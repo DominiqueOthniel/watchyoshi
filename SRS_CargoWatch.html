@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Requirements Specification - CargoWatch</title>
+    <style>
+        /* Bordeaux: #722F37, #8B3A42, #5C2429 | White: #FFFFFF, #F8F5F5 */
+        :root {
+            --bordeaux: #722F37;
+            --bordeaux-fonce: #5C2429;
+            --bordeaux-clair: #8B3A42;
+            --bordeaux-pale: #A0454D;
+            --blanc: #FFFFFF;
+            --blanc-casse: #F8F5F5;
+            --texte: #2C1818;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--blanc-casse);
+            color: var(--texte);
+            line-height: 1.6;
+        }
+
+        .cover {
+            background: var(--bordeaux);
+            color: var(--blanc);
+            padding: 60px 40px;
+            text-align: center;
+            page-break-after: always;
+        }
+        .cover h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .cover .subtitle {
+            font-size: 20px;
+            margin-bottom: 50px;
+        }
+        .cover .meta {
+            text-align: left;
+            max-width: 400px;
+            margin: 0 auto;
+            font-size: 14px;
+        }
+        .cover .meta p { margin: 8px 0; }
+
+        .header-page {
+            background: var(--bordeaux);
+            color: var(--blanc);
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        section {
+            margin: 30px 40px 40px;
+            page-break-inside: avoid;
+        }
+        h2 {
+            color: var(--bordeaux);
+            font-size: 18px;
+            margin: 25px 0 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--bordeaux);
+        }
+        h3 { font-size: 14px; margin: 15px 0 10px; color: var(--bordeaux-fonce); }
+        p { margin: 10px 0; text-align: justify; }
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 5px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid var(--bordeaux);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background: var(--bordeaux);
+            color: var(--blanc);
+        }
+        tr:nth-child(even) { background: rgba(114, 47, 55, 0.06); }
+        .num { font-weight: bold; color: var(--bordeaux); }
+
+        .toc {
+            background: var(--blanc);
+            border: 1px solid var(--bordeaux);
+            padding: 20px 30px;
+            margin: 20px 0;
+        }
+        .toc h2 { margin-top: 0; }
+        .toc a {
+            color: var(--bordeaux);
+            text-decoration: none;
+            display: block;
+            padding: 4px 0;
+        }
+        .toc a:hover { text-decoration: underline; }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px 40px;
+            background: var(--bordeaux);
+            color: var(--blanc);
+            font-size: 11px;
+            text-align: center;
+        }
+
+        @media print {
+            body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .cover { background: var(--bordeaux) !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .header-page { background: var(--bordeaux) !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            th { background: var(--bordeaux) !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            h2 { color: var(--bordeaux) !important; border-bottom-color: var(--bordeaux) !important; }
+            h3 { color: var(--bordeaux-fonce) !important; }
+            .num { color: var(--bordeaux) !important; }
+            footer { background: var(--bordeaux) !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            tr:nth-child(even) { background: rgba(114, 47, 55, 0.08) !important; }
+            section { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cover">
+        <h1>Software Requirements Specification</h1>
+        <p class="subtitle">(SRS)</p>
+        <h2 style="margin-top:40px;font-size:22px;">CargoWatch</h2>
+        <p style="margin-top:20px;">Real-Time Shipment Tracking System</p>
+        <div class="meta" style="margin-top:60px;">
+            <p><strong>Institution:</strong> Rousseau High Institute of Technology</p>
+            <p><strong>Student:</strong> POUGOM TCHATCHOUA DOMINIQUE OTHNIEL</p>
+            <p><strong>Program:</strong> Computer Engineering and Electronics, Year 3</p>
+            <p><strong>Date:</strong> February 9, 2026</p>
+        </div>
+    </div>
+
+    <div class="header-page">1. Introduction</div>
+    <section>
+        <h2>1.1 Document Purpose</h2>
+        <p>This document presents the Software Requirements Specification (SRS) for the CargoWatch system, a real-time shipment tracking web application. It defines the functional and non-functional requirements, architecture, and use cases.</p>
+
+        <h2>1.2 System Scope</h2>
+        <p>CargoWatch enables businesses and individuals to create shipments, track their progress in real time on a map, manage PDF receipts, view customer reviews, and provide support via live chat.</p>
+
+        <h2>1.3 Definitions and Acronyms</h2>
+        <table>
+            <tr><th>Term</th><th>Definition</th></tr>
+            <tr><td>SRS</td><td>Software Requirements Specification</td></tr>
+            <tr><td>API</td><td>Application Programming Interface</td></tr>
+            <tr><td>MongoDB</td><td>Document-oriented NoSQL database</td></tr>
+            <tr><td>OSRM</td><td>Open Source Routing Machine – route calculation</td></tr>
+            <tr><td>Tracking ID</td><td>Unique shipment identifier (e.g. CW20260208ABC123)</td></tr>
+            <tr><td>Socket.io</td><td>Library for real-time communication (WebSockets)</td></tr>
+        </table>
+
+        <h2>1.4 References</h2>
+        <ul>
+            <li>IEEE 830-1998 – Practice for Software Requirements Specifications</li>
+            <li>CargoWatch technical documentation – source code and API</li>
+        </ul>
+    </section>
+
+    <div class="header-page">2. General Description</div>
+    <section>
+        <h2>2.1 Product Perspective</h2>
+        <p>CargoWatch is a monolithic web application (Node.js/Express) that serves both the frontend (HTML/CSS/JS) and backend (REST API). It uses MongoDB for persistence and Socket.io for real-time chat.</p>
+
+        <h2>2.2 Main Functions</h2>
+        <ul>
+            <li>Shipment creation and management</li>
+            <li>Real-time tracking on map (Leaflet) with OSRM routing</li>
+            <li>Administrator authentication</li>
+            <li>Multilingual PDF receipt generation</li>
+            <li>Customer reviews system (CRUD)</li>
+            <li>Live chat customer support</li>
+            <li>Swagger/OpenAPI API documentation</li>
+        </ul>
+
+        <h2>2.3 Users</h2>
+        <table>
+            <tr><th>Actor</th><th>Role</th></tr>
+            <tr><td>Visitor</td><td>Track by ID, view reviews, submit reviews</td></tr>
+            <tr><td>Administrator</td><td>Create shipments, manage statuses, receipts, chat, delete reviews</td></tr>
+        </table>
+    </section>
+
+    <div class="header-page">3. Functional Requirements</div>
+    <section>
+        <h2>3.1 Shipment Management</h2>
+        <table>
+            <tr><th class="num">ID</th><th>Requirement</th><th>Priority</th></tr>
+            <tr><td class="num">FR-01</td><td>Create a shipment (sender, recipient, package, costs)</td><td>High</td></tr>
+            <tr><td class="num">FR-02</td><td>Generate a unique Tracking ID (format CW + date + random)</td><td>High</td></tr>
+            <tr><td class="num">FR-03</td><td>Retrieve a shipment by Tracking ID</td><td>High</td></tr>
+            <tr><td class="num">FR-04</td><td>Update status (pending, picked_up, in_transit, out_for_delivery, delivered)</td><td>High</td></tr>
+            <tr><td class="num">FR-05</td><td>Automatic position progression along OSRM route</td><td>Medium</td></tr>
+            <tr><td class="num">FR-06</td><td>Pause/resume automatic progression</td><td>Medium</td></tr>
+        </table>
+
+        <h2>3.2 Authentication</h2>
+        <table>
+            <tr><th class="num">ID</th><th>Requirement</th><th>Priority</th></tr>
+            <tr><td class="num">FR-07</td><td>Administrator login (username, password)</td><td>High</td></tr>
+            <tr><td class="num">FR-08</td><td>Logout and session destruction</td><td>High</td></tr>
+            <tr><td class="num">FR-09</td><td>Admin route protection by session</td><td>High</td></tr>
+        </table>
+
+        <h2>3.3 Receipts</h2>
+        <table>
+            <tr><th class="num">ID</th><th>Requirement</th><th>Priority</th></tr>
+            <tr><td class="num">FR-10</td><td>Generate PDF receipt per shipment</td><td>Medium</td></tr>
+            <tr><td class="num">FR-11</td><td>Multilingual receipt support (EN, FR, ES, etc.)</td><td>Low</td></tr>
+            <tr><td class="num">FR-12</td><td>Download list of available receipts</td><td>Low</td></tr>
+        </table>
+
+        <h2>3.4 Customer Reviews</h2>
+        <table>
+            <tr><th class="num">ID</th><th>Requirement</th><th>Priority</th></tr>
+            <tr><td class="num">FR-13</td><td>View review list (author, rating 1–5, comment)</td><td>Medium</td></tr>
+            <tr><td class="num">FR-14</td><td>Submit a review (no authentication required)</td><td>Medium</td></tr>
+            <tr><td class="num">FR-15</td><td>Delete a review (author or admin)</td><td>Medium</td></tr>
+            <tr><td class="num">FR-16</td><td>Delete all reviews (admin only)</td><td>Low</td></tr>
+        </table>
+
+        <h2>3.5 Chat Support</h2>
+        <table>
+            <tr><th class="num">ID</th><th>Requirement</th><th>Priority</th></tr>
+            <tr><td class="num">FR-17</td><td>Start a conversation (name, email, message)</td><td>Medium</td></tr>
+            <tr><td class="num">FR-18</td><td>Exchange messages in real time (Socket.io)</td><td>Medium</td></tr>
+            <tr><td class="num">FR-19</td><td>Admin: conversation list, assignment, closure</td><td>Medium</td></tr>
+        </table>
+
+        <h2>3.6 API and Documentation</h2>
+        <table>
+            <tr><th class="num">ID</th><th>Requirement</th><th>Priority</th></tr>
+            <tr><td class="num">FR-20</td><td>Expose REST API for all operations</td><td>High</td></tr>
+            <tr><td class="num">FR-21</td><td>Interactive Swagger/OpenAPI documentation</td><td>Low</td></tr>
+        </table>
+    </section>
+
+    <div class="header-page">4. Non-Functional Requirements</div>
+    <section>
+        <h2>4.1 Performance</h2>
+        <ul>
+            <li>API response &lt; 2 s for standard requests</li>
+            <li>Shipment position update every 10 seconds</li>
+        </ul>
+
+        <h2>4.2 Security</h2>
+        <ul>
+            <li>Hashed passwords (bcrypt)</li>
+            <li>Secure sessions (express-session)</li>
+            <li>Server-side input validation</li>
+        </ul>
+
+        <h2>4.3 Availability</h2>
+        <ul>
+            <li>Deployment on Render (cloud)</li>
+            <li>MongoDB Atlas database (high availability)</li>
+        </ul>
+
+        <h2>4.4 Maintainability</h2>
+        <ul>
+            <li>Modular code (JSON/MongoDB separation)</li>
+            <li>API documentation and comments</li>
+        </ul>
+    </section>
+
+    <div class="header-page">5. Architecture and Technologies</div>
+    <section>
+        <h2>5.1 Technical Stack</h2>
+        <table>
+            <tr><th>Component</th><th>Technology</th></tr>
+            <tr><td>Backend</td><td>Node.js, Express.js</td></tr>
+            <tr><td>Database</td><td>MongoDB (or JSON files as fallback)</td></tr>
+            <tr><td>Frontend</td><td>HTML5, CSS3, JavaScript (vanilla)</td></tr>
+            <tr><td>Real-time</td><td>Socket.io</td></tr>
+            <tr><td>Mapping</td><td>Leaflet, OpenStreetMap</td></tr>
+            <tr><td>Routing</td><td>OSRM (external API)</td></tr>
+            <tr><td>PDF</td><td>PDFKit</td></tr>
+        </table>
+
+        <h2>5.2 Main Modules</h2>
+        <ul>
+            <li><strong>server.js</strong>: Express server, API routes, Socket.io</li>
+            <li><strong>db.js</strong>: MongoDB connection</li>
+            <li><strong>public/reviews.js</strong>: Client-side reviews module</li>
+            <li><strong>pages/</strong>: Interfaces (admin, tracking, creation, support)</li>
+        </ul>
+    </section>
+
+    <div class="header-page">6. Use Cases (Summary)</div>
+    <section>
+        <table>
+            <tr><th>Case</th><th>Actor</th><th>Description</th></tr>
+            <tr><td>Track a shipment</td><td>Visitor</td><td>Enter Tracking ID, view map and status</td></tr>
+            <tr><td>Create a shipment</td><td>Admin</td><td>Fill form, automatic Tracking ID generation</td></tr>
+            <tr><td>Update status</td><td>Admin</td><td>Select new status from dashboard</td></tr>
+            <tr><td>Generate receipt</td><td>Admin</td><td>Select language, download PDF</td></tr>
+            <tr><td>Submit a review</td><td>Visitor</td><td>Name, rating, comment via public form</td></tr>
+            <tr><td>Delete a review</td><td>Admin / Author</td><td>Confirm then delete</td></tr>
+            <tr><td>Chat support</td><td>Visitor / Admin</td><td>Real-time message exchange</td></tr>
+        </table>
+    </section>
+
+    <div class="header-page">7. Data Model (Concepts)</div>
+    <section>
+        <h2>7.1 Main Entities</h2>
+        <ul>
+            <li><strong>User</strong>: id, username, email, password (hashed), role (admin/client)</li>
+            <li><strong>Shipment</strong>: id, trackingId, status, sender, recipient, package, events, currentLocation, routeGeometry, cost, autoProgress</li>
+            <li><strong>Review</strong>: id, author, rating, comment, createdAt</li>
+            <li><strong>Chat</strong>: id, clientName, clientEmail, messages[], status, assignedTo</li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>Rousseau High Institute of Technology — Computer Engineering and Electronics — Year 3</p>
+        <p>POUGOM TCHATCHOUA DOMINIQUE OTHNIEL — CargoWatch SRS — February 9, 2026</p>
+    </footer>
+</body>
+</html>
