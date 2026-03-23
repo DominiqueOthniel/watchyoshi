@@ -1,0 +1,97 @@
+/**
+ * CargoWatch — responsive global
+ * Chargé après main.css sur toutes les pages.
+ */
+
+html {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+body {
+  min-width: 0;
+}
+
+/* Encoches / safe-area (iOS, certains Android) */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left, 0px));
+    padding-right: max(0px, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* Empêche les images / médias de forcer le scroll horizontal */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Conteneurs flex/grid : permet le rétrécissement correct */
+.min-h-screen {
+  min-height: 100dvh;
+}
+
+/* Utilitaires réutilisables */
+.cw-break-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Tableaux : défilement horizontal lisible sur mobile */
+.cw-table-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+}
+
+/* Carte Leaflet suivi : hauteur fluide (évite carte trop basse sur mobile) */
+#tracking-map {
+  width: 100%;
+  min-height: 200px;
+  height: min(52vh, 22rem);
+}
+
+@media (min-width: 640px) {
+  #tracking-map {
+    height: 16rem;
+    min-height: 14rem;
+  }
+}
+
+/* Page suivi public : bouton Track dans le champ (sm+) vs pleine largeur (mobile) */
+#track-button {
+  display: none;
+}
+#track-button-mobile {
+  display: block;
+  width: 100%;
+}
+@media (min-width: 640px) {
+  #track-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  #track-button-mobile {
+    display: none;
+  }
+}
+
+/* Modal carte plein écran — petits écrans */
+@media (max-width: 639px) {
+  #map-modal-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+  #map-modal-content {
+    margin: 0.5rem;
+    min-height: 0;
+  }
+}

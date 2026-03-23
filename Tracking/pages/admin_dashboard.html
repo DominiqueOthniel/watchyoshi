@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Admin Dashboard - CargoWatch</title>
+    <!-- Langue par défaut : anglais -->
+    <script>
+        (function() {
+            const supportedLanguages = ['en', 'fr', 'es', 'de', 'pt', 'it', 'zh', 'ja', 'ru', 'ar'];
+            let detectedLang = 'en'; // Par défaut : anglais
+            
+            // Vérifier si une préférence est sauvegardée
+            try {
+                const savedLang = localStorage.getItem('cargowatch_lang');
+                if (savedLang && supportedLanguages.includes(savedLang)) {
+                    detectedLang = savedLang;
+                }
+            } catch(e) {}
+            
+            document.documentElement.setAttribute('lang', detectedLang);
+        })();
+    </script>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/public/i18n.js"></script>
+    <script src="/public/init-i18n.js"></script>
+    <style>
+        /* Fullscreen Chat Styles */
+        body.chat-fullscreen {
+            overflow: hidden;
+        }
+        
+        .chat-list-container {
+            max-height: 700px;
+        }
+        
+        .chat-messages-container {
+            min-height: 700px;
+        }
+        
+        body.chat-fullscreen .chat-list-container {
+            max-height: calc(100vh - 250px);
+            height: calc(100vh - 250px);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        body.chat-fullscreen .chat-messages-container {
+            min-height: calc(100vh - 250px);
+            height: calc(100vh - 250px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        body.chat-fullscreen #admin-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: calc(100vh - 350px);
+        }
+        
+        body.chat-fullscreen #chat-container {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 1.5rem;
+            height: 100vh;
+            padding: 1.5rem;
+        }
+        
+        body.chat-fullscreen #chat-container .card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        #chat-container.chat-fullscreen-active {
+            display: grid !important;
+            grid-template-columns: 400px 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 1024px) {
+            #chat-container.chat-fullscreen-active {
+                grid-template-columns: 1fr;
+                grid-template-rows: 280px 1fr;
+            }
+        }
+        
+        /* Ensure scrolling works in normal mode too */
+        .chat-list-container {
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e0 #f7fafc;
+        }
+        
+        .chat-list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-list-container::-webkit-scrollbar-track {
+            background: #f7fafc;
+            border-radius: 4px;
+        }
+        
+        .chat-list-container::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+        
+        .chat-list-container::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+        
+        #admin-chat-messages {
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e0 #f7fafc;
+        }
+        
+        #admin-chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #admin-chat-messages::-webkit-scrollbar-track {
+            background: #f7fafc;
+            border-radius: 4px;
+        }
+        
+        #admin-chat-messages::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+        
+        #admin-chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+        
+        @media (max-width: 1024px) {
+            body.chat-fullscreen #chat-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 300px 1fr;
+            }
+        }
+        @media (max-width: 640px) {
+            .chat-list-container { max-height: 280px; }
+            .chat-messages-container { min-height: 400px; }
+        }
+        .admin-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .admin-tabs::-webkit-scrollbar { display: none; }
+        @media (max-width: 768px) {
+            #shipments-table { min-width: 600px; }
+        }
+    </style>
+  
+  <!-- Scripts Rocket désactivés -->
+  </head>
+<body class="bg-background">
+    <!-- Smart Header with Navigation -->
+    <header class="header-dark sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/pages/homepage.html" class="flex items-center space-x-2">
+                        <img src="/delivery-truck-logo.png" alt="CargoWatch Logo" class="w-8 h-8 object-contain brightness-0 invert opacity-90">
+                        <span class="text-xl font-bold text-white tracking-tight">CargoWatch</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="/pages/admin_dashboard.html" class="nav-link-active">Dashboard</a>
+                    <a href="/pages/public_tracking_interface.html" class="nav-link">Track Shipment</a>
+                    <a href="/pages/shipment_creation_portal.html" class="nav-link">Create Shipment</a>
+                    <a href="/pages/support_hub.html" class="nav-link">Support</a>
+                </nav>
+                <div class="hidden lg:flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white font-semibold text-sm shadow-lg shadow-primary-500/30" id="admin-avatar">A</div>
+                        <span class="text-sm font-medium text-white" id="admin-header-name">Admin</span>
+                    </div>
+                </div>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-dark-300 hover:text-white hover:bg-dark-700" aria-label="Toggle menu">
+                    <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden border-t border-dark-700 bg-dark-800">
+                <nav class="flex flex-col px-4 py-4 space-y-1">
+                    <a href="/pages/admin_dashboard.html" class="nav-link-active py-3">Dashboard</a>
+                    <a href="/pages/shipment_creation_portal.html" class="nav-link py-3">Create Shipment</a>
+                    <a href="/pages/public_tracking_interface.html" class="nav-link py-3">Track</a>
+                    <a href="/pages/support_hub.html" class="nav-link py-3">Support</a>
+                    <button type="button" onclick="logout()" class="text-left text-error hover:text-error-400 py-3 text-sm font-medium">Logout</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div id="dashboard-title-block" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">Admin</h1>
+                <p class="text-sm sm:text-base text-text-secondary mt-0.5" id="welcome-message">Shipments and chat</p>
+            </div>
+            <a href="shipment_creation_portal.html" class="btn-primary inline-flex items-center justify-center sm:justify-start w-full sm:w-auto">
+                <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Create Shipment
+            </a>
+        </div>
+
+        <!-- Stats (hidden when Chat tab is active) -->
+        <div id="dashboard-stats" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
+            <div class="card p-4 sm:p-6">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <p class="text-text-muted text-xs sm:text-sm font-medium truncate">Active</p>
+                        <p class="text-xl sm:text-3xl font-bold text-text-primary" id="active-shipments">0</p>
+                        <p class="text-success text-xs" id="active-change"></p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-4 sm:p-6">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <p class="text-text-muted text-xs sm:text-sm font-medium truncate">In Transit</p>
+                        <p class="text-xl sm:text-3xl font-bold text-text-primary" id="in-transit">0</p>
+                        <p class="text-warning text-xs" id="in-transit-info"></p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-warning-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-4 sm:p-6">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <p class="text-text-muted text-xs sm:text-sm font-medium truncate">Delivered</p>
+                        <p class="text-xl sm:text-3xl font-bold text-text-primary" id="delivered-today">0</p>
+                        <p class="text-success text-xs" id="delivered-info"></p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-success-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-4 sm:p-6">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <p class="text-text-muted text-xs sm:text-sm font-medium truncate">Messages</p>
+                        <p class="text-xl sm:text-3xl font-bold text-text-primary" id="client-messages">0</p>
+                        <p class="text-accent text-xs" id="unread-messages"></p>
+                    </div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-accent-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mb-4 sm:mb-6 border-b border-border admin-tabs">
+            <nav class="flex gap-6 sm:gap-8 min-w-max px-1">
+                <button id="tab-shipments" class="tab-button active py-3 sm:py-4 px-1 border-b-2 border-primary font-medium text-primary text-sm sm:text-base whitespace-nowrap">
+                    Shipments
+                </button>
+                <button id="tab-chat" class="tab-button py-3 sm:py-4 px-1 border-b-2 border-transparent font-medium text-text-secondary hover:text-primary text-sm sm:text-base whitespace-nowrap">
+                    Chat <span id="chat-badge" class="ml-1 sm:ml-2 bg-accent text-white text-xs rounded-full px-1.5 py-0.5 hidden">0</span>
+                </button>
+            </nav>
+        </div>
+
+        <div id="content-shipments">
+        <div class="space-y-4 sm:space-y-6">
+                <div class="card p-4 sm:p-6">
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                        <a href="shipment_creation_portal.html" class="flex flex-col items-center justify-center p-4 sm:p-5 bg-surface rounded-lg hover:bg-surface-hover transition-colors">
+                            <svg class="w-7 h-7 sm:w-8 sm:h-8 text-primary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                            <span class="text-xs sm:text-sm font-medium text-text-primary text-center">Create Shipment</span>
+                        </a>
+                        <button id="download-receipts-btn" type="button" class="flex flex-col items-center justify-center p-4 sm:p-5 bg-surface rounded-lg hover:bg-surface-hover transition-colors">
+                            <svg class="w-7 h-7 sm:w-8 sm:h-8 text-secondary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <span class="text-xs sm:text-sm font-medium text-text-primary text-center">Receipts</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card p-4 sm:p-6 overflow-hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <h3 class="text-base sm:text-lg font-semibold text-text-primary">Shipments</h3>
+                        <div class="relative w-full sm:w-56">
+                            <input type="text" placeholder="Search..." class="input-field w-full pl-9 pr-3 py-2 text-sm" id="admin-shipment-search">
+                            <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto -mx-4 sm:-mx-6 lg:mx-0">
+                        <div class="inline-block min-w-full align-middle px-4 sm:px-6 lg:px-0">
+                            <table id="shipments-table" class="w-full min-w-[600px] sm:min-w-[700px] text-sm">
+                            <thead>
+                                <tr class="border-b border-border">
+                                    <th class="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium text-text-secondary text-xs sm:text-sm"><input type="checkbox" class="rounded border-border" aria-label="Select all"></th>
+                                    <th class="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium text-text-secondary text-xs sm:text-sm">ID</th>
+                                    <th class="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium text-text-secondary text-xs sm:text-sm hidden sm:table-cell">From</th>
+                                    <th class="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium text-text-secondary text-xs sm:text-sm hidden md:table-cell">To</th>
+                                    <th class="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium text-text-secondary text-xs sm:text-sm">Status</th>
+                                    <th class="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium text-text-secondary text-xs sm:text-sm hidden lg:table-cell">Updated</th>
+                                    <th class="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium text-text-secondary text-xs sm:text-sm">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                <!-- Les shipments seront chargés dynamiquement -->
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mt-4 pt-4 border-t border-border">
+                        <div class="text-xs sm:text-sm text-text-muted" id="pagination-info">No shipments yet</div>
+                        <div class="flex items-center justify-center sm:justify-end gap-1 sm:gap-2">
+                            <button type="button" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-border rounded-lg hover:bg-surface transition-colors">Prev</button>
+                            <button type="button" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-primary text-white rounded-lg">1</button>
+                            <button type="button" class="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-border rounded-lg hover:bg-surface transition-colors">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div id="content-chat" class="hidden">
+            <div class="mb-3 sm:mb-4 flex justify-end">
+                <button type="button" id="chat-fullscreen-btn" class="btn-secondary flex items-center gap-2 px-3 py-2 text-sm">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                    <span class="hidden sm:inline">Fullscreen</span>
+                </button>
+            </div>
+            <div id="chat-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 min-w-0">
+                <!-- Liste des Chats (Colonne Gauche) -->
+                <div class="card min-w-0">
+                    <div class="flex items-center justify-between mb-4 pb-4 border-b border-border">
+                        <h3 class="text-xl font-bold text-text-primary">💬 Conversations</h3>
+                        <select id="chat-status-filter" class="text-sm border border-border rounded-lg px-3 py-2 bg-surface">
+                            <option value="">Tous</option>
+                            <option value="open">Ouvert</option>
+                            <option value="active">Actif</option>
+                            <option value="closed">Fermé</option>
+                            </select>
+                            </div>
+                    <div id="chat-list" class="space-y-3 chat-list-container overflow-y-auto" style="max-height: 100%; overflow-y: auto;">
+                        <div class="text-center py-8 text-text-muted">
+                            <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                            <p class="text-sm">Chargement des conversations...</p>
+                        </div>
+                            </div>
+                        </div>
+
+                <!-- Zone de Messages (Colonne Droite) -->
+                <div class="card flex flex-col min-w-0 overflow-hidden" style="min-height: min(65vh, 700px);">
+                    <!-- État: Aucun chat sélectionné -->
+                        <div id="no-chat-selected" class="flex-1 flex items-center justify-center text-center p-8">
+                                            <div>
+                            <div class="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-text-primary mb-2">Sélectionnez une conversation</h3>
+                            <p class="text-text-secondary text-sm">Choisissez une conversation dans la liste pour voir les messages</p>
+                            </div>
+                        </div>
+
+                    <!-- État: Chat sélectionné avec messages -->
+                        <div id="chat-messages-panel" class="hidden flex-1 flex flex-col min-w-0">
+                        <!-- En-tête du Chat -->
+                        <div class="border-b border-border p-3 sm:p-4 bg-surface">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div class="min-w-0 flex-1">
+                                    <h4 id="chat-client-name" class="font-bold text-base sm:text-lg text-text-primary mb-0.5 truncate"></h4>
+                                    <p id="chat-client-email" class="text-xs sm:text-sm text-text-secondary truncate"></p>
+                                    <p id="chat-subject-admin" class="text-xs text-text-muted truncate"></p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 flex-shrink-0">
+                                    <button id="assign-chat-btn" class="btn-secondary text-xs sm:text-sm px-3 py-2 whitespace-nowrap">M'assigner</button>
+                                    <button id="close-chat-btn" class="text-xs sm:text-sm px-3 py-2 bg-error-100 text-error hover:bg-error-200 rounded-lg whitespace-nowrap">Fermer</button>
+                                    <button id="delete-chat-btn" class="text-xs sm:text-sm px-3 py-2 border border-error text-error hover:bg-error-50 rounded-lg whitespace-nowrap" title="Supprimer définitivement la conversation">Supprimer</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Zone des Messages -->
+                        <div id="admin-chat-messages" class="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-6 space-y-4 bg-gray-50 min-h-[200px]">
+                        </div>
+
+                        <!-- Zone de Saisie -->
+                        <div class="border-t border-border p-3 sm:p-4 bg-white">
+                            <div class="flex gap-2 sm:gap-3 items-stretch">
+                                <input 
+                                    type="text" 
+                                    id="admin-chat-message-input" 
+                                    class="input-field flex-1 min-w-0 px-3 sm:px-4 py-2 sm:py-3 rounded-lg border border-border focus:border-primary focus:ring-2 focus:ring-primary-50 text-sm sm:text-base" 
+                                    placeholder="Tapez votre message..."
+                                >
+                                <button id="admin-chat-send-btn" class="btn-primary px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base flex-shrink-0 whitespace-nowrap">
+                                    Envoyer
+                                </button>
+                            </div>
+                        </div>
+                        </div>
+                        </div>
+                    </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-text-primary text-white py-16 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <img src="/delivery-truck-logo.png" alt="CargoWatch Logo" class="w-8 h-8 object-contain">
+                        <span class="text-xl font-bold">CargoWatch</span>
+                    </div>
+                    <p class="text-text-muted mb-4">Your cargo. Our watch. Every mile.</p>
+                    <p class="text-sm text-text-muted">© 2025 CargoWatch. All Rights Reserved.</p>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h4 class="font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-sm text-text-muted">
+                        <li><a href="public_tracking_interface.html" class="hover:text-white transition-colors">Package Tracking</a></li>
+                        <li><a href="shipment_creation_portal.html" class="hover:text-white transition-colors">Create Shipment</a></li>
+                        <li><a href="admin_dashboard.html" class="hover:text-white transition-colors">Admin Dashboard</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-text-muted">
+                        <li><a href="support_hub.html" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="support_hub.html" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="support_hub.html" class="hover:text-white transition-colors">System Status</a></li>
+                        <li><a href="support_hub.html" class="hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-sm text-text-muted">
+                        <li>watchyourcargo@gmail.com</li>
+                        <li>24/7 Customer Support</li>
+                        <li>Enterprise Solutions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Receipt Create Modal -->
+    <div id="receipt-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-text-primary">Generate Shipment Receipt</h3>
+                <button id="close-receipt-modal" class="text-text-secondary hover:text-text-primary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-4">
+                <p class="text-sm text-text-secondary mb-4">Tracking ID: <span id="receipt-tracking-id" class="font-semibold"></span></p>
+                
+                <!-- Language Selection -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-text-primary mb-2">Receipt Language</label>
+                    <select id="receipt-language-select" class="input-field w-full">
+                        <option value="en">English</option>
+                        <option value="fr">Français</option>
+                        <option value="es">Español</option>
+                        <option value="de">Deutsch</option>
+                        <option value="pt">Português</option>
+                        <option value="it">Italiano</option>
+                        <option value="zh">中文</option>
+                        <option value="ja">日本語</option>
+                        <option value="ru">Русский</option>
+                        <option value="ar">العربية</option>
+                    </select>
+                </div>
+                
+                <div class="bg-surface rounded-lg p-6 text-center">
+                    <svg class="w-16 h-16 mx-auto mb-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <p class="text-text-primary font-medium mb-2">Generate Receipt</p>
+                    <p class="text-sm text-text-secondary">A professional receipt will be automatically generated based on shipment details.</p>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button id="cancel-receipt-upload" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200">
+                    Cancel
+                </button>
+                <button id="upload-receipt-btn" class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>Generate Receipt</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipts Download Modal -->
+    <div id="receipts-download-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-text-primary">Download Shipment Receipts</h3>
+                <button id="close-receipts-modal" class="text-text-secondary hover:text-text-primary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-4">
+                <p class="text-sm text-text-secondary mb-4">All available shipment receipts:</p>
+                <div id="receipts-list" class="space-y-2">
+                    <p class="text-sm text-text-muted">Loading receipts...</p>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button id="cancel-receipts-download" class="btn-secondary px-4 py-2">Close</button>
+                <button id="download-all-receipts-btn" class="btn-primary px-4 py-2">Download All</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentUser = null;
+        let shipments = [];
+
+        // Vérifier l'authentification au chargement
+        async function checkAuth() {
+            try {
+                console.log('🔐 Checking authentication...');
+                const response = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
+                
+                console.log('🔐 Auth response status:', response.status, response.statusText);
+                
+                // Vérifier si la réponse est du JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.error('❌ Auth: Non-JSON response, redirecting to login');
+                    window.location.href = '/pages/admin_login.html';
+                    return false;
+                }
+                
+                if (!response.ok) {
+                    console.error('❌ Auth: Response not OK, redirecting to login');
+                    window.location.href = '/pages/admin_login.html';
+                    return false;
+                }
+                
+                const data = await response.json();
+                currentUser = data.user;
+                
+                console.log('👤 Current user:', currentUser);
+                console.log('👤 User role:', currentUser.role);
+                
+                // Vérifier que l'utilisateur est admin
+                if (currentUser.role !== 'admin') {
+                    console.error('❌ Auth: User is not admin, redirecting to tracking page');
+                    console.error('❌ User role:', currentUser.role, '(expected: admin)');
+                    // Rediriger vers la page de tracking
+                    window.location.href = '/pages/public_tracking_interface.html';
+                    return false;
+                }
+                
+                console.log('✅ Auth: User is authenticated as admin');
+                
+                // Mettre à jour l'affichage de l'utilisateur
+                // Build display name with fallbacks
+                let displayName = '';
+                if (currentUser.firstName && currentUser.lastName) {
+                    displayName = `${currentUser.firstName} ${currentUser.lastName}`;
+                } else if (currentUser.firstName) {
+                    displayName = currentUser.firstName;
+                } else if (currentUser.lastName) {
+                    displayName = currentUser.lastName;
+                } else {
+                    displayName = currentUser.username || 'Admin';
+                }
+                
+                // Get initials
+                let initials = 'A';
+                if (currentUser.firstName || currentUser.lastName) {
+                    const first = currentUser.firstName ? currentUser.firstName.charAt(0).toUpperCase() : '';
+                    const last = currentUser.lastName ? currentUser.lastName.charAt(0).toUpperCase() : '';
+                    initials = first + last || displayName.charAt(0).toUpperCase();
+                } else {
+                    initials = displayName.substring(0, 2).toUpperCase();
+                }
+                
+                // Update header elements
+                const adminHeaderName = document.getElementById('admin-header-name');
+                const adminAvatar = document.getElementById('admin-avatar');
+                const welcomeMessage = document.getElementById('welcome-message');
+                
+                if (adminHeaderName) adminHeaderName.textContent = displayName;
+                if (adminAvatar) adminAvatar.textContent = initials;
+                if (welcomeMessage) {
+                    const firstName = currentUser.firstName || displayName.split(' ')[0];
+                    welcomeMessage.textContent = `Welcome back, ${firstName}. Here's what's happening with your shipments today.`;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/pages/admin_login.html';
+                return false;
+            }
+        }
+
+        // Fonction helper pour mettre à jour l'affichage des stats
+        function updateStatsDisplay(statsData) {
+            if (!statsData) {
+                console.warn('⚠️ [updateStatsDisplay] No stats data provided');
+                    return;
+                }
+                
+            console.log('🎯 [updateStatsDisplay] Starting update with data:', statsData);
+                    
+            // Liste de tous les éléments à mettre à jour
+            const updates = [
+                { id: 'active-shipments', value: statsData.activeShipments ?? 0, name: 'Active Shipments' },
+                { id: 'delivered-today', value: statsData.deliveredToday ?? 0, name: 'Delivered Today' },
+                { id: 'total-shipments-sidebar', value: statsData.totalShipments ?? 0, name: 'Total Shipments' },
+                { id: 'in-transit', value: statsData.inTransit ?? 0, name: 'In Transit' },
+                { id: 'pending-sidebar', value: statsData.pending ?? 0, name: 'Pending' },
+                { id: 'delivered-sidebar', value: statsData.delivered ?? 0, name: 'Delivered' }
+            ];
+            
+            let successCount = 0;
+            let failCount = 0;
+            
+            updates.forEach(({ id, value, name }) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const oldValue = el.textContent;
+                    el.textContent = String(value);
+                    console.log(`✅ [updateStatsDisplay] Updated ${name} (${id}): "${oldValue}" → "${value}"`);
+                    successCount++;
+                } else {
+                    console.error(`❌ [updateStatsDisplay] Element "${id}" (${name}) NOT FOUND in DOM!`);
+                    failCount++;
+                }
+            });
+                    
+            // Mettre à jour la pagination info
+                    const paginationInfo = document.getElementById('pagination-info');
+                    if (paginationInfo) {
+                        if (statsData.totalShipments === 0) {
+                            paginationInfo.textContent = 'No shipments yet';
+                        } else {
+                    const total = statsData.totalShipments || 0;
+                    const showing = shipments?.length || 0;
+                            const start = showing > 0 ? 1 : 0;
+                    paginationInfo.textContent = `Showing ${start}-${showing} of ${total} shipments`;
+                }
+            }
+            
+            console.log(`📊 [updateStatsDisplay] Complete: ${successCount} updated, ${failCount} failed`);
+            
+            if (failCount > 0) {
+                console.error(`⚠️ [updateStatsDisplay] WARNING: ${failCount} elements could not be updated!`);
+            }
+        }
+
+        // Charger les stats depuis l'API (simplifié comme dans homepage.html)
+        async function loadStats() {
+            try {
+                console.log('🔄 Loading stats from /api/stats...');
+                const response = await fetch('/api/stats');
+                
+                if (response.ok) {
+                    const stats = await response.json();
+                    console.log('📊 Stats data received:', stats);
+                    updateStatsDisplay(stats);
+                console.log('✅ Stats updated successfully');
+                } else {
+                    console.error('❌ Failed to load stats:', response.status, response.statusText);
+                    // Utiliser des valeurs par défaut si l'API échoue
+                    updateStatsDisplay({
+                        activeShipments: 0,
+                        deliveredToday: 0,
+                        totalShipments: 0,
+                        inTransit: 0,
+                        pending: 0,
+                        delivered: 0
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Error loading stats:', error);
+                // Utiliser des valeurs par défaut en cas d'erreur
+                updateStatsDisplay({
+                    activeShipments: 0,
+                    deliveredToday: 0,
+                    totalShipments: 0,
+                    inTransit: 0,
+                    pending: 0,
+                    delivered: 0
+                });
+            }
+        }
+
+        // Fonction globale pour tester manuellement le chargement des stats
+        window.forceReloadStats = loadStats;
+
+        // Charger les messages clients pour la carte "Client Messages"
+        async function loadClientMessagesCount() {
+            try {
+                console.log('📨 Loading client messages count...');
+                const response = await fetch('/api/chat', { credentials: 'include' });
+                if (response.ok) {
+                    const chats = await response.json();
+                    // Count total unread messages from clients
+                    let totalUnread = 0;
+                    chats.forEach(chat => {
+                        if (chat.messages) {
+                            totalUnread += chat.messages.filter(m => !m.read && m.senderType === 'client').length;
+                        }
+                    });
+                    
+                    const openChats = chats.filter(c => c.status === 'open' || c.status === 'active').length;
+                    
+                    const messagesEl = document.getElementById('client-messages');
+                    const unreadEl = document.getElementById('unread-messages');
+                    
+                    if (messagesEl) {
+                        messagesEl.textContent = openChats || 0;
+                        console.log('✅ Client messages updated:', openChats);
+                    } else {
+                        console.warn('⚠️ Client messages element not found');
+                    }
+                    
+                    if (unreadEl) {
+                        if (totalUnread > 0) {
+                            unreadEl.textContent = `${totalUnread} unread`;
+                            unreadEl.style.display = 'block';
+                        } else {
+                            unreadEl.textContent = '';
+                            unreadEl.style.display = 'none';
+                    }
+                    }
+                } else {
+                    console.error('❌ Failed to load client messages:', response.status, response.statusText);
+                }
+            } catch (err) {
+                console.error('❌ Error loading client messages:', err);
+            }
+        }
+
+        // Charger les shipments
+        async function loadShipments() {
+            try {
+                console.log('🔄 Loading shipments from /api/shipments...');
+                const response = await fetch('/api/shipments', {
+                    credentials: 'include'
+                });
+                
+                console.log('📡 Shipments response status:', response.status, response.statusText);
+                console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+                
+                // Vérifier si la réponse est du JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('❌ Non-JSON response:', text);
+                    console.error('❌ Content-Type:', contentType);
+                    
+                    // Si c'est une redirection vers login, informer l'utilisateur
+                    if (response.status === 401 || response.status === 403) {
+                        alert('Authentication required. Redirecting to login...');
+                        window.location.href = '/pages/admin_login.html';
+                        return;
+                    }
+                    
+                    throw new Error('Server returned non-JSON response');
+                }
+                
+                if (!response.ok) {
+                    let errorMessage = 'Failed to load shipments';
+                    try {
+                    const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                        console.error('❌ API Error:', errorData);
+                    } catch (e) {
+                        const text = await response.text();
+                        errorMessage = text || errorMessage;
+                        console.error('❌ Error response (not JSON):', text);
+                    }
+                    
+                    // Si c'est une erreur d'authentification, rediriger
+                    if (response.status === 401 || response.status === 403) {
+                        alert('Access denied. Please log in as admin.');
+                        window.location.href = '/pages/admin_login.html';
+                        return;
+                    }
+                    
+                    throw new Error(errorMessage);
+                }
+                
+                const data = await response.json();
+                shipments = data.shipments || [];
+                
+                console.log(`✅ Loaded ${shipments.length} shipments (Total: ${data.total || shipments.length})`);
+                console.log('📦 Shipments data:', shipments);
+                
+                // Toujours charger les stats depuis l'API séparément
+                await loadStats();
+                
+                // Charger le nombre de messages clients
+                await loadClientMessagesCount();
+                
+                // Afficher les shipments dans le tableau
+                displayShipments(shipments);
+                
+                // Afficher un message si aucun shipment
+                if (shipments.length === 0) {
+                    console.warn('⚠️ No shipments loaded. Check if you are logged in as admin.');
+                }
+            } catch (error) {
+                console.error('❌ Error loading shipments:', error);
+                console.error('❌ Error details:', error.message, error.stack);
+                
+                // Même en cas d'erreur, essayer de charger les stats
+                await loadStats();
+                
+                // Ne pas afficher d'alerte si c'est une redirection
+                if (error.message.includes('redirecting') || error.message.includes('Access denied')) {
+                    return;
+                }
+                
+                alert(`Error loading shipments: ${error.message}\n\nPlease make sure you are logged in as admin.`);
+            }
+        }
+
+        // Mettre à jour les statistiques locales (utilise les shipments fournis, pas tous)
+        // NOTE: Cette fonction est maintenant utilisée seulement en fallback
+        // Les stats principales sont chargées via /api/stats dans loadShipments()
+        function updateStats(shipments) {
+            const totalShipments = shipments.length;
+            const activeShipments = shipments.filter(s => s.status !== 'delivered' && s.status !== 'cancelled').length;
+            const inTransit = shipments.filter(s => s.status === 'in_transit' || s.status === 'out_for_delivery' || s.status === 'picked_up').length;
+            const pending = shipments.filter(s => s.status === 'pending').length;
+            const delivered = shipments.filter(s => s.status === 'delivered').length;
+            const deliveredToday = shipments.filter(s => {
+                if (!s.deliveredAt) return false;
+                const deliveredDate = new Date(s.deliveredAt);
+                const today = new Date();
+                return deliveredDate.toDateString() === today.toDateString();
+            }).length;
+            
+            // Top stats cards
+            const activeElement = document.getElementById('active-shipments');
+            const inTransitElement = document.getElementById('in-transit');
+            const deliveredTodayElement = document.getElementById('delivered-today');
+            
+            if (activeElement) activeElement.textContent = activeShipments;
+            if (inTransitElement) inTransitElement.textContent = inTransit;
+            if (deliveredTodayElement) deliveredTodayElement.textContent = deliveredToday;
+            
+            // Sidebar stats
+            const totalSidebarElement = document.getElementById('total-shipments-sidebar');
+            const pendingSidebarElement = document.getElementById('pending-sidebar');
+            const deliveredSidebarElement = document.getElementById('delivered-sidebar');
+            
+            if (totalSidebarElement) totalSidebarElement.textContent = totalShipments;
+            if (pendingSidebarElement) pendingSidebarElement.textContent = pending;
+            if (deliveredSidebarElement) deliveredSidebarElement.textContent = delivered;
+            
+            // Note: La pagination info est maintenant mise à jour dans loadStats() avec le total réel
+            // Cette fonction est conservée uniquement en fallback
+        }
+
+        // Afficher les shipments dans le tableau
+        function displayShipments(shipmentsList) {
+            const tbody = document.querySelector('#shipments-table tbody');
+            if (!tbody) {
+                console.error('❌ Table tbody not found!');
+                return;
+            }
+            
+            console.log(`🎨 Displaying ${shipmentsList?.length || 0} shipments in table...`);
+            tbody.innerHTML = '';
+            
+            if (!shipmentsList || shipmentsList.length === 0) {
+                console.warn('⚠️ No shipments to display');
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-text-muted">No shipments found</td></tr>';
+                return;
+            }
+            
+            shipmentsList.forEach((shipment, index) => {
+                console.log(`📝 Creating row ${index + 1} for shipment:`, shipment.trackingId);
+                try {
+                const row = createShipmentRow(shipment);
+                tbody.appendChild(row);
+                } catch (error) {
+                    console.error(`❌ Error creating row for shipment ${shipment.trackingId}:`, error);
+                }
+            });
+            
+            console.log(`✅ Successfully displayed ${shipmentsList.length} shipments`);
+        }
+
+        // Créer une ligne de tableau pour un shipment
+        function createShipmentRow(shipment) {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-surface transition-colors';
+            
+            const statusMap = {
+                'pending': { class: 'status-warning', text: 'Pending' },
+                'picked_up': { class: 'status-info', text: 'Picked Up' },
+                'in_transit': { class: 'status-info', text: 'In Transit' },
+                'out_for_delivery': { class: 'status-warning', text: 'Out for Delivery' },
+                'delivered': { class: 'status-success', text: 'Delivered' },
+                'exception': { class: 'status-error', text: 'Exception' }
+            };
+            
+            const status = statusMap[shipment.status] || { class: 'status-info', text: shipment.status };
+            const createdAt = new Date(shipment.createdAt).toLocaleDateString();
+            
+            tr.innerHTML = `
+                <td class="px-2 sm:px-4 py-2 sm:py-4">
+                    <input type="checkbox" class="rounded border-border text-primary focus:ring-primary" aria-label="Select row">
+                </td>
+                <td class="px-2 sm:px-4 py-2 sm:py-4">
+                    <div class="font-medium text-text-primary text-sm">${shipment.trackingId}</div>
+                    <div class="text-xs text-text-muted truncate max-w-[120px] sm:max-w-none">${shipment.package?.description || '—'}</div>
+                </td>
+                <td class="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-4">
+                    <div class="text-xs sm:text-sm text-text-primary">${shipment.sender?.name || 'N/A'}</div>
+                    <div class="text-xs text-text-muted">${shipment.sender?.address?.city || ''}</div>
+                </td>
+                <td class="hidden md:table-cell px-2 sm:px-4 py-2 sm:py-4">
+                    <div class="text-xs sm:text-sm text-text-primary">${shipment.recipient?.name || 'N/A'}</div>
+                    <div class="text-xs text-text-muted">${shipment.recipient?.address?.city || ''}</div>
+                </td>
+                <td class="px-2 sm:px-4 py-2 sm:py-4">
+                    <span class="px-2 py-1 rounded-full text-xs font-medium ${status.class} whitespace-nowrap">${status.text}</span>
+                </td>
+                <td class="hidden lg:table-cell px-2 sm:px-4 py-2 sm:py-4 text-xs sm:text-sm text-text-secondary">${createdAt}</td>
+                <td class="px-2 sm:px-4 py-2 sm:py-4">
+                    <div class="flex flex-col space-y-2">
+                                        <div class="flex items-center space-x-2">
+                            <select class="status-select text-sm border border-border rounded px-2 py-1" data-tracking-id="${shipment.trackingId}">
+                                <option value="pending" ${shipment.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="picked_up" ${shipment.status === 'picked_up' ? 'selected' : ''}>Picked Up</option>
+                                <option value="in_transit" ${shipment.status === 'in_transit' ? 'selected' : ''}>In Transit</option>
+                                <option value="out_for_delivery" ${shipment.status === 'out_for_delivery' ? 'selected' : ''}>Out for Delivery</option>
+                                <option value="delivered" ${shipment.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                <option value="exception" ${shipment.status === 'exception' ? 'selected' : ''}>Exception</option>
+                            </select>
+                            <input type="text" class="location-input text-sm border border-border rounded px-2 py-1 w-32" 
+                                   placeholder="City/State" 
+                                   data-tracking-id="${shipment.trackingId}"
+                                   value="${shipment.currentLocation?.city || ''}">
+                            <button class="update-status-btn text-primary hover:text-primary-dark text-sm px-3 py-1" data-tracking-id="${shipment.trackingId}">
+                                Update
+                                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            ${shipment.autoProgress?.paused ? 
+                                `<button class="pause-btn text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded" data-tracking-id="${shipment.trackingId}" data-action="resume">
+                                    ▶ Resume
+                                            </button>
+                                <span class="text-xs text-orange-600">⏸ Paused: ${shipment.autoProgress.pauseReason || 'Maintenance'}</span>` :
+                                `<button class="pause-btn text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded" data-tracking-id="${shipment.trackingId}" data-action="pause">
+                                    ⏸ Pause
+                                </button>
+                                <input type="text" class="pause-reason-input text-xs border border-border rounded px-2 py-1 w-32" 
+                                       placeholder="Reason (optional)" 
+                                       data-tracking-id="${shipment.trackingId}">`
+                            }
+                        </div>
+                        <div class="flex items-center space-x-2 mt-2 flex-wrap gap-2">
+                            <button type="button" class="delete-shipment-btn inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-red-300 text-red-700 bg-red-50 hover:bg-red-100 transition-colors" data-tracking-id="${shipment.trackingId}" title="Delete this tracking case">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                Delete
+                            </button>
+                            <button type="button" class="receipt-btn inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 hover:shadow-lg ${shipment.receipt ? 'bg-green-50 hover:bg-green-100 text-green-700 border-2 border-green-500 hover:border-green-600' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white'}" data-tracking-id="${shipment.trackingId}" style="cursor: pointer; z-index: 10; position: relative;">
+                                ${shipment.receipt ? `
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                    </svg>
+                                    <span>Download Receipt</span>
+                                ` : `
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    <span>Create Receipt</span>
+                                `}
+                            </button>
+                        </div>
+                                        </div>
+                                    </td>
+            `;
+            
+            // Ajouter l'event listener pour le bouton update
+            const updateBtn = tr.querySelector('.update-status-btn');
+            const statusSelect = tr.querySelector('.status-select');
+            const locationInput = tr.querySelector('.location-input');
+            
+            updateBtn.addEventListener('click', () => updateShipmentStatus(shipment.trackingId, statusSelect.value, locationInput.value));
+            
+            // Ajouter l'event listener pour pause/resume
+            const pauseBtn = tr.querySelector('.pause-btn');
+            if (pauseBtn) {
+                pauseBtn.addEventListener('click', () => {
+                    const action = pauseBtn.getAttribute('data-action');
+                    const reasonInput = tr.querySelector('.pause-reason-input');
+                    const reason = reasonInput ? reasonInput.value : '';
+                    handlePauseResume(shipment.trackingId, action === 'pause', reason);
+                });
+            }
+            
+            // Ajouter l'event listener pour le bouton receipt
+            const receiptBtn = tr.querySelector('.receipt-btn');
+            if (receiptBtn) {
+                console.log('Attaching receipt button listener for:', shipment.trackingId);
+                receiptBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('✅ Receipt button clicked for:', shipment.trackingId, 'Has receipt:', !!shipment.receipt);
+                    if (shipment.receipt) {
+                        // Download receipt if it exists
+                        console.log('Downloading receipt:', shipment.receipt);
+                        const link = document.createElement('a');
+                        link.href = shipment.receipt;
+                        link.download = shipment.receipt.split('/').pop();
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    } else {
+                        // Open create modal if no receipt
+                        console.log('Opening receipt modal for:', shipment.trackingId);
+                        if (typeof openReceiptModal === 'function') {
+                            openReceiptModal(shipment.trackingId);
+                        } else {
+                            console.error('❌ openReceiptModal function not found!');
+                            alert('Error: Receipt create function not available. Please refresh the page.');
+                        }
+                    }
+                });
+                // Test: Add a test listener to verify button is clickable
+                receiptBtn.addEventListener('mouseenter', () => {
+                    console.log('Mouse over receipt button:', shipment.trackingId);
+                });
+            } else {
+                console.error('❌ Receipt button not found for shipment:', shipment.trackingId);
+            }
+
+            const deleteBtn = tr.querySelector('.delete-shipment-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', () => deleteShipmentCase(shipment.trackingId));
+            }
+            
+            return tr;
+        }
+
+        async function deleteShipmentCase(trackingId) {
+            if (!trackingId) return;
+            const ok = confirm(`Delete tracking case ${trackingId}?\n\nThis cannot be undone.`);
+            if (!ok) return;
+            try {
+                const response = await fetch(`/api/shipments/${encodeURIComponent(trackingId)}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(data.error || data.message || `HTTP ${response.status}`);
+                }
+                await loadShipments();
+            } catch (e) {
+                console.error('Delete shipment failed:', e);
+                alert(`Could not delete: ${e.message}`);
+            }
+        }
+        
+        // Gérer pause/resume
+        async function handlePauseResume(trackingId, pause, reason = '') {
+            try {
+                const response = await fetch(`/api/shipments/${trackingId}/pause`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        pause: pause,
+                        reason: reason || (pause ? 'Maintenance' : '')
+                    })
+                });
+                
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    throw new Error('Server returned non-JSON response');
+                }
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to pause/resume shipment');
+                }
+                
+                await loadShipments();
+                alert(pause ? `Shipment paused: ${reason || 'Maintenance'}` : 'Shipment resumed');
+            } catch (error) {
+                console.error('Error pausing/resuming shipment:', error);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Mettre à jour le statut d'un shipment
+        async function updateShipmentStatus(trackingId, newStatus, location = '') {
+            try {
+                const response = await fetch(`/api/shipments/${trackingId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        status: newStatus,
+                        location: location || `Updated by admin`,
+                        description: `Status changed to ${newStatus}${location ? ` - Location: ${location}` : ''}`
+                    })
+                });
+                
+                // Vérifier si la réponse est du JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    throw new Error('Server returned non-JSON response');
+                }
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to update status');
+                }
+                
+                // Recharger les shipments
+                await loadShipments();
+                alert('Status updated successfully!');
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert('Error updating status: ' + error.message);
+            }
+        }
+
+        // Déconnexion
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/pages/admin_login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/pages/admin_login.html';
+            }
+        }
+
+        // Fonction pour forcer la mise à jour des stats (à appeler manuellement si nécessaire)
+        async function forceUpdateStats() {
+            console.log('🔧 [forceUpdateStats] Force updating stats...');
+            return await loadStats();
+        }
+
+        // ==================== TAB SWITCHING FUNCTIONS ====================
+        // Define these BEFORE DOMContentLoaded so they're available when event listeners are attached
+        // Function to switch to shipments tab
+        function switchToShipmentsTab() {
+            console.log('Switching to shipments tab');
+            const tabShipments = document.getElementById('tab-shipments');
+            const tabChat = document.getElementById('tab-chat');
+            const tabReviews = document.getElementById('tab-reviews');
+            const contentShipments = document.getElementById('content-shipments');
+            const contentChat = document.getElementById('content-chat');
+            const contentReviews = document.getElementById('content-reviews');
+
+            if (tabShipments) {
+                tabShipments.classList.add('active', 'border-primary', 'text-primary');
+                tabShipments.classList.remove('border-transparent', 'text-text-secondary');
+            }
+            if (tabChat) {
+                tabChat.classList.remove('active', 'border-primary', 'text-primary');
+                tabChat.classList.add('border-transparent', 'text-text-secondary');
+            }
+            if (tabReviews) {
+                tabReviews.classList.remove('active', 'border-primary', 'text-primary');
+                tabReviews.classList.add('border-transparent', 'text-text-secondary');
+            }
+            const statsEl = document.getElementById('dashboard-stats');
+            if (statsEl) statsEl.classList.remove('hidden');
+            if (contentShipments) contentShipments.classList.remove('hidden');
+            if (contentChat) contentChat.classList.add('hidden');
+            if (contentReviews) contentReviews.classList.add('hidden');
+        }
+
+        // Function to switch to chat tab
+        function switchToChatTab() {
+            console.log('🔵 switchToChatTab() called');
+            const tabShipments = document.getElementById('tab-shipments');
+            const tabChat = document.getElementById('tab-chat');
+            const tabReviews = document.getElementById('tab-reviews');
+            const contentShipments = document.getElementById('content-shipments');
+            const contentChat = document.getElementById('content-chat');
+            const contentReviews = document.getElementById('content-reviews');
+            
+            console.log('🔍 Elements found:', {
+                tabChat: !!tabChat,
+                contentChat: !!contentChat,
+                tabShipments: !!tabShipments,
+                contentShipments: !!contentShipments
+            });
+            
+            if (tabChat) {
+                tabChat.classList.add('active', 'border-primary', 'text-primary');
+                tabChat.classList.remove('border-transparent', 'text-text-secondary');
+                console.log('✅ Chat tab activated');
+            } else {
+                console.error('❌ tab-chat element not found!');
+            }
+            
+            if (tabShipments) {
+                tabShipments.classList.remove('active', 'border-primary', 'text-primary');
+                tabShipments.classList.add('border-transparent', 'text-text-secondary');
+            }
+            
+            if (tabReviews) {
+                tabReviews.classList.remove('active', 'border-primary', 'text-primary');
+                tabReviews.classList.add('border-transparent', 'text-text-secondary');
+                }
+            
+            if (contentShipments) {
+                contentShipments.classList.add('hidden');
+                console.log('✅ Shipments content hidden');
+            }
+            
+            const statsEl = document.getElementById('dashboard-stats');
+            if (statsEl) statsEl.classList.add('hidden');
+            if (contentShipments) contentShipments.classList.add('hidden');
+            if (contentChat) {
+                contentChat.classList.remove('hidden');
+                contentChat.style.display = '';
+                contentChat.style.visibility = 'visible';
+            }
+            if (contentReviews) contentReviews.classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Initialize chat functionality - check if functions exist, if not wait a bit
+            const initChatFunctions = () => {
+                console.log('🔧 Initializing chat functions...');
+                console.log('🔍 Function checks:', {
+                    initAdminSocket: typeof initAdminSocket,
+                    loadChats: typeof loadChats,
+                    initializeChatButtons: typeof initializeChatButtons
+                });
+                
+                if (typeof initAdminSocket === 'function') {
+                    console.log('✅ Calling initAdminSocket()');
+                    initAdminSocket();
+                } else {
+                    console.error('❌ initAdminSocket is not a function');
+                    console.error('❌ Available functions:', Object.keys(window).filter(k => typeof window[k] === 'function' && k.includes('chat')));
+                }
+                
+                if (typeof loadChats === 'function') {
+                    console.log('✅ Calling loadChats()');
+                    loadChats();
+                } else {
+                    console.error('❌ loadChats is not a function');
+                }
+                
+                if (typeof initializeChatButtons === 'function') {
+                    console.log('✅ Calling initializeChatButtons()');
+                    initializeChatButtons();
+                } else {
+                    console.warn('⚠️ initializeChatButtons is not a function');
+                        }
+            };
+            
+            // Try immediately first
+            if (typeof initAdminSocket === 'function' && typeof loadChats === 'function') {
+                initChatFunctions();
+            } else {
+                // If not ready, wait a bit and retry
+                console.log('⏳ Chat functions not ready, waiting 200ms...');
+                setTimeout(() => {
+                    if (typeof initAdminSocket === 'function' && typeof loadChats === 'function') {
+                        initChatFunctions();
+                    } else {
+                        console.error('❌ Chat functions still not available after delay');
+                        console.error('❌ initAdminSocket type:', typeof initAdminSocket);
+                        console.error('❌ loadChats type:', typeof loadChats);
+                }
+                }, 200);
+            }
+        }
+
+        // Function to switch to reviews tab
+        function switchToReviewsTab() {
+            const tabShipments = document.getElementById('tab-shipments');
+            const tabChat = document.getElementById('tab-chat');
+            const tabReviews = document.getElementById('tab-reviews');
+            const contentShipments = document.getElementById('content-shipments');
+            const contentChat = document.getElementById('content-chat');
+            const contentReviews = document.getElementById('content-reviews');
+            
+            if (tabReviews) {
+                tabReviews.classList.add('active', 'border-primary', 'text-primary');
+                tabReviews.classList.remove('border-transparent', 'text-text-secondary');
+            }
+            if (tabShipments) {
+                tabShipments.classList.remove('active', 'border-primary', 'text-primary');
+                tabShipments.classList.add('border-transparent', 'text-text-secondary');
+            }
+            if (tabChat) {
+                tabChat.classList.remove('active', 'border-primary', 'text-primary');
+                tabChat.classList.add('border-transparent', 'text-text-secondary');
+            }
+            if (contentShipments) contentShipments.classList.add('hidden');
+            if (contentChat) contentChat.classList.add('hidden');
+            if (contentReviews) contentReviews.classList.remove('hidden');
+            }
+
+        // ==================== CHAT FUNCTIONALITY ====================
+        // Define these BEFORE DOMContentLoaded so they're available when tab switching occurs
+        let chatSocket = null;
+        let currentAdminChatId = null;
+
+        // Initialize Socket.io for admin
+        function initAdminSocket() {
+            if (chatSocket && chatSocket.connected) {
+                console.log('Socket already connected');
+                return;
+            }
+            
+            try {
+                console.log('Initializing socket connection to:', window.location.origin);
+                chatSocket = io(window.location.origin, {
+                    transports: ['websocket', 'polling'],
+                    reconnection: true,
+                    reconnectionDelay: 1000,
+                    reconnectionAttempts: 5
+                });
+                
+                chatSocket.on('connect', () => {
+                    console.log('✅ Admin connected to chat server, socket ID:', chatSocket.id);
+                    // Join admin room to receive all chat updates
+                    chatSocket.emit('join-admins');
+                    // Reload chats when connected
+                    if (typeof loadChats === 'function') {
+                        loadChats();
+                    }
+                });
+
+                chatSocket.on('connect_error', (error) => {
+                    console.error('❌ Socket connection error:', error);
+                });
+                
+                chatSocket.on('disconnect', (reason) => {
+                    console.log('⚠️ Admin disconnected from chat server:', reason);
+                });
+                
+                chatSocket.on('new-chat', (chat) => {
+                    console.log('📨 New chat received:', chat);
+                    if (typeof loadChats === 'function') {
+                    loadChats();
+                    }
+                    if (typeof updateChatBadge === 'function') {
+                    updateChatBadge();
+                    }
+                });
+                
+                chatSocket.on('new-message', (data) => {
+                    console.log('💬 New message received:', data);
+                    if (data.chatId === currentAdminChatId) {
+                        if (typeof addAdminMessageToChat === 'function') {
+                        addAdminMessageToChat(data.message);
+                        }
+                        if (typeof scrollAdminChatToBottom === 'function') {
+                        scrollAdminChatToBottom();
+                    }
+                        // If admin is viewing the chat, mark new client messages as read automatically
+                        if (data.message.senderType === 'client' && !data.message.read) {
+                            fetch(`/api/chat/${data.chatId}/read`, {
+                                method: 'PUT',
+                                credentials: 'include'
+                            }).then(() => {
+                                if (typeof loadChats === 'function') {
+                                    loadChats();
+                                }
+                                if (typeof loadClientMessagesCount === 'function') {
+                                    loadClientMessagesCount(); // Update Client Messages card
+                                }
+                            });
+                        }
+                    }
+                    if (typeof loadChats === 'function') {
+                        loadChats(); // Refresh chat list to update unread counts
+                    }
+                    if (typeof loadClientMessagesCount === 'function') {
+                        loadClientMessagesCount(); // Update Client Messages card
+                    }
+                });
+                
+                chatSocket.on('chat-assigned', (data) => {
+                    console.log('👤 Chat assigned:', data);
+                    if (typeof loadChats === 'function') {
+                    loadChats();
+                    }
+                });
+                
+                chatSocket.on('chat-closed', (data) => {
+                    console.log('🔒 Chat closed:', data);
+                    if (data.chatId === currentAdminChatId) {
+                        currentAdminChatId = null;
+                        const noChatSelected = document.getElementById('no-chat-selected');
+                        const chatMessagesPanel = document.getElementById('chat-messages-panel');
+                        if (noChatSelected) noChatSelected.classList.remove('hidden');
+                        if (chatMessagesPanel) chatMessagesPanel.classList.add('hidden');
+                    }
+                    if (typeof loadChats === 'function') {
+                    loadChats();
+                    }
+                });
+
+                chatSocket.on('chat-deleted', (data) => {
+                    if (data.chatId === currentAdminChatId) {
+                        currentAdminChatId = null;
+                        const noChatSelected = document.getElementById('no-chat-selected');
+                        const chatMessagesPanel = document.getElementById('chat-messages-panel');
+                        if (noChatSelected) noChatSelected.classList.remove('hidden');
+                        if (chatMessagesPanel) chatMessagesPanel.classList.add('hidden');
+                    }
+                    if (typeof loadChats === 'function') loadChats();
+                });
+            } catch (error) {
+                console.error('❌ Error initializing admin socket:', error);
+                alert('Erreur de connexion au chat. Vérifiez que le serveur est démarré.');
+            }
+        }
+
+        // Load chats list
+        async function loadChats() {
+            try {
+                console.log('📥 loadChats() called');
+                const status = document.getElementById('chat-status-filter')?.value || '';
+                const url = status ? `/api/chat?status=${status}` : '/api/chat';
+                console.log('📡 Fetching chats from:', url);
+                const response = await fetch(url, { credentials: 'include' });
+                if (!response.ok) {
+                    console.error('❌ Failed to load chats, status:', response.status);
+                    throw new Error('Failed to load chats');
+                }
+                
+                const chats = await response.json();
+                console.log('📨 Received chats:', chats.length, 'chats');
+                console.log('📨 Chats data:', chats);
+                
+                const chatList = document.getElementById('chat-list');
+                if (!chatList) {
+                    console.error('❌ chat-list element not found');
+                    return;
+                }
+                console.log('✅ chat-list element found');
+                chatList.innerHTML = '';
+                
+                if (chats.length === 0) {
+                    console.log('⚠️ No chats available, showing empty message');
+                    chatList.innerHTML = '<p class="text-sm text-text-muted p-4">Aucune conversation disponible</p>';
+                    return;
+                }
+
+                // Nettoyer le message de chargement
+                chatList.innerHTML = '';
+                console.log('🧹 Cleared chat-list, ready to add chats');
+                
+                console.log('🔄 Processing', chats.length, 'chats');
+                chats.forEach((chat, index) => {
+                    console.log(`📝 Processing chat ${index + 1}:`, chat.id, chat.clientName);
+                    
+                    const chatItem = document.createElement('div');
+                    const unreadCount = chat.messages?.filter(m => !m.read && m.senderType === 'client').length || 0;
+                    const lastMessage = chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
+                    const isActive = chat.id === currentAdminChatId;
+                    
+                    chatItem.className = `p-4 border-2 rounded-lg cursor-pointer transition-all mb-3 ${
+                        isActive 
+                            ? 'border-primary bg-primary-50 shadow-md' 
+                            : 'border-border hover:border-primary-200 hover:bg-surface'
+                    }`;
+                    chatItem.dataset.chatId = chat.id;
+                    
+                    const lastMessageTime = lastMessage 
+                        ? new Date(lastMessage.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                        : '';
+                    
+                    // Construire le HTML de manière plus sûre
+                    const clientInitial = (chat.clientName || 'C')[0].toUpperCase();
+                    const clientName = chat.clientName || 'Client';
+                    const clientEmail = chat.clientEmail || '';
+                    const statusBadgeClass = chat.status === 'open' ? 'bg-warning-100 text-warning' : 
+                                           chat.status === 'active' ? 'bg-success-100 text-success' : 
+                                           'bg-gray-100 text-gray-600';
+                    const statusText = chat.status || 'open';
+                    
+                    let lastMessageHtml = '';
+                    if (lastMessage) {
+                        const messagePreview = lastMessage.text ? lastMessage.text.substring(0, 60) + (lastMessage.text.length > 60 ? '...' : '') : 'Aucun texte';
+                        lastMessageHtml = `
+                            <div class="text-sm text-text-primary mb-2">${messagePreview}</div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs px-2 py-1 rounded ${statusBadgeClass}">${statusText}</span>
+                                <span class="text-xs text-text-muted">${lastMessageTime}</span>
+                            </div>
+                        `;
+                    } else {
+                        lastMessageHtml = `
+                            <div class="text-sm text-text-muted italic mb-2">Aucun message</div>
+                            <div class="text-xs text-text-muted">${statusText}</div>
+                        `;
+                    }
+                    
+                    const unreadBadge = unreadCount > 0 ? `<span class="bg-error text-white text-xs font-bold rounded-full px-2 py-1 min-w-[24px] text-center flex-shrink-0">${unreadCount}</span>` : '';
+                    
+                    chatItem.innerHTML = `
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-primary font-bold text-base">${clientInitial}</span>
+                            </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-bold text-text-primary truncate">${clientName}</div>
+                                        <div class="text-xs text-text-muted truncate">${clientEmail}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            ${unreadBadge}
+                        </div>
+                        <div class="mt-2">
+                            ${lastMessageHtml}
+                        </div>
+                    `;
+                    
+                    console.log('📋 Chat item HTML created:', {
+                        clientName,
+                        clientEmail,
+                        unreadCount,
+                        hasLastMessage: !!lastMessage,
+                        status: statusText
+                    });
+                    
+                    chatItem.addEventListener('click', () => {
+                        console.log('🖱️ Chat item clicked:', chat.id);
+                        // Mettre à jour le style visuel
+                        document.querySelectorAll('[data-chat-id]').forEach(item => {
+                            item.classList.remove('border-primary', 'bg-primary-50', 'shadow-md');
+                            item.classList.add('border-border');
+                        });
+                        chatItem.classList.add('border-primary', 'bg-primary-50', 'shadow-md');
+                        chatItem.classList.remove('border-border');
+                        
+                        if (typeof openChat === 'function') {
+                            openChat(chat.id);
+                        }
+                    });
+                    
+                    chatList.appendChild(chatItem);
+                    console.log(`✅ Chat item ${index + 1} appended to chat-list`);
+
+                    // Vérifier que l'élément est bien dans le DOM et visible
+                    setTimeout(() => {
+                        const addedItem = chatList.querySelector(`[data-chat-id="${chat.id}"]`);
+                        if (addedItem) {
+                            const styles = window.getComputedStyle(addedItem);
+                            console.log(`✅ Chat item verified in DOM for chat ${chat.id}:`, {
+                                offsetWidth: addedItem.offsetWidth,
+                                offsetHeight: addedItem.offsetHeight,
+                                display: styles.display,
+                                visibility: styles.visibility,
+                                opacity: styles.opacity,
+                                position: styles.position,
+                                zIndex: styles.zIndex
+                            });
+                            
+                            // Forcer l'affichage si nécessaire
+                            if (addedItem.offsetHeight === 0 || styles.display === 'none') {
+                                console.warn('⚠️ Chat item has 0 height or display:none, forcing display');
+                                addedItem.style.display = 'block';
+                                addedItem.style.visibility = 'visible';
+                            }
+                        } else {
+                            console.error(`❌ Chat item NOT found in DOM for chat ${chat.id}`);
+                        }
+                    }, 50);
+                });
+                
+                console.log('✅ All chats processed. chat-list now has', chatList.children.length, 'children');
+                
+                // Inspection complète du DOM après insertion
+                setTimeout(() => {
+                    const styles = window.getComputedStyle(chatList);
+                    console.log('📐 Chat list container styles:', {
+                        offsetWidth: chatList.offsetWidth,
+                        offsetHeight: chatList.offsetHeight,
+                        scrollHeight: chatList.scrollHeight,
+                        display: styles.display,
+                        visibility: styles.visibility,
+                        overflow: styles.overflow,
+                        maxHeight: styles.maxHeight,
+                        padding: styles.padding,
+                        margin: styles.margin,
+                        position: styles.position
+                    });
+                    
+                    // Vérifier le parent
+                    const parent = chatList.parentElement;
+                    if (parent) {
+                        const parentStyles = window.getComputedStyle(parent);
+                        console.log('📐 Parent container styles:', {
+                            tagName: parent.tagName,
+                            className: parent.className,
+                            offsetWidth: parent.offsetWidth,
+                            offsetHeight: parent.offsetHeight,
+                            display: parentStyles.display,
+                            visibility: parentStyles.visibility,
+                            overflow: parentStyles.overflow
+                        });
+                    }
+                    
+                    // Lister tous les enfants avec leurs dimensions
+                    console.log('📋 All children in chat-list:', Array.from(chatList.children).map((child, idx) => {
+                        const childStyles = window.getComputedStyle(child);
+                        return {
+                            index: idx,
+                            tagName: child.tagName,
+                            className: child.className,
+                            dataChatId: child.dataset.chatId,
+                            offsetWidth: child.offsetWidth,
+                            offsetHeight: child.offsetHeight,
+                            display: childStyles.display,
+                            visibility: childStyles.visibility,
+                            opacity: childStyles.opacity,
+                            innerHTML: child.innerHTML.substring(0, 100) + '...'
+                        };
+                    }));
+                    
+                    // Forcer l'affichage si le conteneur a 0 hauteur
+                    if (chatList.offsetHeight === 0) {
+                        console.warn('⚠️ chat-list has 0 height, checking parent visibility');
+                        let currentParent = chatList.parentElement;
+                        while (currentParent) {
+                            const parentStyles = window.getComputedStyle(currentParent);
+                            console.log(`Parent ${currentParent.tagName}.${currentParent.className}:`, {
+                                display: parentStyles.display,
+                                visibility: parentStyles.visibility,
+                                height: parentStyles.height,
+                                maxHeight: parentStyles.maxHeight
+                            });
+                            if (parentStyles.display === 'none' || parentStyles.visibility === 'hidden') {
+                                console.warn('⚠️ Found hidden parent, forcing visibility');
+                                currentParent.style.display = 'block';
+                                currentParent.style.visibility = 'visible';
+                            }
+                            currentParent = currentParent.parentElement;
+                        }
+                    }
+                }, 100);
+                
+                if (typeof updateChatBadge === 'function') {
+                updateChatBadge(chats);
+                }
+            } catch (error) {
+                console.error('Error loading chats:', error);
+                const chatList = document.getElementById('chat-list');
+                if (chatList) {
+                    chatList.innerHTML = '<p class="text-sm text-error p-4">Error loading chats</p>';
+                }
+            }
+        }
+
+        function updateChatBadge(chats) {
+            if (!chats) return;
+                        const badge = document.getElementById('chat-badge');
+            if (!badge) return;
+            
+            const unreadCount = chats.reduce((total, chat) => {
+                return total + (chat.messages?.filter(m => !m.read && m.senderType === 'client').length || 0);
+            }, 0);
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        async function openChat(chatId) {
+            try {
+                console.log('🔓 Opening chat:', chatId);
+                currentAdminChatId = chatId;
+
+                // Mark this chat as read so the unread badge disappears
+                try {
+                    await fetch(`/api/chat/${chatId}/read`, { method: 'PUT', credentials: 'include' });
+                    if (typeof loadChats === 'function') loadChats();
+                    if (typeof loadClientMessagesCount === 'function') loadClientMessagesCount();
+                } catch (e) {
+                    console.warn('Could not mark chat as read:', e);
+                }
+                
+                const response = await fetch(`/api/chat/${chatId}`, { credentials: 'include' });
+                if (!response.ok) {
+                    console.error('❌ Failed to load chat, status:', response.status);
+                    throw new Error('Failed to load chat');
+                }
+                
+                const chat = await response.json();
+                console.log('📨 Chat loaded:', {
+                    id: chat.id,
+                    clientName: chat.clientName,
+                    messageCount: chat.messages?.length || 0
+                });
+                
+                const messagesContainer = document.getElementById('admin-chat-messages');
+                const noChatSelected = document.getElementById('no-chat-selected');
+                const chatMessagesPanel = document.getElementById('chat-messages-panel');
+                const chatClientName = document.getElementById('chat-client-name');
+                const chatClientEmail = document.getElementById('chat-client-email');
+                const chatSubjectAdmin = document.getElementById('chat-subject-admin');
+                
+                if (!messagesContainer || !noChatSelected || !chatMessagesPanel) {
+                    console.error('❌ Chat elements not found');
+                    return;
+                }
+                
+                // Mettre à jour l'en-tête
+                if (chatClientName) chatClientName.textContent = chat.clientName || 'Client';
+                if (chatClientEmail) chatClientEmail.textContent = chat.clientEmail || '';
+                if (chatSubjectAdmin) {
+                    const subject = chat.subject || 'Aucun sujet';
+                    const tracking = chat.trackingId ? ` | Suivi: ${chat.trackingId}` : '';
+                    chatSubjectAdmin.textContent = `${subject}${tracking}`;
+                }
+                
+                // Vider et remplir les messages
+                messagesContainer.innerHTML = '';
+                console.log('📝 Rendering', chat.messages?.length || 0, 'messages');
+                
+                if (chat.messages && chat.messages.length > 0) {
+                    chat.messages.forEach((msg, index) => {
+                        console.log(`📨 Message ${index + 1}:`, {
+                            senderType: msg.senderType,
+                            senderName: msg.senderName,
+                            text: msg.text?.substring(0, 30)
+                        });
+                        if (typeof addAdminMessageToChat === 'function') {
+                    addAdminMessageToChat(msg);
+                        }
+                    });
+                } else {
+                    console.log('⚠️ No messages in chat');
+                    messagesContainer.innerHTML = `
+                        <div class="text-center py-8 text-text-muted">
+                            <p class="text-sm">Aucun message dans cette conversation</p>
+                        </div>
+                    `;
+                }
+                
+                // Afficher le panneau de messages
+                noChatSelected.classList.add('hidden');
+                chatMessagesPanel.classList.remove('hidden');
+                
+                console.log('✅ Chat panel displayed');
+                
+                if (typeof scrollAdminChatToBottom === 'function') {
+                scrollAdminChatToBottom();
+                }
+                
+                if (typeof initializeChatButtons === 'function') {
+                    initializeChatButtons();
+                }
+            } catch (error) {
+                console.error('❌ Error opening chat:', error);
+                alert('Erreur lors du chargement de la conversation: ' + error.message);
+            }
+        }
+
+         function addAdminMessageToChat(message) {
+             const messagesContainer = document.getElementById('admin-chat-messages');
+             if (!messagesContainer) {
+                 console.error('❌ admin-chat-messages container not found');
+                 return;
+             }
+             
+             const isAdmin = message.senderType === 'admin';
+             const isClient = message.senderType === 'client';
+             
+             console.log('📨 Adding message to chat:', {
+                 senderType: message.senderType,
+                 senderName: message.senderName,
+                 text: message.text?.substring(0, 50),
+                 isAdmin,
+                 isClient
+             });
+             
+             const messageDiv = document.createElement('div');
+             messageDiv.className = `flex ${isAdmin ? 'justify-end' : 'justify-start'} mb-4`;
+             
+             // Format de date
+             const messageDate = new Date(message.timestamp);
+             const timeString = messageDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+             
+             // Message de l'admin (à droite, bleu)
+             if (isAdmin) {
+             messageDiv.innerHTML = `
+                     <div class="flex flex-col items-end max-w-[70%]">
+                         <div class="bg-primary text-white rounded-2xl rounded-tr-sm px-4 py-3 shadow-md">
+                             <div class="text-sm font-medium mb-1">${message.senderName || 'Admin'}</div>
+                             <div class="text-white break-words">${message.text || ''}</div>
+                         </div>
+                         <span class="text-xs text-text-muted mt-1 px-2">${timeString}</span>
+                 </div>
+             `;
+             } 
+             // Message du client (à gauche, gris)
+             else if (isClient) {
+                 messageDiv.innerHTML = `
+                     <div class="flex flex-col items-start max-w-[70%]">
+                         <div class="bg-white border border-border rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+                             <div class="text-sm font-semibold text-primary mb-1">${message.senderName || 'Client'}</div>
+                             <div class="text-text-primary break-words">${message.text || ''}</div>
+                         </div>
+                         <span class="text-xs text-text-muted mt-1 px-2">${timeString}</span>
+                     </div>
+                 `;
+             }
+             
+             messagesContainer.appendChild(messageDiv);
+             console.log('✅ Message added to container. Total messages:', messagesContainer.children.length);
+             
+             if (typeof scrollAdminChatToBottom === 'function') {
+             scrollAdminChatToBottom();
+             }
+         }
+
+        // Helper function to get admin display name
+        function getAdminDisplayName() {
+            if (!currentUser) return 'Admin';
+            
+            const name = currentUser.name || currentUser.email || 'Admin';
+            return name;
+        }
+
+        // Initialize chat buttons - call this when chat tab is opened
+        function initializeChatButtons() {
+            const sendBtn = document.getElementById('admin-chat-send-btn');
+            const inputField = document.getElementById('admin-chat-message-input');
+            const assignBtn = document.getElementById('assign-chat-btn');
+            const closeBtn = document.getElementById('close-chat-btn');
+            const filterSelect = document.getElementById('chat-status-filter');
+
+            if (sendBtn && !sendBtn.hasAttribute('data-listener-attached')) {
+                sendBtn.addEventListener('click', () => {
+                    if (typeof sendAdminMessage === 'function') {
+                        sendAdminMessage();
+                    }
+                });
+                sendBtn.setAttribute('data-listener-attached', 'true');
+            }
+
+            if (inputField && !inputField.hasAttribute('data-listener-attached')) {
+                inputField.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && typeof sendAdminMessage === 'function') {
+                        sendAdminMessage();
+                    }
+                });
+                inputField.setAttribute('data-listener-attached', 'true');
+            }
+
+            if (filterSelect && !filterSelect.hasAttribute('data-listener-attached')) {
+                filterSelect.addEventListener('change', () => {
+                    if (typeof loadChats === 'function') {
+                        loadChats();
+                    }
+                });
+                filterSelect.setAttribute('data-listener-attached', 'true');
+            }
+
+            if (assignBtn && !assignBtn.hasAttribute('data-listener-attached')) {
+                assignBtn.addEventListener('click', async () => {
+            if (!currentAdminChatId) return;
+            try {
+                const response = await fetch(`/api/chat/${currentAdminChatId}/assign`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                if (!response.ok) throw new Error('Failed to assign chat');
+                        if (typeof loadChats === 'function') {
+                await loadChats();
+                        }
+                alert('Chat assigned to you');
+            } catch (error) {
+                console.error('Error assigning chat:', error);
+            }
+        });
+                assignBtn.setAttribute('data-listener-attached', 'true');
+            }
+
+            if (closeBtn && !closeBtn.hasAttribute('data-listener-attached')) {
+                closeBtn.addEventListener('click', async () => {
+            if (!currentAdminChatId) return;
+            if (!confirm('Are you sure you want to close this chat?')) return;
+            try {
+                const response = await fetch(`/api/chat/${currentAdminChatId}/close`, {
+                    method: 'PUT',
+                    credentials: 'include'
+                });
+                if (!response.ok) throw new Error('Failed to close chat');
+                currentAdminChatId = null;
+                        const noChatSelected = document.getElementById('no-chat-selected');
+                        const chatMessagesPanel = document.getElementById('chat-messages-panel');
+                        if (noChatSelected) noChatSelected.classList.remove('hidden');
+                        if (chatMessagesPanel) chatMessagesPanel.classList.add('hidden');
+                        if (typeof loadChats === 'function') {
+                await loadChats();
+                        }
+            } catch (error) {
+                console.error('Error closing chat:', error);
+            }
+        });
+                closeBtn.setAttribute('data-listener-attached', 'true');
+            }
+
+            const deleteBtn = document.getElementById('delete-chat-btn');
+            if (deleteBtn && !deleteBtn.hasAttribute('data-listener-attached')) {
+                deleteBtn.addEventListener('click', async () => {
+                    if (!currentAdminChatId) return;
+                    if (!confirm('Supprimer définitivement cette conversation ? Cette action est irréversible.')) return;
+                    try {
+                        const response = await fetch(`/api/chat/${currentAdminChatId}`, {
+                            method: 'DELETE',
+                            credentials: 'include'
+                        });
+                        if (!response.ok) {
+                            const data = await response.json().catch(() => ({}));
+                            const msg = data.error || data.message || response.statusText;
+                            if (response.status === 401) throw new Error('Session expirée. Veuillez vous reconnecter.');
+                            if (response.status === 403) throw new Error('Accès refusé. Droits admin requis.');
+                            if (response.status === 404) throw new Error('Conversation introuvable.');
+                            throw new Error(msg || 'Impossible de supprimer la conversation.');
+                        }
+                        currentAdminChatId = null;
+                        const noChatSelected = document.getElementById('no-chat-selected');
+                        const chatMessagesPanel = document.getElementById('chat-messages-panel');
+                        if (noChatSelected) noChatSelected.classList.remove('hidden');
+                        if (chatMessagesPanel) chatMessagesPanel.classList.add('hidden');
+                        if (typeof loadChats === 'function') await loadChats();
+                    } catch (error) {
+                        console.error('Error deleting chat:', error);
+                        alert(error.message || 'Impossible de supprimer la conversation.');
+                    }
+                });
+                deleteBtn.setAttribute('data-listener-attached', 'true');
+            }
+        }
+
+        async function sendAdminMessage() {
+            if (!currentAdminChatId) {
+                alert('No chat selected');
+                return;
+            }
+            
+            const inputField = document.getElementById('admin-chat-message-input');
+            if (!inputField) return;
+            
+            const message = inputField.value.trim();
+            if (!message) return;
+            
+            try {
+                const response = await fetch(`/api/chat/${currentAdminChatId}/message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        text: message,
+                        senderType: 'admin',
+                        senderName: getAdminDisplayName()
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to send message');
+                
+                const data = await response.json();
+                inputField.value = '';
+                
+                if (data.message && typeof addAdminMessageToChat === 'function') {
+                    addAdminMessageToChat(data.message);
+                }
+                
+                if (typeof loadChats === 'function') {
+            loadChats();
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert('Error sending message: ' + error.message);
+            }
+        }
+
+        function scrollAdminChatToBottom() {
+            const messagesContainer = document.getElementById('admin-chat-messages');
+            if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        // ==================== RECEIPT CREATE FUNCTIONALITY ====================
+        // Define these functions before DOMContentLoaded so they're available when shipments are loaded
+        let currentReceiptTrackingId = null;
+
+        function openReceiptModal(trackingId) {
+            console.log('✅ openReceiptModal called with:', trackingId);
+            currentReceiptTrackingId = trackingId;
+            const trackingIdEl = document.getElementById('receipt-tracking-id');
+            const modal = document.getElementById('receipt-modal');
+            if (!trackingIdEl || !modal) {
+                console.error('❌ Receipt modal elements not found!', { trackingIdEl: !!trackingIdEl, modal: !!modal });
+                alert('Error: Receipt create modal not found. Please refresh the page.');
+                return;
+            }
+            trackingIdEl.textContent = trackingId;
+            
+            // Set default language from browser or saved preference
+            const languageSelect = document.getElementById('receipt-language-select');
+            if (languageSelect) {
+                const savedLang = localStorage.getItem('cargowatch_lang') || 'en';
+                const browserLang = navigator.language || navigator.userLanguage || 'en';
+                const langCode = browserLang.split('-')[0].toLowerCase();
+                const supportedLanguages = ['en', 'fr', 'es', 'de', 'pt', 'it', 'zh', 'ja', 'ru', 'ar'];
+                const defaultLang = supportedLanguages.includes(savedLang) ? savedLang : 
+                                  (supportedLanguages.includes(langCode) ? langCode : 'en');
+                languageSelect.value = defaultLang;
+            }
+            
+            modal.classList.remove('hidden');
+            resetReceiptModal();
+            console.log('✅ Receipt modal opened for:', trackingId);
+        }
+
+        function closeReceiptModal() {
+            const modal = document.getElementById('receipt-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+            currentReceiptTrackingId = null;
+            resetReceiptModal();
+        }
+
+        function resetReceiptModal() {
+            const generateBtn = document.getElementById('upload-receipt-btn');
+            if (generateBtn) {
+                generateBtn.disabled = false;
+                const btnSpan = generateBtn.querySelector('span');
+                if (btnSpan) {
+                    btnSpan.textContent = 'Generate Receipt';
+                    } else {
+                    generateBtn.innerHTML = `
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span>Generate Receipt</span>
+                    `;
+                }
+            }
+        }
+        
+        // Exposer les fonctions globalement pour le débogage
+        window.forceUpdateStats = forceUpdateStats;
+        window.forceUpdatesStats = forceUpdateStats; // Alias pour fautes de frappe
+        window.forceReloadStats = loadStats;
+        window.updateStatsDisplay = updateStatsDisplay;
+        window.forceReloadShipments = loadShipments;
+        window.loadStats = loadStats;
+        window.openReceiptModal = openReceiptModal;
+        window.closeReceiptModal = closeReceiptModal;
+        
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 DOM Content Loaded - Initializing admin dashboard...');
+            
+            // Charger les stats immédiatement (route publique, ne nécessite pas d'auth)
+            console.log('📊 Loading stats immediately...');
+            loadStats().catch(err => console.error('❌ Failed to load stats:', err));
+            
+            // Tentative 2: Après 500ms
+            setTimeout(() => {
+                console.log('🔄 Reloading stats after delay...');
+                loadStats().catch(err => console.error('❌ Failed to load stats:', err));
+            }, 500);
+            
+            // Tentative 3: Après 1 seconde
+            setTimeout(() => {
+                console.log('🔄 Reloading stats after delay...');
+                loadStats().catch(err => console.error('❌ Failed to load stats:', err));
+            }, 1000);
+            
+            // Tentative 4: Après 2 secondes
+            setTimeout(() => {
+                console.log('🔄 Reloading stats after delay...');
+                loadStats().catch(err => console.error('❌ Failed to load stats:', err));
+            }, 2000);
+            
+            // Attach receipt modal event listeners first
+            // Receipt modal event listeners
+            document.getElementById('close-receipt-modal')?.addEventListener('click', () => {
+                console.log('Close receipt modal clicked');
+                closeReceiptModal();
+            });
+            document.getElementById('cancel-receipt-upload')?.addEventListener('click', () => {
+                console.log('Cancel receipt upload clicked');
+                closeReceiptModal();
+            });
+            
+            // Ensure functions are available globally
+            if (typeof openReceiptModal === 'undefined') {
+                console.error('❌ openReceiptModal is not defined!');
+            } else {
+                console.log('✅ openReceiptModal is available');
+            }
+
+            // Receipts download modal
+            let allReceipts = [];
+            
+            document.getElementById('download-receipts-btn')?.addEventListener('click', async () => {
+                const modal = document.getElementById('receipts-download-modal');
+                const receiptsList = document.getElementById('receipts-list');
+                
+                modal.classList.remove('hidden');
+                receiptsList.innerHTML = '<p class="text-sm text-text-muted">Loading receipts...</p>';
+                
+                try {
+                    const response = await fetch('/api/receipts', {
+                        credentials: 'include'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch receipts');
+                    }
+                    
+                    const data = await response.json();
+                    allReceipts = data.receipts || [];
+                    
+                    if (allReceipts.length === 0) {
+                        receiptsList.innerHTML = '<p class="text-sm text-text-muted">No receipts available.</p>';
+                        document.getElementById('download-all-receipts-btn').disabled = true;
+                    } else {
+                        receiptsList.innerHTML = allReceipts.map(receipt => `
+                            <div class="flex items-center justify-between p-3 border border-border rounded-lg">
+                                <div class="flex-1">
+                                    <div class="font-medium text-text-primary">${receipt.trackingId}</div>
+                                    <div class="text-xs text-text-muted">${receipt.recipientName} • ${new Date(receipt.receiptUploadedAt || receipt.createdAt).toLocaleDateString()}</div>
+                                </div>
+                                <button class="download-receipt-btn text-xs bg-primary hover:bg-primary-dark text-white px-3 py-1 rounded" 
+                                        data-receipt-path="${receipt.receipt}">
+                                    📥 Download
+                                </button>
+                            </div>
+                        `).join('');
+                        
+                        document.getElementById('download-all-receipts-btn').disabled = false;
+                        
+                        // Attach individual download listeners
+                        document.querySelectorAll('.download-receipt-btn').forEach(btn => {
+                            btn.addEventListener('click', (e) => {
+                                const receiptPath = e.target.getAttribute('data-receipt-path');
+                                // Create a temporary link to trigger download
+                                const link = document.createElement('a');
+                                link.href = receiptPath;
+                                link.download = receiptPath.split('/').pop();
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            });
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading receipts:', error);
+                    receiptsList.innerHTML = '<p class="text-sm text-error">Error loading receipts. Please try again.</p>';
+                    document.getElementById('download-all-receipts-btn').disabled = true;
+                }
+            });
+            
+            document.getElementById('close-receipts-modal')?.addEventListener('click', () => {
+                document.getElementById('receipts-download-modal').classList.add('hidden');
+            });
+            
+            document.getElementById('cancel-receipts-download')?.addEventListener('click', () => {
+                document.getElementById('receipts-download-modal').classList.add('hidden');
+            });
+            
+            document.getElementById('download-all-receipts-btn')?.addEventListener('click', () => {
+                if (allReceipts.length === 0) return;
+                
+                // Download all receipts one by one
+                allReceipts.forEach((receipt, index) => {
+                    setTimeout(() => {
+                        const link = document.createElement('a');
+                        link.href = receipt.receipt;
+                        link.download = `${receipt.trackingId}-${receipt.receipt.split('/').pop()}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }, index * 200); // Stagger downloads to avoid browser blocking
+                });
+                
+                alert(`Downloading ${allReceipts.length} receipt(s)...`);
+            });
+
+            // Attach tab switching event listeners
+            console.log('🔧 Attaching tab event listeners...');
+            const tabShipments = document.getElementById('tab-shipments');
+            const tabChat = document.getElementById('tab-chat');
+            const tabReviews = document.getElementById('tab-reviews');
+            const viewLiveChatsBtn = document.getElementById('view-live-chats-btn');
+            
+            if (tabShipments) {
+                tabShipments.addEventListener('click', switchToShipmentsTab);
+                console.log('✅ Tab shipments listener attached');
+            } else {
+                console.error('❌ tab-shipments element not found');
+            }
+            
+            if (tabChat) {
+                tabChat.addEventListener('click', switchToChatTab);
+            }
+            
+            if (viewLiveChatsBtn) {
+                viewLiveChatsBtn.addEventListener('click', () => {
+                    console.log('View Live Chats button clicked');
+                    switchToChatTab();
+                });
+                console.log('✅ View Live Chats button listener attached');
+            } else {
+                console.error('❌ view-live-chats-btn element not found');
+            }
+            
+            // Fullscreen chat functionality
+            const fullscreenBtn = document.getElementById('chat-fullscreen-btn');
+            const chatContainer = document.getElementById('chat-container');
+            const header = document.querySelector('header');
+            const footer = document.querySelector('footer');
+            let isFullscreen = false;
+            
+            if (fullscreenBtn && chatContainer) {
+                fullscreenBtn.addEventListener('click', () => {
+                    isFullscreen = !isFullscreen;
+                    
+                    if (isFullscreen) {
+                        document.body.classList.add('chat-fullscreen');
+                        if (header) header.classList.add('hidden');
+                        if (footer) footer.classList.add('hidden');
+                        const tabsBar = document.querySelector('.admin-tabs');
+                        if (tabsBar) tabsBar.classList.add('hidden');
+                        const contentShipments = document.getElementById('content-shipments');
+                        if (contentShipments) contentShipments.classList.add('hidden');
+                        const mainTitleBlock = document.getElementById('dashboard-title-block');
+                        if (mainTitleBlock) mainTitleBlock.classList.add('hidden');
+                        const dashboardStats = document.getElementById('dashboard-stats');
+                        if (dashboardStats) dashboardStats.classList.add('hidden');
+                        
+                        chatContainer.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;background:var(--color-background,#f8fafc);padding:1.5rem;margin:0;height:100vh;overflow:hidden;';
+                        chatContainer.classList.add('chat-fullscreen-active');
+                        
+                        fullscreenBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg><span class="hidden sm:inline">Quitter Plein Écran</span>`;
+                        
+                        const exitBtn = document.createElement('button');
+                        exitBtn.id = 'chat-exit-fullscreen';
+                        exitBtn.className = 'fixed top-4 right-4 z-[60] bg-error text-white p-3 rounded-full shadow-lg hover:bg-error-600 transition-colors';
+                        exitBtn.setAttribute('aria-label', 'Quitter le plein écran');
+                        exitBtn.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+                        exitBtn.addEventListener('click', () => { isFullscreen = false; exitFullscreen(); });
+                        document.body.appendChild(exitBtn);
+                    } else {
+                        exitFullscreen();
+                    }
+                    
+                    function exitFullscreen() {
+                        document.body.classList.remove('chat-fullscreen');
+                        if (header) header.classList.remove('hidden');
+                        if (footer) footer.classList.remove('hidden');
+                        const tabsBar = document.querySelector('.admin-tabs');
+                        if (tabsBar) tabsBar.classList.remove('hidden');
+                        const contentShipments = document.getElementById('content-shipments');
+                        if (contentShipments) contentShipments.classList.remove('hidden');
+                        const mainTitleBlock = document.getElementById('dashboard-title-block');
+                        if (mainTitleBlock) mainTitleBlock.classList.remove('hidden');
+                        const dashboardStats = document.getElementById('dashboard-stats');
+                        if (dashboardStats) dashboardStats.classList.remove('hidden');
+                        
+                        chatContainer.style.cssText = '';
+                        chatContainer.classList.remove('chat-fullscreen-active');
+                        
+                        fullscreenBtn.innerHTML = `<svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg><span class="hidden sm:inline">Fullscreen</span>`;
+                        
+                        const exitBtn = document.getElementById('chat-exit-fullscreen');
+                        if (exitBtn) exitBtn.remove();
+                    }
+                });
+            }
+
+            document.getElementById('upload-receipt-btn')?.addEventListener('click', async () => {
+                if (!currentReceiptTrackingId) {
+                    alert('No tracking ID selected');
+                    return;
+                }
+
+                const generateBtn = document.getElementById('upload-receipt-btn');
+                generateBtn.disabled = true;
+                const btnSpan = generateBtn.querySelector('span');
+                if (btnSpan) {
+                    btnSpan.textContent = 'Generating...';
+                } else {
+                    generateBtn.textContent = 'Generating...';
+                }
+
+                try {
+                    console.log('Generating receipt for:', currentReceiptTrackingId);
+
+                    // Get selected language
+                    const languageSelect = document.getElementById('receipt-language-select');
+                    const selectedLanguage = languageSelect ? languageSelect.value : 'en';
+                    
+                    const response = await fetch(`/api/shipments/${currentReceiptTrackingId}/receipt/generate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({ language: selectedLanguage })
+                    });
+
+                    const responseText = await response.text();
+                    console.log('Response status:', response.status);
+                    console.log('Response:', responseText);
+
+                    if (!response.ok) {
+                        let error;
+                        try {
+                            error = JSON.parse(responseText);
+                        } catch {
+                            error = { error: responseText || 'Failed to generate receipt' };
+                        }
+                        throw new Error(error.error || 'Failed to generate receipt');
+                    }
+
+                    const data = JSON.parse(responseText);
+                    
+                    // Download receipt instead of opening in new tab
+                    if (data.receipt) {
+                        const link = document.createElement('a');
+                        link.href = data.receipt;
+                        link.download = data.receipt.split('/').pop();
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    
+                    alert('Receipt generated and downloaded successfully!');
+                    closeReceiptModal();
+                    await loadShipments(); // Reload to show updated receipt
+                } catch (error) {
+                    console.error('Error generating receipt:', error);
+                    alert('Error generating receipt: ' + error.message);
+                    generateBtn.disabled = false;
+                    const btnSpan = generateBtn.querySelector('span');
+                    if (btnSpan) {
+                        btnSpan.textContent = 'Generate Receipt';
+                    } else {
+                        generateBtn.innerHTML = `
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span>Generate Receipt</span>
+                        `;
+                    }
+                }
+            });
+
+            const isAuthenticated = await checkAuth();
+            if (isAuthenticated) {
+                console.log('✅ Admin authenticated, loading dashboard data...');
+                
+                // Charger les stats immédiatement (ne nécessite pas d'auth)
+                loadStats(); // Ne pas await pour ne pas bloquer
+                loadClientMessagesCount(); // Ne pas await pour ne pas bloquer
+                
+                // Ensuite charger les shipments (nécessite auth admin)
+                console.log('🔄 Starting to load shipments...');
+                await loadShipments();
+                console.log('✅ Dashboard initialized - all data loaded');
+                
+                // Ajouter le bouton de déconnexion
+                const profileButton = document.querySelector('.flex.items-center.space-x-2');
+                if (profileButton) {
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.textContent = 'Logout';
+                    logoutBtn.className = 'ml-4 text-text-secondary hover:text-primary text-sm';
+                    logoutBtn.onclick = logout;
+                    profileButton.appendChild(logoutBtn);
+                }
+                
+                // Auto-refresh toutes les 30 secondes
+                setInterval(() => {
+                    loadStats();
+                    loadClientMessagesCount();
+                    loadShipments();
+                }, 30000);
+            }
+        });
+
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

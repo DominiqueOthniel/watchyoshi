@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Data files
+# Note: data/*.json are now tracked for persistence on Render
+# If you want to ignore them, uncomment the lines below:
+# data/
+# *.json
+!package.json
+# Allow data files to be tracked
+!data/*.json
+
+# Uploaded files
+public/receipts/
+
+# Environment variables
+.env
+.env.local
+config/supabase.js
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

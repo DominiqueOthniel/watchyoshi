@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Create Shipment - CargoWatch</title>
+    <!-- Langue par défaut : anglais -->
+    <script>
+        (function() {
+            const supportedLanguages = ['en', 'fr', 'es', 'de', 'pt', 'it', 'zh', 'ja', 'ru', 'ar'];
+            let detectedLang = 'en'; // Par défaut : anglais
+            
+            // Vérifier si une préférence est sauvegardée
+            try {
+                const savedLang = localStorage.getItem('cargowatch_lang');
+                if (savedLang && supportedLanguages.includes(savedLang)) {
+                    detectedLang = savedLang;
+                }
+            } catch(e) {}
+            
+            document.documentElement.setAttribute('lang', detectedLang);
+        })();
+    </script>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="/public/i18n.js"></script>
+    <script src="/public/init-i18n.js"></script>
+  
+  <!-- Scripts Rocket désactivés temporairement pour éviter les boucles de redirection -->
+  <!-- <script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fcargowatch6877back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.9"></script> -->
+  <!-- <script type="module" src="https://static.rocket.new/rocket-shot.js?v=0.0.1"></script> -->
+  <style>
+    /* Accent solide : USA, France, Italie, Espagne */
+    .cw-priority-banner {
+      background: linear-gradient(120deg,
+        rgba(37, 99, 235, 0.12) 0%,
+        rgba(220, 38, 38, 0.08) 28%,
+        rgba(0, 85, 164, 0.12) 52%,
+        rgba(0, 146, 70, 0.11) 76%,
+        rgba(170, 0, 0, 0.1) 100%);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35), 0 8px 32px rgba(0, 0, 0, 0.12);
+      border-radius: 0.875rem;
+    }
+    .cw-priority-banner .cw-flag-row span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 3rem;
+      height: 3rem;
+      border-radius: 0.75rem;
+      font-size: 1.75rem;
+      line-height: 1;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    }
+    .cw-flag-us { background: linear-gradient(145deg, #1e3a8a 0%, #2563eb 50%, #bf0a30 100%); }
+    .cw-flag-fr { background: linear-gradient(145deg, #1e40af 0%, #fff 45%, #dc2626 100%); }
+    .cw-flag-it { background: linear-gradient(145deg, #059669 0%, #f8fafc 50%, #b91c1c 100%); }
+    .cw-flag-es { background: linear-gradient(145deg, #b91c1c 0%, #facc15 50%, #b91c1c 100%); }
+    select.cw-country-priority optgroup:first-of-type {
+      font-weight: 700;
+      color: #1d4ed8;
+    }
+  </style>
+  </head>
+<body class="bg-background">
+    <!-- Smart Header with Navigation -->
+    <header class="header-dark sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/pages/homepage.html" class="flex items-center space-x-2">
+                        <img src="/delivery-truck-logo.png" alt="CargoWatch Logo" class="w-8 h-8 object-contain brightness-0 invert opacity-90">
+                        <span class="text-xl font-bold text-white tracking-tight">CargoWatch</span>
+                    </a>
+                </div>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="/pages/homepage.html" class="nav-link">Home</a>
+                    <a href="/pages/public_tracking_interface.html" class="nav-link">Track Shipment</a>
+                    <a href="/pages/shipment_creation_portal.html" class="nav-link-active">Create Shipment</a>
+                    <a href="/pages/support_hub.html" class="nav-link">Support</a>
+                </nav>
+                <div class="hidden lg:flex items-center space-x-4">
+                    <a href="/pages/admin_dashboard.html" class="px-5 py-2.5 rounded-xl font-semibold bg-primary text-white hover:bg-primary-600 transition-colors shadow-lg shadow-primary-500/20 hidden">Admin</a>
+                </div>
+                <button type="button" id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-dark-300 hover:text-white hover:bg-dark-700" aria-label="Open menu">
+                    <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden border-t border-dark-700 bg-dark-800">
+                <nav class="flex flex-col px-4 py-4 space-y-1">
+                    <a href="/pages/homepage.html" class="nav-link py-3">Home</a>
+                    <a href="/pages/public_tracking_interface.html" class="nav-link py-3">Track Shipment</a>
+                    <a href="/pages/shipment_creation_portal.html" class="nav-link-active py-3">Create Shipment</a>
+                    <a href="/pages/support_hub.html" class="nav-link py-3">Support</a>
+                </nav>
+                <div class="px-4 pb-4 border-t border-dark-700 pt-3">
+                    <label class="sr-only" for="mobile-header-tracking-input">Tracking ID</label>
+                    <div class="flex flex-col gap-2">
+                        <div class="relative">
+                            <input type="text" id="mobile-header-tracking-input" placeholder="Enter tracking ID..." class="w-full pl-10 pr-3 py-2.5 rounded-xl bg-dark-800 border border-dark-600 text-white text-sm placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <svg class="w-5 h-5 text-dark-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <button type="button" id="mobile-header-track-btn" class="w-full py-2.5 rounded-xl font-semibold bg-primary text-white text-sm">Track</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-dark-950 py-10">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl lg:text-4xl font-extrabold text-white mb-2 tracking-tight">
+                Create <span class="text-gradient-primary">Shipment</span>
+            </h1>
+            <p class="text-dark-400">Priorité routes <span class="text-white font-semibold">USA · France · Italie · Espagne</span></p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="card">
+                <div class="cw-priority-banner p-4 sm:p-5 mb-6">
+                    <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-center text-primary mb-2">Couverture renforcée</p>
+                    <p class="text-sm text-center text-text-secondary leading-relaxed">
+                        Listes de villes étendues et géolocalisation optimisées pour les <strong class="text-text-primary">États-Unis</strong>, la <strong class="text-text-primary">France</strong>, l’<strong class="text-text-primary">Italie</strong> et l’<strong class="text-text-primary">Espagne</strong>.
+                    </p>
+                    <div class="cw-flag-row flex flex-wrap justify-center gap-4 mt-4">
+                        <span class="cw-flag-us" title="États-Unis">🇺🇸</span>
+                        <span class="cw-flag-fr" title="France">🇫🇷</span>
+                        <span class="cw-flag-it" title="Italie">🇮🇹</span>
+                        <span class="cw-flag-es" title="Espagne">🇪🇸</span>
+                    </div>
+                </div>
+                <form id="shipment-form" class="space-y-6">
+                    <div>
+                        <h3 class="text-base font-semibold text-text-primary mb-3">From (Sender)</h3>
+                        <p class="text-sm text-text-muted mb-3"><strong>1.</strong> Pays (priorité <strong>USA / FR / IT / ES</strong> en haut de liste), puis <strong>2.</strong> ville ou <strong>« Autre »</strong> — carte via OpenStreetMap.</p>
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            <input type="text" name="sender-name" class="input-field" placeholder="Name *" required>
+                            <input type="email" name="sender-email" class="input-field" placeholder="Email *" required>
+                            <input type="tel" name="sender-phone" class="input-field" placeholder="Phone *" required>
+                            <input type="text" name="sender-street" class="input-field sm:col-span-2" placeholder="Street address *" required>
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-medium text-text-secondary mb-1">Pays / région * <span class="text-primary font-semibold">(prioritaires en premier)</span></label>
+                                <select name="sender-country" id="sender-country" class="input-field w-full cw-country-priority" required aria-label="Sender country">
+                                <optgroup label="━━ USA · France · Italie · Espagne ━━">
+                                    <option value="US">🇺🇸 États-Unis (USA)</option>
+                                    <option value="FR">🇫🇷 France</option>
+                                    <option value="IT">🇮🇹 Italie</option>
+                                    <option value="ES">🇪🇸 Espagne</option>
+                                </optgroup>
+                                <optgroup label="Autres destinations">
+                                    <option value="CA">Canada</option>
+                                    <option value="GB">United Kingdom</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="MX">Mexico</option>
+                                    <option value="AU">Australia</option>
+                                    <option value="BR">Brazil</option>
+                                    <option value="JP">Japan</option>
+                                    <option value="CN">China</option>
+                                    <option value="IN">India</option>
+                                    <option value="AE">UAE</option>
+                                </optgroup>
+                            </select>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-medium text-text-secondary mb-1" for="sender-city-select">Ville * <span class="text-text-muted font-normal">(liste selon le pays)</span></label>
+                                <select id="sender-city-select" class="input-field w-full" required aria-label="Sender city"></select>
+                                <input type="text" id="sender-city-other" class="input-field w-full mt-2 hidden" placeholder="Saisir le nom de la ville" autocomplete="off" aria-label="Sender city other">
+                                <input type="hidden" name="sender-city" id="sender-city-value" value="">
+                            </div>
+                            <div>
+                                <label id="sender-state-label" class="block text-xs font-medium text-text-secondary mb-1">State / province</label>
+                                <input type="text" name="sender-state" id="sender-state" class="input-field w-full" placeholder="Optional">
+                            </div>
+                            <div>
+                                <label id="sender-zip-label" class="block text-xs font-medium text-text-secondary mb-1">Postal / ZIP code</label>
+                                <input type="text" name="sender-zip" id="sender-zip" class="input-field w-full" placeholder="Required for US">
+                            </div>
+                            <div class="sm:col-span-2 flex flex-wrap items-center gap-2">
+                                <button type="button" id="sender-verify-btn" class="px-3 py-1.5 text-sm rounded-lg border border-border bg-surface hover:bg-background text-text-primary">Verify sender location</button>
+                                <span id="sender-geo-hint" class="text-xs text-text-muted"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-base font-semibold text-text-primary mb-3">To (Recipient)</h3>
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            <input type="text" name="recipient-name" class="input-field" placeholder="Name *" required>
+                            <input type="email" name="recipient-email" class="input-field" placeholder="Email *" required>
+                            <input type="tel" name="recipient-phone" class="input-field" placeholder="Phone *" required>
+                            <input type="text" name="recipient-street" class="input-field sm:col-span-2" placeholder="Street address *" required>
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-medium text-text-secondary mb-1">Pays / région * <span class="text-primary font-semibold">(prioritaires en premier)</span></label>
+                                <select name="recipient-country" id="recipient-country" class="input-field w-full cw-country-priority" required aria-label="Recipient country">
+                                <optgroup label="━━ USA · France · Italie · Espagne ━━">
+                                    <option value="US">🇺🇸 États-Unis (USA)</option>
+                                    <option value="FR">🇫🇷 France</option>
+                                    <option value="IT">🇮🇹 Italie</option>
+                                    <option value="ES">🇪🇸 Espagne</option>
+                                </optgroup>
+                                <optgroup label="Autres destinations">
+                                    <option value="CA">Canada</option>
+                                    <option value="GB">United Kingdom</option>
+                                    <option value="DE">Germany</option>
+                                    <option value="MX">Mexico</option>
+                                    <option value="AU">Australia</option>
+                                    <option value="BR">Brazil</option>
+                                    <option value="JP">Japan</option>
+                                    <option value="CN">China</option>
+                                    <option value="IN">India</option>
+                                    <option value="AE">UAE</option>
+                                </optgroup>
+                            </select>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-medium text-text-secondary mb-1" for="recipient-city-select">Ville * <span class="text-text-muted font-normal">(liste selon le pays)</span></label>
+                                <select id="recipient-city-select" class="input-field w-full" required aria-label="Recipient city"></select>
+                                <input type="text" id="recipient-city-other" class="input-field w-full mt-2 hidden" placeholder="Saisir le nom de la ville" autocomplete="off" aria-label="Recipient city other">
+                                <input type="hidden" name="recipient-city" id="recipient-city-value" value="">
+                            </div>
+                            <div>
+                                <label id="recipient-state-label" class="block text-xs font-medium text-text-secondary mb-1">State / province</label>
+                                <input type="text" name="recipient-state" id="recipient-state" class="input-field w-full" placeholder="Optional">
+                            </div>
+                            <div>
+                                <label id="recipient-zip-label" class="block text-xs font-medium text-text-secondary mb-1">Postal / ZIP code</label>
+                                <input type="text" name="recipient-zip" id="recipient-zip" class="input-field w-full" placeholder="Required for US">
+                            </div>
+                            <div class="sm:col-span-2 flex flex-wrap items-center gap-2">
+                                <button type="button" id="recipient-verify-btn" class="px-3 py-1.5 text-sm rounded-lg border border-border bg-surface hover:bg-background text-text-primary">Verify recipient location</button>
+                                <span id="recipient-geo-hint" class="text-xs text-text-muted"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-base font-semibold text-text-primary mb-3">Package</h3>
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            <select id="package-type" name="package-type" class="input-field" required aria-label="Package type">
+                                <option value="">Type *</option>
+                                <option value="envelope">Envelope</option>
+                                <option value="small-box">Small box</option>
+                                <option value="medium-box">Medium box</option>
+                                <option value="large-box">Large box</option>
+                                <option value="vehicle">Vehicle</option>
+                                <option value="custom">Other</option>
+                            </select>
+                            <input type="number" name="weight" id="weight-input" class="input-field" placeholder="Weight (lbs) *" step="0.1" min="0.1" required>
+                            <input type="text" name="length" id="length-input" class="input-field" placeholder="Length (in)" step="0.1" min="0">
+                            <input type="text" name="width" id="width-input" class="input-field" placeholder="Width (in)" step="0.1" min="0">
+                            <input type="text" name="height" id="height-input" class="input-field" placeholder="Height (in)" step="0.1" min="0">
+                            <textarea name="description" id="description-input" class="input-field sm:col-span-2" rows="2" placeholder="Description *" required></textarea>
+                            <select name="currency" id="currency-select" class="input-field" aria-label="Currency">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="CAD">CAD</option>
+                            </select>
+                            <input type="number" name="value" id="value-input" class="input-field" placeholder="Declared value *" step="0.01" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-3 pt-2">
+                        <div>
+                            <label class="block text-sm text-text-muted mb-1">Cost (currency)</label>
+                            <select id="cost-currency" name="cost-currency" class="input-field w-full" aria-label="Cost currency">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="CAD">CAD</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-text-muted mb-1">Base / Shipping / Insurance</label>
+                            <div class="flex gap-2">
+                                <input type="number" id="cost-base" name="cost-base" class="input-field flex-1" placeholder="Base" step="0.01" min="0" value="0">
+                                <input type="number" id="cost-shipping" name="cost-shipping" class="input-field flex-1" placeholder="Ship" step="0.01" min="0" value="0">
+                                <input type="number" id="cost-insurance" name="cost-insurance" class="input-field flex-1" placeholder="Ins." step="0.01" min="0" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-4 border-t border-border">
+                        <span class="text-text-muted">Total:</span>
+                        <span id="cost-total-display" class="text-lg font-bold text-primary">$0.00</span>
+                    </div>
+
+                    <button type="button" class="btn-primary w-full py-3" onclick="nextStep()">
+                        Create Shipment
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-text-primary text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <img src="/delivery-truck-logo.png" alt="CargoWatch Logo" class="w-8 h-8 object-contain">
+                        <span class="text-xl font-bold">CargoWatch</span>
+                    </div>
+                    <p class="text-text-muted mb-4">Your cargo. Our watch. Every mile.</p>
+                    <p class="text-sm text-text-muted">© 2025 CargoWatch. All Rights Reserved.</p>
+                </div>
+
+                <!-- Services -->
+                <div>
+                    <h4 class="font-semibold mb-4">Services</h4>
+                    <ul class="space-y-2 text-sm text-text-muted">
+                        <li><a href="public_tracking_interface.html" class="hover:text-white transition-colors">Package Tracking</a></li>
+                        <li><a href="shipment_creation_portal.html" class="hover:text-white transition-colors">Create Shipment</a></li>
+                        <li><a href="admin_dashboard.html" class="hover:text-white transition-colors hidden">Admin Dashboard</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-text-muted">
+                        <li><a href="support_hub.html" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="support_hub.html" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="support_hub.html" class="hover:text-white transition-colors">System Status</a></li>
+                        <li><a href="support_hub.html" class="hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-sm text-text-muted">
+                        <li>watchyourcargo@gmail.com</li>
+                        <li>24/7 Customer Support</li>
+                        <li>Enterprise Solutions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/public/cities-by-country.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            const closeIcon = document.getElementById('close-icon');
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    const isHidden = mobileMenu.classList.contains('hidden');
+                    if (isHidden) {
+                        mobileMenu.classList.remove('hidden');
+                        menuIcon?.classList.add('hidden');
+                        closeIcon?.classList.remove('hidden');
+                    } else {
+                        mobileMenu.classList.add('hidden');
+                        menuIcon?.classList.remove('hidden');
+                        closeIcon?.classList.add('hidden');
+                    }
+                });
+            }
+            function goTrack(id) {
+                const v = (id || '').trim();
+                window.location.href = v
+                    ? '/pages/public_tracking_interface.html?track=' + encodeURIComponent(v)
+                    : '/pages/public_tracking_interface.html';
+            }
+            document.getElementById('mobile-header-tracking-input')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') goTrack(this.value);
+            });
+            document.getElementById('mobile-header-track-btn')?.addEventListener('click', () => {
+                goTrack(document.getElementById('mobile-header-tracking-input')?.value || '');
+            });
+        });
+
+        const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', GBP: '£', CAD: '$' };
+
+        function populateCitySelect(selectEl, countryCode) {
+            if (!selectEl) return;
+            const raw = (window.CARGOWATCH_CITIES_BY_COUNTRY && window.CARGOWATCH_CITIES_BY_COUNTRY[countryCode]) || [];
+            const cities = [...new Set(raw)].sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }));
+            selectEl.innerHTML = '';
+            const ph = document.createElement('option');
+            ph.value = '';
+            ph.textContent = '— Choisissez une ville —';
+            selectEl.appendChild(ph);
+            cities.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                selectEl.appendChild(opt);
+            });
+            const other = document.createElement('option');
+            other.value = '__other__';
+            other.textContent = 'Autre (saisie manuelle)';
+            selectEl.appendChild(other);
+        }
+
+        function syncCityOtherVisibility(prefix) {
+            const sel = document.getElementById(`${prefix}-city-select`);
+            const other = document.getElementById(`${prefix}-city-other`);
+            const hidden = document.getElementById(`${prefix}-city-value`);
+            if (!sel || !other || !hidden) return;
+            const isOther = sel.value === '__other__';
+            other.classList.toggle('hidden', !isOther);
+            other.required = isOther;
+            if (isOther) {
+                hidden.value = (other.value || '').trim();
+                other.focus();
+            } else if (sel.value && sel.value !== '') {
+                hidden.value = sel.value;
+            } else {
+                hidden.value = '';
+            }
+        }
+
+        function getCityFieldValue(prefix) {
+            const sel = document.getElementById(`${prefix}-city-select`);
+            const other = document.getElementById(`${prefix}-city-other`);
+            if (!sel) return '';
+            if (sel.value === '__other__') return (other?.value || '').trim();
+            return (sel.value || '').trim();
+        }
+
+        function refreshCityForPrefix(prefix, countryCode) {
+            populateCitySelect(document.getElementById(`${prefix}-city-select`), countryCode);
+            const other = document.getElementById(`${prefix}-city-other`);
+            if (other) other.value = '';
+            syncCityOtherVisibility(prefix);
+        }
+
+        function updatePostalLabelsForCountry(countrySelect, zipInput, zipLabel, stateLabel) {
+            const cc = countrySelect.value;
+            const zipReq = (cc === 'US' || cc === 'CA');
+            zipLabel.textContent = zipReq ? 'Postal / ZIP code *' : 'Postal / ZIP code';
+            zipInput.placeholder = zipReq ? (cc === 'US' ? 'e.g. 90210' : 'e.g. K1A 0A6') : 'Optional';
+            stateLabel.textContent = cc === 'US' ? 'State (2-letter code helps)' : 'Region / province';
+        }
+
+        async function verifyAddress(prefix) {
+            const btn = document.getElementById(`${prefix}-verify-btn`);
+            const hint = document.getElementById(`${prefix}-geo-hint`);
+            syncCityOtherVisibility(prefix);
+            const city = getCityFieldValue(prefix);
+            const state = document.getElementById(`${prefix}-state`)?.value?.trim();
+            const zip = document.getElementById(`${prefix}-zip`)?.value?.trim();
+            const country = document.getElementById(`${prefix}-country`)?.value;
+            if (!city || !country) {
+                hint.textContent = 'Enter city and country first.';
+                hint.className = 'text-xs text-red-600';
+                return;
+            }
+            if (btn) { btn.disabled = true; btn.textContent = 'Checking…'; }
+            hint.textContent = '';
+            try {
+                const q = new URLSearchParams({ city, country: country || '', state: state || '', zip: zip || '' });
+                const res = await fetch(`/api/geocode-preview?${q}`, { credentials: 'include' });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw new Error(data.error || 'Not found');
+                }
+                hint.textContent = `✓ Located (${data.source}): ${data.displayName || `${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}`}`;
+                hint.className = 'text-xs text-green-700';
+            } catch (e) {
+                hint.textContent = '✗ ' + (e.message || 'Could not resolve location. Check spelling and country.');
+                hint.className = 'text-xs text-red-600';
+            } finally {
+                if (btn) { btn.disabled = false; btn.textContent = prefix === 'sender' ? 'Verify sender location' : 'Verify recipient location'; }
+            }
+        }
+
+        async function nextStep() {
+            const form = document.getElementById('shipment-form');
+            const sc = document.getElementById('sender-country')?.value;
+            const rc = document.getElementById('recipient-country')?.value;
+            const sz = document.getElementById('sender-zip')?.value?.trim();
+            const rz = document.getElementById('recipient-zip')?.value?.trim();
+            if ((sc === 'US' || sc === 'CA') && !sz) {
+                alert('Please enter a postal/ZIP code for the sender (required for US/Canada).');
+                document.getElementById('sender-zip')?.classList.add('border-error');
+                return;
+            }
+            if ((rc === 'US' || rc === 'CA') && !rz) {
+                alert('Please enter a postal/ZIP code for the recipient (required for US/Canada).');
+                document.getElementById('recipient-zip')?.classList.add('border-error');
+                return;
+            }
+            if (sz) document.getElementById('sender-zip')?.classList.remove('border-error');
+            if (rz) document.getElementById('recipient-zip')?.classList.remove('border-error');
+
+            syncCityOtherVisibility('sender');
+            syncCityOtherVisibility('recipient');
+            if (!getCityFieldValue('sender')) {
+                alert('Choisissez une ville d’expéditeur (ou « Autre » puis saisissez-la).');
+                return;
+            }
+            if (!getCityFieldValue('recipient')) {
+                alert('Choisissez une ville de destinataire (ou « Autre » puis saisissez-la).');
+                return;
+            }
+
+            const required = form.querySelectorAll('[required]');
+            let valid = true;
+            required.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('border-error');
+                    valid = false;
+                } else {
+                    field.classList.remove('border-error');
+                }
+            });
+            if (!valid) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            const formData = collectFormData();
+            const btn = form.querySelector('button[type="button"]');
+            btn.textContent = 'Creating...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/shipments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(formData)
+                });
+                const text = await response.text();
+
+                if (!response.ok) {
+                    let msg = 'Failed to create shipment';
+                    try { msg = JSON.parse(text).error || msg; } catch (e) { msg = text || msg; }
+                    throw new Error(msg);
+                }
+
+                const shipment = JSON.parse(text);
+                if (!shipment.trackingId) throw new Error('No tracking ID received');
+                alert('Shipment created!\nTracking ID: ' + shipment.trackingId);
+                window.location.href = '/pages/public_tracking_interface.html?track=' + shipment.trackingId;
+            } catch (err) {
+                alert('Error: ' + err.message);
+            } finally {
+                btn.textContent = 'Create Shipment';
+                btn.disabled = false;
+            }
+        }
+
+        function collectFormData() {
+            const num = (id) => parseFloat(document.getElementById(id)?.value || '0') || 0;
+            return {
+                sender: {
+                    name: document.querySelector('input[name="sender-name"]')?.value?.trim() || '',
+                    email: document.querySelector('input[name="sender-email"]')?.value?.trim() || '',
+                    phone: document.querySelector('input[name="sender-phone"]')?.value?.trim() || '',
+                    address: {
+                        street: document.querySelector('input[name="sender-street"]')?.value?.trim() || '',
+                        city: getCityFieldValue('sender') || document.getElementById('sender-city-value')?.value?.trim() || '',
+                        state: document.querySelector('input[name="sender-state"]')?.value?.trim() || '',
+                        zipCode: document.querySelector('input[name="sender-zip"]')?.value?.trim() || '',
+                        country: document.querySelector('select[name="sender-country"]')?.value || 'US'
+                    }
+                },
+                recipient: {
+                    name: document.querySelector('input[name="recipient-name"]')?.value?.trim() || '',
+                    email: document.querySelector('input[name="recipient-email"]')?.value?.trim() || '',
+                    phone: document.querySelector('input[name="recipient-phone"]')?.value?.trim() || '',
+                    address: {
+                        street: document.querySelector('input[name="recipient-street"]')?.value?.trim() || '',
+                        city: getCityFieldValue('recipient') || document.getElementById('recipient-city-value')?.value?.trim() || '',
+                        state: document.querySelector('input[name="recipient-state"]')?.value?.trim() || '',
+                        zipCode: document.querySelector('input[name="recipient-zip"]')?.value?.trim() || '',
+                        country: document.querySelector('select[name="recipient-country"]')?.value || 'US'
+                    }
+                },
+                package: {
+                    type: document.querySelector('#package-type')?.value || 'custom',
+                    weight: num('weight-input'),
+                    dimensions: {
+                        length: num('length-input'),
+                        width: num('width-input'),
+                        height: num('height-input')
+                    },
+                    description: document.querySelector('#description-input')?.value?.trim() || '',
+                    value: num('value-input'),
+                    currency: document.querySelector('#currency-select')?.value || 'USD',
+                    vehicle: {}
+                },
+                service: { type: 'standard', priority: 'normal', insurance: false },
+                cost: {
+                    base: num('cost-base'),
+                    shipping: num('cost-shipping'),
+                    insurance: num('cost-insurance'),
+                    currency: document.getElementById('cost-currency')?.value || 'USD'
+                }
+            };
+        }
+
+        function updateCostTotal() {
+            const base = parseFloat(document.getElementById('cost-base')?.value || '0') || 0;
+            const shipping = parseFloat(document.getElementById('cost-shipping')?.value || '0') || 0;
+            const insurance = parseFloat(document.getElementById('cost-insurance')?.value || '0') || 0;
+            const currency = document.getElementById('cost-currency')?.value || 'USD';
+            const symbol = CURRENCY_SYMBOLS[currency] || currency;
+            const el = document.getElementById('cost-total-display');
+            if (el) el.textContent = symbol + (base + shipping + insurance).toFixed(2);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            ['cost-base', 'cost-shipping', 'cost-insurance', 'cost-currency'].forEach(id => {
+                document.getElementById(id)?.addEventListener('input', updateCostTotal);
+                document.getElementById(id)?.addEventListener('change', updateCostTotal);
+            });
+            updateCostTotal();
+            checkCreateShipmentAccess();
+
+            const syncSender = () => {
+                refreshCityForPrefix('sender', document.getElementById('sender-country')?.value);
+                updatePostalLabelsForCountry(
+                    document.getElementById('sender-country'),
+                    document.getElementById('sender-zip'),
+                    document.getElementById('sender-zip-label'),
+                    document.getElementById('sender-state-label')
+                );
+            };
+            const syncRecipient = () => {
+                refreshCityForPrefix('recipient', document.getElementById('recipient-country')?.value);
+                updatePostalLabelsForCountry(
+                    document.getElementById('recipient-country'),
+                    document.getElementById('recipient-zip'),
+                    document.getElementById('recipient-zip-label'),
+                    document.getElementById('recipient-state-label')
+                );
+            };
+            document.getElementById('sender-country')?.addEventListener('change', syncSender);
+            document.getElementById('recipient-country')?.addEventListener('change', syncRecipient);
+            document.getElementById('sender-city-select')?.addEventListener('change', () => syncCityOtherVisibility('sender'));
+            document.getElementById('recipient-city-select')?.addEventListener('change', () => syncCityOtherVisibility('recipient'));
+            document.getElementById('sender-city-other')?.addEventListener('input', () => syncCityOtherVisibility('sender'));
+            document.getElementById('recipient-city-other')?.addEventListener('input', () => syncCityOtherVisibility('recipient'));
+            syncSender();
+            syncRecipient();
+            document.getElementById('sender-verify-btn')?.addEventListener('click', () => verifyAddress('sender'));
+            document.getElementById('recipient-verify-btn')?.addEventListener('click', () => verifyAddress('recipient'));
+        });
+
+        async function checkCreateShipmentAccess() {
+            try {
+                const res = await fetch('/api/auth/me', { credentials: 'include' });
+                if (!res.ok) {
+                    alert('You must be logged in as an administrator to create shipments.');
+                    window.location.href = '/pages/admin_login.html';
+                    return;
+                }
+                const data = await res.json();
+                if (!data.user) {
+                    alert('You must be logged in as an administrator to create shipments.');
+                    window.location.href = '/pages/admin_login.html';
+                    return;
+                }
+                if (data.user.role !== 'admin') {
+                    alert('Only administrators can create shipments.');
+                    window.location.href = '/pages/public_tracking_interface.html';
+                }
+            } catch (e) {
+                alert('Authentication error. Please log in as administrator.');
+                window.location.href = '/pages/admin_login.html';
+            }
+        }
+    </script>
+<script id="dhws-data-injector" src="../public/dhws-data-injector.js"></script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>
