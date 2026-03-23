@@ -1,0 +1,7 @@
+[build]
+  # L'app est du HTML/CSS statique dans `Tracking/` (dossier pages/, css/, public/, etc.).
+  # On publie donc ce dossier pour que Netlify serve `Tracking/pages/*`.
+  publish = "Tracking"
+  # Aucun build nécessaire : main.css est déjà précompilé.
+  command = ""
+
