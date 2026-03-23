@@ -1,0 +1,145 @@
+{
+  "createdAt": "2026-03-22T03:02:10.067Z",
+  "cases": [
+    {
+      "trackingId": "CWTESTDEST01",
+      "destination": "Miami FL",
+      "country": "US",
+      "city": "Miami",
+      "originHub": "Atlanta"
+    },
+    {
+      "trackingId": "CWTESTDEST02",
+      "destination": "New York NY",
+      "country": "US",
+      "city": "New York",
+      "originHub": "Boston"
+    },
+    {
+      "trackingId": "CWTESTDEST03",
+      "destination": "Los Angeles CA",
+      "country": "US",
+      "city": "Los Angeles",
+      "originHub": "Lyon"
+    },
+    {
+      "trackingId": "CWTESTDEST04",
+      "destination": "Chicago IL",
+      "country": "US",
+      "city": "Chicago",
+      "originHub": "Rome"
+    },
+    {
+      "trackingId": "CWTESTDEST05",
+      "destination": "Seattle WA",
+      "country": "US",
+      "city": "Seattle",
+      "originHub": "Madrid"
+    },
+    {
+      "trackingId": "CWTESTDEST06",
+      "destination": "Paris",
+      "country": "FR",
+      "city": "Paris",
+      "originHub": "Rotterdam"
+    },
+    {
+      "trackingId": "CWTESTDEST07",
+      "destination": "Lyon",
+      "country": "FR",
+      "city": "Lyon",
+      "originHub": "Frankfurt"
+    },
+    {
+      "trackingId": "CWTESTDEST08",
+      "destination": "Marseille",
+      "country": "FR",
+      "city": "Marseille",
+      "originHub": "Roissy-en-France"
+    },
+    {
+      "trackingId": "CWTESTDEST09",
+      "destination": "Bordeaux",
+      "country": "FR",
+      "city": "Bordeaux",
+      "originHub": "Atlanta"
+    },
+    {
+      "trackingId": "CWTESTDEST10",
+      "destination": "Rome",
+      "country": "IT",
+      "city": "Rome",
+      "originHub": "Boston"
+    },
+    {
+      "trackingId": "CWTESTDEST11",
+      "destination": "Milan",
+      "country": "IT",
+      "city": "Milan",
+      "originHub": "Lyon"
+    },
+    {
+      "trackingId": "CWTESTDEST12",
+      "destination": "Naples",
+      "country": "IT",
+      "city": "Naples",
+      "originHub": "Rome"
+    },
+    {
+      "trackingId": "CWTESTDEST13",
+      "destination": "Venice",
+      "country": "IT",
+      "city": "Venice",
+      "originHub": "Madrid"
+    },
+    {
+      "trackingId": "CWTESTDEST14",
+      "destination": "Turin",
+      "country": "IT",
+      "city": "Turin",
+      "originHub": "Rotterdam"
+    },
+    {
+      "trackingId": "CWTESTDEST15",
+      "destination": "Madrid",
+      "country": "ES",
+      "city": "Madrid",
+      "originHub": "Frankfurt"
+    },
+    {
+      "trackingId": "CWTESTDEST16",
+      "destination": "Barcelona",
+      "country": "ES",
+      "city": "Barcelona",
+      "originHub": "Roissy-en-France"
+    },
+    {
+      "trackingId": "CWTESTDEST17",
+      "destination": "Valencia ES",
+      "country": "ES",
+      "city": "Valencia",
+      "originHub": "Atlanta"
+    },
+    {
+      "trackingId": "CWTESTDEST18",
+      "destination": "Bilbao",
+      "country": "ES",
+      "city": "Bilbao",
+      "originHub": "Boston"
+    },
+    {
+      "trackingId": "CWTESTDEST19",
+      "destination": "Seville",
+      "country": "ES",
+      "city": "Seville",
+      "originHub": "Lyon"
+    },
+    {
+      "trackingId": "CWTESTDEST20",
+      "destination": "Palma",
+      "country": "ES",
+      "city": "Palma",
+      "originHub": "Rome"
+    }
+  ]
+}

@@ -1,0 +1,2624 @@
+[
+  {
+    "id": "ac6aefc8-6fbf-46b4-9016-c00708b0f887",
+    "trackingId": "CW20260318NXGR1U0R",
+    "status": "pending",
+    "createdAt": "2026-03-17T23:39:15.926Z",
+    "updatedAt": "2026-03-17T23:43:12.383Z",
+    "sender": {
+      "name": "Gran Turismo",
+      "email": "turismo@gmail.com",
+      "phone": "5555555",
+      "address": {
+        "street": "Tokyo",
+        "city": "Tokyo",
+        "state": "",
+        "zipCode": "0000",
+        "country": "JP",
+        "lat": 35.6762,
+        "lng": 139.6503
+      }
+    },
+    "recipient": {
+      "name": "Jann",
+      "email": "Mardenborough@gmail.com",
+      "phone": "777777",
+      "address": {
+        "street": "London",
+        "city": "London",
+        "state": "",
+        "zipCode": "1111",
+        "country": "GB",
+        "lat": 51.5074,
+        "lng": -0.1278
+      }
+    },
+    "package": {
+      "type": "vehicle",
+      "weight": 10000,
+      "dimensions": {
+        "length": 0,
+        "width": 0,
+        "height": 0
+      },
+      "description": "Racing car",
+      "value": 2500000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "d351e381-55a7-4deb-8eb2-682046361be1",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Tokyo",
+        "timestamp": "2026-03-17T23:39:15.926Z",
+        "completed": true,
+        "current": false
+      },
+      {
+        "id": "6ea0ee3b-4ec4-495e-85c3-5959427722d7",
+        "status": "pending",
+        "title": "Pending Pickup",
+        "description": "Status changed to pending - Location: Apo, AP",
+        "location": "Apo, AP",
+        "timestamp": "2026-03-17T23:40:16.860Z",
+        "completed": false,
+        "current": true
+      }
+    ],
+    "cost": {
+      "base": 2500000,
+      "shipping": 12000,
+      "insurance": 100000,
+      "total": 2612000,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-23T05:39:15.944Z",
+    "currentLocation": {
+      "lat": 35.689197030413894,
+      "lng": 139.53554557728435,
+      "city": "Apo, AP"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": "2026-03-17T23:43:12.383Z"
+    },
+    "receipt": "/receipts/receipt-CW20260318NXGR1U0R-1773790812636.pdf",
+    "receiptUploadedAt": "2026-03-17T23:40:13.057Z"
+  },
+  {
+    "id": "85ab2b52-6e8e-49f6-a7e5-ae0c8c92bd0d",
+    "trackingId": "CW20260318IKNHNWY0",
+    "status": "pending",
+    "createdAt": "2026-03-17T23:46:35.287Z",
+    "updatedAt": "2026-03-17T23:46:35.287Z",
+    "sender": {
+      "name": "Gran Turismo",
+      "email": "turismo@gmail.com",
+      "phone": "5555555",
+      "address": {
+        "street": "Tokyo",
+        "city": "Barcelona",
+        "state": "",
+        "zipCode": "0000",
+        "country": "ES",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "recipient": {
+      "name": "Jann",
+      "email": "Mardenborough@gmail.com",
+      "phone": "777777",
+      "address": {
+        "street": "ca",
+        "city": "cardiff",
+        "state": "",
+        "zipCode": "1111",
+        "country": "GB",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "package": {
+      "type": "vehicle",
+      "weight": 10000,
+      "dimensions": {
+        "length": 0,
+        "width": 0,
+        "height": 0
+      },
+      "description": "Racing car",
+      "value": 3500000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "92f35bb8-28d2-4870-893b-dcf30aa52a4a",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Barcelona",
+        "timestamp": "2026-03-17T23:46:35.288Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 3500000,
+      "shipping": 24000,
+      "insurance": 300000,
+      "total": 3824000,
+      "currency": "USD"
+    },
+    "estimatedDelivery": null,
+    "currentLocation": {
+      "lat": null,
+      "lng": null,
+      "city": "Barcelona"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "83cc16e0-682b-41ef-b9a6-1f11fee05818",
+    "trackingId": "CW20260318OA1DPIHL",
+    "status": "pending",
+    "createdAt": "2026-03-17T23:47:44.998Z",
+    "updatedAt": "2026-03-18T00:28:44.785Z",
+    "sender": {
+      "name": "Gran Turismo",
+      "email": "turismo@gmail.com",
+      "phone": "5555555",
+      "address": {
+        "street": "Tokyo",
+        "city": "madrid",
+        "state": "",
+        "zipCode": "0000",
+        "country": "ES",
+        "lat": 40.4168,
+        "lng": -3.7038
+      }
+    },
+    "recipient": {
+      "name": "Jann",
+      "email": "Mardenborough@gmail.com",
+      "phone": "777777",
+      "address": {
+        "street": "ca",
+        "city": "London",
+        "state": "",
+        "zipCode": "1111",
+        "country": "GB",
+        "lat": 51.5074,
+        "lng": -0.1278
+      }
+    },
+    "package": {
+      "type": "vehicle",
+      "weight": 10000,
+      "dimensions": {
+        "length": 0,
+        "width": 0,
+        "height": 0
+      },
+      "description": "Racing car",
+      "value": 3500000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "24f299b8-1175-48c4-8aaa-63b0d1c19beb",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "madrid",
+        "timestamp": "2026-03-17T23:47:44.998Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 3500000,
+      "shipping": 24000,
+      "insurance": 300000,
+      "total": 3824000,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-18T22:47:44.998Z",
+    "currentLocation": {
+      "lat": 40.511522966166666,
+      "lng": -3.6732579800000003,
+      "city": "Dpo, AE"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": "2026-03-18T00:28:44.785Z"
+    }
+  },
+  {
+    "id": "aee5ede4-fb5e-443d-bd23-af4f97c181f7",
+    "trackingId": "CW20260318CJB8L1LT",
+    "status": "pending",
+    "createdAt": "2026-03-17T23:48:36.206Z",
+    "updatedAt": "2026-03-17T23:48:36.206Z",
+    "sender": {
+      "name": "Gran Turismo",
+      "email": "turismo@gmail.com",
+      "phone": "5555555",
+      "address": {
+        "street": "Tokyo",
+        "city": "madrid",
+        "state": "",
+        "zipCode": "0000",
+        "country": "ES",
+        "lat": 40.4168,
+        "lng": -3.7038
+      }
+    },
+    "recipient": {
+      "name": "Jann",
+      "email": "Mardenborough@gmail.com",
+      "phone": "777777",
+      "address": {
+        "street": "oxford",
+        "city": "Oxford",
+        "state": "",
+        "zipCode": "1111",
+        "country": "GB",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "package": {
+      "type": "vehicle",
+      "weight": 10000,
+      "dimensions": {
+        "length": 0,
+        "width": 0,
+        "height": 0
+      },
+      "description": "Racing car",
+      "value": 3500000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "da00025e-4dd5-480f-8350-49ce1a975afd",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "madrid",
+        "timestamp": "2026-03-17T23:48:36.206Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 3500000,
+      "shipping": 24000,
+      "insurance": 300000,
+      "total": 3824000,
+      "currency": "USD"
+    },
+    "estimatedDelivery": null,
+    "currentLocation": {
+      "lat": 40.4168,
+      "lng": -3.7038,
+      "city": "madrid"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "fb74887d-4441-49f3-ba6d-c0b91e936bc3",
+    "trackingId": "CW202603184F4Y76C9",
+    "status": "pending",
+    "createdAt": "2026-03-17T23:49:42.030Z",
+    "updatedAt": "2026-03-17T23:49:42.030Z",
+    "sender": {
+      "name": "Gran Turismo",
+      "email": "turismo@gmail.com",
+      "phone": "5555555",
+      "address": {
+        "street": "Tokyo",
+        "city": "madrid",
+        "state": "",
+        "zipCode": "0000",
+        "country": "ES",
+        "lat": 40.4168,
+        "lng": -3.7038
+      }
+    },
+    "recipient": {
+      "name": "Jann",
+      "email": "Mardenborough@gmail.com",
+      "phone": "777777",
+      "address": {
+        "street": "oxford",
+        "city": "bermingham",
+        "state": "",
+        "zipCode": "1111",
+        "country": "GB",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "package": {
+      "type": "vehicle",
+      "weight": 10000,
+      "dimensions": {
+        "length": 0,
+        "width": 0,
+        "height": 0
+      },
+      "description": "Racing car",
+      "value": 3500000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "804381cb-ab4d-4c64-93ce-6f98a90ca1db",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "madrid",
+        "timestamp": "2026-03-17T23:49:42.030Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 3500000,
+      "shipping": 24000,
+      "insurance": 300000,
+      "total": 3824000,
+      "currency": "USD"
+    },
+    "estimatedDelivery": null,
+    "currentLocation": {
+      "lat": 40.4168,
+      "lng": -3.7038,
+      "city": "madrid"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "498efca6-a347-409b-83f4-829ab428a19b",
+    "trackingId": "CW20260318VWJVEDYK",
+    "status": "pending",
+    "createdAt": "2026-03-17T23:50:27.132Z",
+    "updatedAt": "2026-03-17T23:51:03.769Z",
+    "sender": {
+      "name": "Gran Turismo",
+      "email": "turismo@gmail.com",
+      "phone": "5555555",
+      "address": {
+        "street": "Tokyo",
+        "city": "madrid",
+        "state": "",
+        "zipCode": "0000",
+        "country": "ES",
+        "lat": 40.4168,
+        "lng": -3.7038
+      }
+    },
+    "recipient": {
+      "name": "Jann",
+      "email": "Mardenborough@gmail.com",
+      "phone": "777777",
+      "address": {
+        "street": "Paris",
+        "city": "Paris",
+        "state": "",
+        "zipCode": "1111",
+        "country": "GB",
+        "lat": 48.8566,
+        "lng": 2.3522
+      }
+    },
+    "package": {
+      "type": "vehicle",
+      "weight": 10000,
+      "dimensions": {
+        "length": 0,
+        "width": 0,
+        "height": 0
+      },
+      "description": "Racing car",
+      "value": 3500000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "ae423d88-666b-4a37-92ec-33649edaedb0",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "madrid",
+        "timestamp": "2026-03-17T23:50:27.132Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 3500000,
+      "shipping": 24000,
+      "insurance": 300000,
+      "total": 3824000,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-18T20:50:27.132Z",
+    "currentLocation": {
+      "lat": 40.41787364219653,
+      "lng": -3.703029605305556,
+      "city": "Dpo, AE"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": "2026-03-17T23:51:03.769Z"
+    }
+  },
+  {
+    "id": "c2262fc8-dd70-4e48-965f-782ef2734d57",
+    "trackingId": "CW20260318AJ3WAOAD",
+    "status": "pending",
+    "createdAt": "2026-03-17T23:51:16.581Z",
+    "updatedAt": "2026-03-18T00:02:54.770Z",
+    "sender": {
+      "name": "Gran Turismo",
+      "email": "turismo@gmail.com",
+      "phone": "5555555",
+      "address": {
+        "street": "Tokyo",
+        "city": "madrid",
+        "state": "",
+        "zipCode": "0000",
+        "country": "ES",
+        "lat": 40.4168,
+        "lng": -3.7038
+      }
+    },
+    "recipient": {
+      "name": "Jann",
+      "email": "Mardenborough@gmail.com",
+      "phone": "777777",
+      "address": {
+        "street": "Paris",
+        "city": "Douala",
+        "state": "",
+        "zipCode": "1111",
+        "country": "GB",
+        "lat": 4.0511,
+        "lng": 9.7679
+      }
+    },
+    "package": {
+      "type": "vehicle",
+      "weight": 10000,
+      "dimensions": {
+        "length": 0,
+        "width": 0,
+        "height": 0
+      },
+      "description": "Racing car",
+      "value": 3500000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "04fb36c7-bf4d-43f3-9a41-803f3704658b",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "madrid",
+        "timestamp": "2026-03-17T23:51:16.581Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 3500000,
+      "shipping": 24000,
+      "insurance": 300000,
+      "total": 3824000,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-20T11:51:16.582Z",
+    "currentLocation": {
+      "lat": 40.32863982042604,
+      "lng": -3.6711409973913196,
+      "city": "Dpo, AE"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": "2026-03-18T00:02:54.770Z"
+    }
+  },
+  {
+    "id": "dab84186-73bc-440a-a2d8-d0420d783735",
+    "trackingId": "CW20260318Q5KZJVZK",
+    "status": "pending",
+    "createdAt": "2026-03-17T23:51:42.518Z",
+    "updatedAt": "2026-03-17T23:51:54.582Z",
+    "sender": {
+      "name": "Gran Turismo",
+      "email": "turismo@gmail.com",
+      "phone": "5555555",
+      "address": {
+        "street": "Tokyo",
+        "city": "madrid",
+        "state": "Portugal",
+        "zipCode": "0000",
+        "country": "ES",
+        "lat": 40.4168,
+        "lng": -3.7038
+      }
+    },
+    "recipient": {
+      "name": "Jann",
+      "email": "Mardenborough@gmail.com",
+      "phone": "777777",
+      "address": {
+        "street": "Paris",
+        "city": "Douala",
+        "state": "",
+        "zipCode": "1111",
+        "country": "GB",
+        "lat": 4.0511,
+        "lng": 9.7679
+      }
+    },
+    "package": {
+      "type": "vehicle",
+      "weight": 10000,
+      "dimensions": {
+        "length": 0,
+        "width": 0,
+        "height": 0
+      },
+      "description": "Racing car",
+      "value": 3500000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "37bb68a3-15ba-43e3-8d52-cb56d073d3a9",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "madrid",
+        "timestamp": "2026-03-17T23:51:42.518Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 3500000,
+      "shipping": 24000,
+      "insurance": 300000,
+      "total": 3824000,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-20T11:51:42.519Z",
+    "currentLocation": {
+      "lat": 40.4152802167875,
+      "lng": -3.703236995204167,
+      "city": "Dpo, AE"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": "2026-03-17T23:51:54.582Z"
+    }
+  },
+  {
+    "id": "686448a9-59a4-4ece-b29d-8deac84d31c7",
+    "trackingId": "CW20260322D1WZ52HJ",
+    "status": "pending",
+    "createdAt": "2026-03-22T02:55:47.607Z",
+    "updatedAt": "2026-03-22T03:03:01.587Z",
+    "sender": {
+      "name": "OG JOSMAN",
+      "email": "uncledrewlegacy@gmail.com",
+      "phone": "0696032676",
+      "address": {
+        "street": "123 rue",
+        "city": "Albuquerque",
+        "state": "",
+        "zipCode": "1111",
+        "country": "US",
+        "lat": 35.0841034,
+        "lng": -106.650985
+      }
+    },
+    "recipient": {
+      "name": "Njike Diane",
+      "email": "merciel2006@icloud.com",
+      "phone": "0696032676",
+      "address": {
+        "street": "123 rue",
+        "city": "Charlotte",
+        "state": "",
+        "zipCode": "5555",
+        "country": "US",
+        "lat": 35.2272086,
+        "lng": -80.8430827
+      }
+    },
+    "package": {
+      "type": "envelope",
+      "weight": 999,
+      "dimensions": {
+        "length": 0,
+        "width": 7,
+        "height": 0
+      },
+      "description": "mm",
+      "value": 7000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "4f26bb84-e7cc-42e5-b380-1d0fec5e4d74",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Albuquerque",
+        "timestamp": "2026-03-22T02:55:47.607Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 0,
+      "shipping": 0,
+      "insurance": 0,
+      "total": 0,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-23T15:55:54.447Z",
+    "currentLocation": {
+      "lat": 35.08431904164825,
+      "lng": -106.61209571722169,
+      "city": "Albuquerque, NM"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": "2026-03-22T03:03:01.587Z"
+    }
+  },
+  {
+    "id": "82ae52c8-f918-4d82-a8bc-e977ca1bd991",
+    "trackingId": "CW202603220BYROYNE",
+    "status": "pending",
+    "createdAt": "2026-03-22T02:51:33.518Z",
+    "updatedAt": "2026-03-22T02:51:33.518Z",
+    "sender": {
+      "name": "OG JOSMAN",
+      "email": "uncledrewlegacy@gmail.com",
+      "phone": "687522332",
+      "address": {
+        "street": "123 Rue de la paix",
+        "city": "Albuquerque",
+        "state": "",
+        "zipCode": "1111",
+        "country": "US",
+        "lat": null,
+        "lng": null
+      }
+    },
+    "recipient": {
+      "name": "Njike Diane",
+      "email": "merciel2006@icloud.com",
+      "phone": "696032676",
+      "address": {
+        "street": "123 rue",
+        "city": "Charlotte",
+        "state": "",
+        "zipCode": "5555",
+        "country": "US",
+        "lat": 35.2272086,
+        "lng": -80.8430827
+      }
+    },
+    "package": {
+      "type": "envelope",
+      "weight": 999,
+      "dimensions": {
+        "length": 0,
+        "width": 0,
+        "height": 0
+      },
+      "description": "....",
+      "value": 7000,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "6e2ea3fa-b61f-4b3e-9d16-cdb4cf531a1c",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Albuquerque",
+        "timestamp": "2026-03-22T02:51:33.518Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 7000,
+      "shipping": 70,
+      "insurance": 0,
+      "total": 7070,
+      "currency": "USD"
+    },
+    "estimatedDelivery": null,
+    "currentLocation": {
+      "lat": null,
+      "lng": null,
+      "city": "Albuquerque"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "b2ceaa6e-39d6-417e-829e-ad26b63ecc28",
+    "trackingId": "CWTESTDEST01",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.062Z",
+    "updatedAt": "2026-03-22T03:02:10.062Z",
+    "sender": {
+      "name": "Hub Test Atlanta",
+      "email": "test.sender.1@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "1 Origin Street",
+        "city": "Atlanta",
+        "state": "Georgia",
+        "zipCode": "30301",
+        "country": "US",
+        "lat": 33.749,
+        "lng": -84.388
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 1",
+      "email": "test.recipient.1@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "100 Test Avenue",
+        "city": "Miami",
+        "state": "Florida",
+        "zipCode": "33101",
+        "country": "US",
+        "lat": 25.7617,
+        "lng": -80.1918
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #1 — destination: Miami FL",
+      "value": 100,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "d7026617-08ca-4334-bb59-548b77b09b13",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Atlanta",
+        "timestamp": "2026-03-22T03:02:10.062Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 15,
+      "insurance": 0,
+      "total": 40,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-27T03:02:10.063Z",
+    "currentLocation": {
+      "lat": 33.749,
+      "lng": -84.388,
+      "city": "Atlanta"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "d734f19e-6cd6-4dcd-b924-af82942a794f",
+    "trackingId": "CWTESTDEST02",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.063Z",
+    "updatedAt": "2026-03-22T03:02:10.063Z",
+    "sender": {
+      "name": "Hub Test Boston",
+      "email": "test.sender.2@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "2 Origin Street",
+        "city": "Boston",
+        "state": "Massachusetts",
+        "zipCode": "02101",
+        "country": "US",
+        "lat": 42.3601,
+        "lng": -71.0589
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 2",
+      "email": "test.recipient.2@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "101 Test Avenue",
+        "city": "New York",
+        "state": "New York",
+        "zipCode": "10001",
+        "country": "US",
+        "lat": 40.7128,
+        "lng": -74.006
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 5.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #2 — destination: New York NY",
+      "value": 110,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "28414e39-8605-468c-a22a-c9cf07d24955",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Boston",
+        "timestamp": "2026-03-22T03:02:10.063Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 16,
+      "insurance": 0,
+      "total": 41,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-28T03:02:10.063Z",
+    "currentLocation": {
+      "lat": 42.3601,
+      "lng": -71.0589,
+      "city": "Boston"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "42a3c474-1ae4-4a34-9ab3-f3303a383ecd",
+    "trackingId": "CWTESTDEST03",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.063Z",
+    "updatedAt": "2026-03-22T03:02:10.063Z",
+    "sender": {
+      "name": "Entrepôt Lyon",
+      "email": "test.sender.3@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "3 Origin Street",
+        "city": "Lyon",
+        "state": "",
+        "zipCode": "69002",
+        "country": "FR",
+        "lat": 45.764,
+        "lng": 4.8357
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 3",
+      "email": "test.recipient.3@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "102 Test Avenue",
+        "city": "Los Angeles",
+        "state": "California",
+        "zipCode": "90001",
+        "country": "US",
+        "lat": 34.0522,
+        "lng": -118.2437
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 6,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #3 — destination: Los Angeles CA",
+      "value": 120,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "e9739989-c930-4d6e-bcaf-2608efbe1f6b",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Lyon",
+        "timestamp": "2026-03-22T03:02:10.063Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 17,
+      "insurance": 0,
+      "total": 42,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-29T03:02:10.063Z",
+    "currentLocation": {
+      "lat": 45.764,
+      "lng": 4.8357,
+      "city": "Lyon"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "778f8aa8-8826-4247-ba9c-66da0885ac44",
+    "trackingId": "CWTESTDEST04",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.063Z",
+    "updatedAt": "2026-03-22T03:02:10.063Z",
+    "sender": {
+      "name": "Deposito Roma",
+      "email": "test.sender.4@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "4 Origin Street",
+        "city": "Rome",
+        "state": "",
+        "zipCode": "00118",
+        "country": "IT",
+        "lat": 41.9028,
+        "lng": 12.4964
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 4",
+      "email": "test.recipient.4@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "103 Test Avenue",
+        "city": "Chicago",
+        "state": "Illinois",
+        "zipCode": "60601",
+        "country": "US",
+        "lat": 41.8781,
+        "lng": -87.6298
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 6.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #4 — destination: Chicago IL",
+      "value": 130,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "538a1453-5634-4992-90ad-11f061cb40e7",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Rome",
+        "timestamp": "2026-03-22T03:02:10.063Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 18,
+      "insurance": 0,
+      "total": 43,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-30T03:02:10.063Z",
+    "currentLocation": {
+      "lat": 41.9028,
+      "lng": 12.4964,
+      "city": "Rome"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "9759447c-bd46-4121-ade5-cf1a3e20267a",
+    "trackingId": "CWTESTDEST05",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.063Z",
+    "updatedAt": "2026-03-22T03:02:10.063Z",
+    "sender": {
+      "name": "Almacén Madrid",
+      "email": "test.sender.5@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "5 Origin Street",
+        "city": "Madrid",
+        "state": "",
+        "zipCode": "28013",
+        "country": "ES",
+        "lat": 40.4168,
+        "lng": -3.7038
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 5",
+      "email": "test.recipient.5@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "104 Test Avenue",
+        "city": "Seattle",
+        "state": "Washington",
+        "zipCode": "98101",
+        "country": "US",
+        "lat": 47.6062,
+        "lng": -122.3321
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 7,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #5 — destination: Seattle WA",
+      "value": 140,
+      "currency": "USD",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "b77a041a-7638-482f-9bf2-2a50cf7887c3",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Madrid",
+        "timestamp": "2026-03-22T03:02:10.063Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 19,
+      "insurance": 0,
+      "total": 44,
+      "currency": "USD"
+    },
+    "estimatedDelivery": "2026-03-31T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 40.4168,
+      "lng": -3.7038,
+      "city": "Madrid"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "ede7c0cb-2e5d-4d5d-b86f-6301a66bea1f",
+    "trackingId": "CWTESTDEST06",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Cargo Rotterdam",
+      "email": "test.sender.6@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "6 Origin Street",
+        "city": "Rotterdam",
+        "state": "",
+        "zipCode": "3011",
+        "country": "NL",
+        "lat": 51.9244,
+        "lng": 4.4777
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 6",
+      "email": "test.recipient.6@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "105 Test Avenue",
+        "city": "Paris",
+        "state": "",
+        "zipCode": "75001",
+        "country": "FR",
+        "lat": 48.8566,
+        "lng": 2.3522
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 7.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #6 — destination: Paris",
+      "value": 150,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "48cdf74d-0e5b-4982-a64f-5f982e59abc7",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Rotterdam",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 20,
+      "insurance": 0,
+      "total": 45,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-01T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 51.9244,
+      "lng": 4.4777,
+      "city": "Rotterdam"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "d14e187d-7ca5-462a-9138-0470c1c1f781",
+    "trackingId": "CWTESTDEST07",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Hub Frankfurt",
+      "email": "test.sender.7@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "7 Origin Street",
+        "city": "Frankfurt",
+        "state": "",
+        "zipCode": "60311",
+        "country": "DE",
+        "lat": 50.1109,
+        "lng": 8.6821
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 7",
+      "email": "test.recipient.7@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "106 Test Avenue",
+        "city": "Lyon",
+        "state": "",
+        "zipCode": "69001",
+        "country": "FR",
+        "lat": 45.764,
+        "lng": 4.8357
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 8,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #7 — destination: Lyon",
+      "value": 160,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "5528f99f-fef0-4b92-b72c-7f0468de49f5",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Frankfurt",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 21,
+      "insurance": 0,
+      "total": 46,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-02T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 50.1109,
+      "lng": 8.6821,
+      "city": "Frankfurt"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "7c9b90ab-e8cb-4c7f-bde9-7f362549d119",
+    "trackingId": "CWTESTDEST08",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Terminal CDG",
+      "email": "test.sender.8@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "8 Origin Street",
+        "city": "Roissy-en-France",
+        "state": "",
+        "zipCode": "95700",
+        "country": "FR",
+        "lat": 49.0097,
+        "lng": 2.5479
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 8",
+      "email": "test.recipient.8@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "107 Test Avenue",
+        "city": "Marseille",
+        "state": "",
+        "zipCode": "13001",
+        "country": "FR",
+        "lat": 43.2965,
+        "lng": 5.3698
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 8.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #8 — destination: Marseille",
+      "value": 170,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "c5fa8cc2-a3d0-47ae-a059-1f6db5986d66",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Roissy-en-France",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 22,
+      "insurance": 0,
+      "total": 47,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-03T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 49.0097,
+      "lng": 2.5479,
+      "city": "Roissy-en-France"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "45d89fa0-bcea-40de-b602-b8a8778673a6",
+    "trackingId": "CWTESTDEST09",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Hub Test Atlanta",
+      "email": "test.sender.9@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "9 Origin Street",
+        "city": "Atlanta",
+        "state": "Georgia",
+        "zipCode": "30301",
+        "country": "US",
+        "lat": 33.749,
+        "lng": -84.388
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 9",
+      "email": "test.recipient.9@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "108 Test Avenue",
+        "city": "Bordeaux",
+        "state": "",
+        "zipCode": "33000",
+        "country": "FR",
+        "lat": 44.8378,
+        "lng": -0.5792
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 9,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #9 — destination: Bordeaux",
+      "value": 180,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "bc239443-d3ce-4c6b-8d39-6668db1b2667",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Atlanta",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 23,
+      "insurance": 0,
+      "total": 48,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-04T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 33.749,
+      "lng": -84.388,
+      "city": "Atlanta"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "bd8675ad-70a2-449d-b1cc-898ac6c7b3e8",
+    "trackingId": "CWTESTDEST10",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Hub Test Boston",
+      "email": "test.sender.10@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "10 Origin Street",
+        "city": "Boston",
+        "state": "Massachusetts",
+        "zipCode": "02101",
+        "country": "US",
+        "lat": 42.3601,
+        "lng": -71.0589
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 10",
+      "email": "test.recipient.10@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "109 Test Avenue",
+        "city": "Rome",
+        "state": "",
+        "zipCode": "00100",
+        "country": "IT",
+        "lat": 41.9028,
+        "lng": 12.4964
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 9.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #10 — destination: Rome",
+      "value": 190,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "f930f8a8-f4a5-4206-8da1-73597110f8a6",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Boston",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 24,
+      "insurance": 0,
+      "total": 49,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-05T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 42.3601,
+      "lng": -71.0589,
+      "city": "Boston"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "869bb95d-7636-471e-be33-50086e577184",
+    "trackingId": "CWTESTDEST11",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Entrepôt Lyon",
+      "email": "test.sender.11@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "11 Origin Street",
+        "city": "Lyon",
+        "state": "",
+        "zipCode": "69002",
+        "country": "FR",
+        "lat": 45.764,
+        "lng": 4.8357
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 11",
+      "email": "test.recipient.11@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "110 Test Avenue",
+        "city": "Milan",
+        "state": "",
+        "zipCode": "20121",
+        "country": "IT",
+        "lat": 45.4642,
+        "lng": 9.19
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 10,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #11 — destination: Milan",
+      "value": 200,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "15378de2-d234-4471-b49b-d4f478ff591b",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Lyon",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 25,
+      "insurance": 0,
+      "total": 50,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-06T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 45.764,
+      "lng": 4.8357,
+      "city": "Lyon"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "7ca4fd29-cdbb-4b63-b26d-db6500f2de52",
+    "trackingId": "CWTESTDEST12",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Deposito Roma",
+      "email": "test.sender.12@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "12 Origin Street",
+        "city": "Rome",
+        "state": "",
+        "zipCode": "00118",
+        "country": "IT",
+        "lat": 41.9028,
+        "lng": 12.4964
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 12",
+      "email": "test.recipient.12@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "111 Test Avenue",
+        "city": "Naples",
+        "state": "",
+        "zipCode": "80100",
+        "country": "IT",
+        "lat": 40.8518,
+        "lng": 14.2681
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 10.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #12 — destination: Naples",
+      "value": 210,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "f048bca1-9f9e-4852-b6f6-5b3fe68d52b3",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Rome",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 26,
+      "insurance": 0,
+      "total": 51,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-07T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 41.9028,
+      "lng": 12.4964,
+      "city": "Rome"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "762d9458-bf78-46f7-92b0-bc7665246e53",
+    "trackingId": "CWTESTDEST13",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Almacén Madrid",
+      "email": "test.sender.13@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "13 Origin Street",
+        "city": "Madrid",
+        "state": "",
+        "zipCode": "28013",
+        "country": "ES",
+        "lat": 40.4168,
+        "lng": -3.7038
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 13",
+      "email": "test.recipient.13@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "112 Test Avenue",
+        "city": "Venice",
+        "state": "",
+        "zipCode": "30100",
+        "country": "IT",
+        "lat": 45.4408,
+        "lng": 12.3155
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 11,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #13 — destination: Venice",
+      "value": 220,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "7637e1c1-ec3e-4495-8cad-cd8a4cc3b0a5",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Madrid",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 27,
+      "insurance": 0,
+      "total": 52,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-08T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 40.4168,
+      "lng": -3.7038,
+      "city": "Madrid"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "0c28445d-0a65-43be-a18b-0947a688d395",
+    "trackingId": "CWTESTDEST14",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Cargo Rotterdam",
+      "email": "test.sender.14@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "14 Origin Street",
+        "city": "Rotterdam",
+        "state": "",
+        "zipCode": "3011",
+        "country": "NL",
+        "lat": 51.9244,
+        "lng": 4.4777
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 14",
+      "email": "test.recipient.14@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "113 Test Avenue",
+        "city": "Turin",
+        "state": "",
+        "zipCode": "10100",
+        "country": "IT",
+        "lat": 45.0703,
+        "lng": 7.6869
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 11.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #14 — destination: Turin",
+      "value": 230,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "2036ca13-45cc-451b-bcae-f25327ac52d4",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Rotterdam",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 28,
+      "insurance": 0,
+      "total": 53,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-09T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 51.9244,
+      "lng": 4.4777,
+      "city": "Rotterdam"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "e5ccf5fa-5dae-4ace-ba43-b4c1a0e39441",
+    "trackingId": "CWTESTDEST15",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Hub Frankfurt",
+      "email": "test.sender.15@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "15 Origin Street",
+        "city": "Frankfurt",
+        "state": "",
+        "zipCode": "60311",
+        "country": "DE",
+        "lat": 50.1109,
+        "lng": 8.6821
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 15",
+      "email": "test.recipient.15@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "114 Test Avenue",
+        "city": "Madrid",
+        "state": "",
+        "zipCode": "28001",
+        "country": "ES",
+        "lat": 40.4168,
+        "lng": -3.7038
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 12,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #15 — destination: Madrid",
+      "value": 240,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "c35af704-0752-4ed1-955c-04052183b925",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Frankfurt",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 29,
+      "insurance": 0,
+      "total": 54,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-10T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 50.1109,
+      "lng": 8.6821,
+      "city": "Frankfurt"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "389772f8-c68d-4098-b2e7-7f4c4a4fd3db",
+    "trackingId": "CWTESTDEST16",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Terminal CDG",
+      "email": "test.sender.16@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "16 Origin Street",
+        "city": "Roissy-en-France",
+        "state": "",
+        "zipCode": "95700",
+        "country": "FR",
+        "lat": 49.0097,
+        "lng": 2.5479
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 16",
+      "email": "test.recipient.16@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "115 Test Avenue",
+        "city": "Barcelona",
+        "state": "",
+        "zipCode": "08001",
+        "country": "ES",
+        "lat": 41.3851,
+        "lng": 2.1734
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 12.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #16 — destination: Barcelona",
+      "value": 250,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "556b97d3-d974-4c95-9c0a-30a49de44b32",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Roissy-en-France",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 30,
+      "insurance": 0,
+      "total": 55,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-11T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 49.0097,
+      "lng": 2.5479,
+      "city": "Roissy-en-France"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "ec238e23-4d2b-4b3c-94d7-9c771852ab70",
+    "trackingId": "CWTESTDEST17",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Hub Test Atlanta",
+      "email": "test.sender.17@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "17 Origin Street",
+        "city": "Atlanta",
+        "state": "Georgia",
+        "zipCode": "30301",
+        "country": "US",
+        "lat": 33.749,
+        "lng": -84.388
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 17",
+      "email": "test.recipient.17@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "116 Test Avenue",
+        "city": "Valencia",
+        "state": "",
+        "zipCode": "46001",
+        "country": "ES",
+        "lat": 39.4699,
+        "lng": -0.3763
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 13,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #17 — destination: Valencia ES",
+      "value": 260,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "495d3591-3dc1-4e5f-afa8-2572ba022017",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Atlanta",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 31,
+      "insurance": 0,
+      "total": 56,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-12T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 33.749,
+      "lng": -84.388,
+      "city": "Atlanta"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "bc853ac8-41d1-4819-9fd1-2ce6a4b1e3fa",
+    "trackingId": "CWTESTDEST18",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Hub Test Boston",
+      "email": "test.sender.18@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "18 Origin Street",
+        "city": "Boston",
+        "state": "Massachusetts",
+        "zipCode": "02101",
+        "country": "US",
+        "lat": 42.3601,
+        "lng": -71.0589
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 18",
+      "email": "test.recipient.18@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "117 Test Avenue",
+        "city": "Bilbao",
+        "state": "",
+        "zipCode": "48001",
+        "country": "ES",
+        "lat": 43.263,
+        "lng": -2.935
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 13.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #18 — destination: Bilbao",
+      "value": 270,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "97b24777-99f2-4c7c-9983-9130e727b47b",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Boston",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 32,
+      "insurance": 0,
+      "total": 57,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-13T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 42.3601,
+      "lng": -71.0589,
+      "city": "Boston"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "9f4f18a2-23cb-44b2-b522-897d4af6bafb",
+    "trackingId": "CWTESTDEST19",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:02:10.064Z",
+    "sender": {
+      "name": "Entrepôt Lyon",
+      "email": "test.sender.19@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "19 Origin Street",
+        "city": "Lyon",
+        "state": "",
+        "zipCode": "69002",
+        "country": "FR",
+        "lat": 45.764,
+        "lng": 4.8357
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 19",
+      "email": "test.recipient.19@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "118 Test Avenue",
+        "city": "Seville",
+        "state": "",
+        "zipCode": "41001",
+        "country": "ES",
+        "lat": 37.3891,
+        "lng": -5.9845
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 14,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #19 — destination: Seville",
+      "value": 280,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "8046d289-9f07-4fcc-ac1f-34b3109bf212",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Lyon",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 33,
+      "insurance": 0,
+      "total": 58,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-14T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 45.764,
+      "lng": 4.8357,
+      "city": "Lyon"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": null
+    }
+  },
+  {
+    "id": "281ca303-f181-452e-9264-00ad920e41f1",
+    "trackingId": "CWTESTDEST20",
+    "status": "pending",
+    "createdAt": "2026-03-22T03:02:10.064Z",
+    "updatedAt": "2026-03-22T03:06:41.645Z",
+    "sender": {
+      "name": "Deposito Roma",
+      "email": "test.sender.20@cargowatch.test",
+      "phone": "+10000000000",
+      "address": {
+        "street": "20 Origin Street",
+        "city": "Rome",
+        "state": "",
+        "zipCode": "00118",
+        "country": "IT",
+        "lat": 41.9028,
+        "lng": 12.4964
+      }
+    },
+    "recipient": {
+      "name": "Destinataire Test 20",
+      "email": "test.recipient.20@cargowatch.test",
+      "phone": "+19999999999",
+      "address": {
+        "street": "119 Test Avenue",
+        "city": "Palma",
+        "state": "",
+        "zipCode": "07001",
+        "country": "ES",
+        "lat": 39.5696,
+        "lng": 2.6502
+      }
+    },
+    "package": {
+      "type": "small-box",
+      "weight": 14.5,
+      "dimensions": {
+        "length": 40,
+        "width": 30,
+        "height": 25
+      },
+      "description": "Jeu de test #20 — destination: Palma",
+      "value": 290,
+      "currency": "EUR",
+      "vehicle": {}
+    },
+    "service": {
+      "type": "standard",
+      "priority": "normal",
+      "insurance": false
+    },
+    "events": [
+      {
+        "id": "e50c403d-9c4f-4e86-9819-d56df9dfcf36",
+        "status": "pending",
+        "title": "Shipment Created",
+        "description": "Your shipment has been created and is awaiting pickup",
+        "location": "Rome",
+        "timestamp": "2026-03-22T03:02:10.064Z",
+        "completed": true,
+        "current": false
+      }
+    ],
+    "cost": {
+      "base": 25,
+      "shipping": 34,
+      "insurance": 0,
+      "total": 59,
+      "currency": "EUR"
+    },
+    "estimatedDelivery": "2026-04-15T03:02:10.064Z",
+    "currentLocation": {
+      "lat": 41.900599816704165,
+      "lng": 12.487115135964583,
+      "city": "Dpo, AE"
+    },
+    "autoProgress": {
+      "enabled": true,
+      "paused": false,
+      "pausedAt": null,
+      "pauseReason": null,
+      "pausedDuration": 0,
+      "startedAt": null,
+      "lastUpdate": "2026-03-22T03:06:41.645Z"
+    }
+  }
+]

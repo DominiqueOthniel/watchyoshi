@@ -1,0 +1,153 @@
+[
+  {
+    "id": "5a6b6a83-dfd3-4b2b-a8ce-042214dc347c",
+    "clientName": "doro",
+    "clientEmail": "john@gmail.com",
+    "subject": "NO",
+    "trackingId": null,
+    "status": "active",
+    "createdAt": "2025-11-02T17:18:55.787Z",
+    "updatedAt": "2026-03-17T06:22:09.777Z",
+    "messages": [
+      {
+        "id": "b0ab2d34-3beb-41be-aae5-faf6c6aaa4da",
+        "text": "yeah",
+        "image": null,
+        "senderType": "client",
+        "senderName": "doro",
+        "timestamp": "2025-11-02T17:18:59.599Z",
+        "read": true
+      },
+      {
+        "id": "679d40e4-693a-4ce8-bb1c-11ca80391a24",
+        "text": "yes",
+        "image": null,
+        "senderType": "admin",
+        "senderName": "admin",
+        "timestamp": "2025-11-02T19:16:01.909Z",
+        "read": false
+      },
+      {
+        "id": "e5245931-3c99-4555-b4ea-8dcebce0890b",
+        "text": "hey",
+        "image": null,
+        "senderType": "client",
+        "senderName": "johna",
+        "timestamp": "2026-03-17T05:56:34.973Z",
+        "read": true
+      }
+    ],
+    "assignedTo": "46432134-7ab8-45ce-a2cf-dc0dc2df43cc"
+  },
+  {
+    "id": "dfd0fcd2-b0d1-4d99-a584-29058e2e1e3b",
+    "clientName": "doro",
+    "clientEmail": "merciel2006@icloud.com",
+    "subject": "General Inquiry",
+    "trackingId": null,
+    "status": "closed",
+    "createdAt": "2025-11-03T15:07:31.694Z",
+    "updatedAt": "2026-03-17T06:22:03.410Z",
+    "messages": [
+      {
+        "id": "351bf476-4583-481a-b53b-602608ed5af3",
+        "text": "yo",
+        "image": null,
+        "senderType": "client",
+        "senderName": "Dau",
+        "timestamp": "2025-11-10T15:04:18.667Z",
+        "read": true
+      },
+      {
+        "id": "783c898c-dacb-48c9-97a8-e313821b65f6",
+        "text": "ok",
+        "image": null,
+        "senderType": "admin",
+        "senderName": "admin@cargowatch.com",
+        "timestamp": "2026-03-17T06:22:03.410Z",
+        "read": false
+      }
+    ],
+    "assignedTo": null
+  },
+  {
+    "id": "e0d93425-e9e7-46d5-860f-9826ae23b737",
+    "clientName": "GOJO",
+    "clientEmail": "TODOROKI",
+    "subject": "Pls why is my product stuck on the way?",
+    "trackingId": null,
+    "status": "closed",
+    "createdAt": "2025-11-03T20:38:29.743Z",
+    "updatedAt": "2026-03-17T06:22:06.770Z",
+    "messages": [
+      {
+        "id": "df16ce39-8c34-402c-92a1-e28bbbde52e4",
+        "text": "I am confused",
+        "image": null,
+        "senderType": "client",
+        "senderName": "GOJO",
+        "timestamp": "2025-11-03T20:38:39.421Z",
+        "read": true
+      },
+      {
+        "id": "7743a102-51c9-450a-9529-e22fabbd4bf8",
+        "text": "ok",
+        "image": null,
+        "senderType": "admin",
+        "senderName": "admin@cargowatch.com",
+        "timestamp": "2026-03-17T05:40:06.854Z",
+        "read": false
+      }
+    ],
+    "assignedTo": null
+  },
+  {
+    "id": "0172e980-3ee3-4057-9144-b796d7d40191",
+    "clientName": "crazy",
+    "clientEmail": "crazy@gmail.com",
+    "subject": "oi",
+    "trackingId": null,
+    "status": "closed",
+    "createdAt": "2026-03-17T06:06:53.210Z",
+    "updatedAt": "2026-03-17T06:22:08.251Z",
+    "messages": [
+      {
+        "id": "cd4817c6-c07c-49d0-85d0-372d9716a903",
+        "text": "please hello",
+        "image": null,
+        "senderType": "client",
+        "senderName": "crazy",
+        "timestamp": "2026-03-17T06:07:03.217Z",
+        "read": true
+      },
+      {
+        "id": "ea88fede-fe32-4042-8702-0941dd540e55",
+        "text": "yes",
+        "image": null,
+        "senderType": "admin",
+        "senderName": "admin@cargowatch.com",
+        "timestamp": "2026-03-17T06:12:24.801Z",
+        "read": false
+      },
+      {
+        "id": "dd223013-888f-417a-891a-335fe9c467dd",
+        "text": "how are you",
+        "image": null,
+        "senderType": "client",
+        "senderName": "crazy",
+        "timestamp": "2026-03-17T06:12:57.821Z",
+        "read": true
+      },
+      {
+        "id": "83d37425-f6c5-4e31-a7d8-d641590623c5",
+        "text": "good",
+        "image": null,
+        "senderType": "admin",
+        "senderName": "admin@cargowatch.com",
+        "timestamp": "2026-03-17T06:13:49.334Z",
+        "read": false
+      }
+    ],
+    "assignedTo": "46432134-7ab8-45ce-a2cf-dc0dc2df43cc"
+  }
+]

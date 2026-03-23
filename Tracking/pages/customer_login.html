@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Sign in - CargoWatch</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body class="bg-background min-h-screen">
+    <div class="min-h-screen flex items-center justify-center bg-dark-950 px-4 py-8 sm:py-12">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(14,165,233,0.12),transparent)]"></div>
+        <div class="w-full max-w-md relative">
+            <div class="text-center mb-6 sm:mb-8">
+                <div class="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+                    <img src="/delivery-truck-logo.png" alt="CargoWatch" class="w-10 h-10 sm:w-12 sm:h-12 object-contain brightness-0 invert opacity-95">
+                    <span class="text-2xl sm:text-3xl font-bold text-white tracking-tight">CargoWatch</span>
+                </div>
+                <h1 class="text-xl sm:text-2xl font-extrabold text-white">Sign in</h1>
+                <p class="text-sm sm:text-base text-dark-400 mt-1">Use your account to track shipments and contact support</p>
+            </div>
+
+            <div class="bg-dark-800/80 backdrop-blur-md border border-dark-600/50 rounded-2xl shadow-2xl p-6 sm:p-8">
+                <form id="login-form" class="space-y-6">
+                    <div id="error-message" class="hidden bg-error-50 border border-error text-error px-4 py-3 rounded-xl text-sm"></div>
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-dark-200 mb-2">Email or username</label>
+                        <input type="text" id="username" name="username" required class="w-full px-4 py-3 rounded-xl bg-dark-900/60 border border-dark-600 text-white placeholder-dark-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="you@example.com" autocomplete="username">
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-dark-200 mb-2">Password</label>
+                        <input type="password" id="password" name="password" required class="w-full px-4 py-3 rounded-xl bg-dark-900/60 border border-dark-600 text-white placeholder-dark-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="••••••••" autocomplete="current-password">
+                    </div>
+                    <button type="submit" id="login-button" class="w-full py-3.5 rounded-xl font-semibold bg-primary text-white shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-all duration-300">Sign in</button>
+                </form>
+                <p class="mt-6 text-center text-sm text-dark-400">
+                    No account? <a href="/pages/customer_signup.html" class="text-primary hover:underline font-medium">Create one</a>
+                </p>
+            </div>
+            <p class="text-center mt-4 sm:mt-6">
+                <a href="/pages/homepage.html" class="text-dark-400 hover:text-white transition-colors text-sm">← Back to Home</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const loginButton = document.getElementById('login-button');
+
+            errorDiv.classList.add('hidden');
+            loginButton.disabled = true;
+            loginButton.textContent = 'Signing in...';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Login failed');
+
+                if (data.user.role === 'admin') {
+                    window.location.href = '/pages/admin_dashboard.html';
+                } else {
+                    const returnTo = new URLSearchParams(window.location.search).get('return') || '/pages/support_hub.html';
+                    window.location.href = returnTo;
+                }
+            } catch (error) {
+                errorDiv.textContent = error.message || 'Invalid email or password. Try again.';
+                errorDiv.classList.remove('hidden');
+                loginButton.disabled = false;
+                loginButton.textContent = 'Sign in';
+            }
+        });
+    </script>
+</body>
+</html>
