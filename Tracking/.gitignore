@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
-package-lock.json
+# Keep lockfiles versioned for CI/CD builders (Koyeb, etc.)
+# package-lock.json
 
 # Data files
 # Note: data/*.json are now tracked for persistence on Render
