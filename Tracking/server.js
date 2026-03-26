@@ -35,13 +35,6 @@ if (USE_SUPABASE) {
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: "*", // Allow all origins for now
-        methods: ['GET', 'POST'],
-        credentials: true
-    }
-});
 
 const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
@@ -149,20 +142,64 @@ const upload = multer({
 });
 
 // Middleware
+const defaultAllowedOrigins = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://watchyoshi.netlify.app',
+    'https://watchyourcargo.com',
+    'https://www.watchyourcargo.com'
+];
+
+const envAllowedOrigins = (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...envAllowedOrigins])];
+
+const isNetlifyPreview = (origin) => /^https:\/\/[a-z0-9-]+--watchyoshi\.netlify\.app$/i.test(origin);
+const isAllowedOrigin = (origin) => !origin || allowedOrigins.includes(origin) || isNetlifyPreview(origin);
+
+const io = new Server(server, {
+    cors: {
+        origin: (origin, callback) => {
+            if (isAllowedOrigin(origin)) {
+                return callback(null, true);
+            }
+            return callback(new Error(`Socket.IO CORS blocked for origin: ${origin}`));
+        },
+        methods: ['GET', 'POST'],
+        credentials: true
+    }
+});
+
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: (origin, callback) => {
+        // Allow non-browser or same-origin requests with no Origin header
+        if (isAllowedOrigin(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Configuration des sessions
+const isProduction = process.env.NODE_ENV === 'production';
+if (isProduction) {
+    // Needed behind reverse proxies (Koyeb/Render/etc.) for secure cookies
+    app.set('trust proxy', 1);
+}
+
 app.use(session({
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000
     }

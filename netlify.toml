@@ -5,3 +5,24 @@
   # Aucun build nécessaire : main.css est déjà précompilé.
   command = ""
 
+[[redirects]]
+  from = "/api/*"
+  # IMPORTANT: remplace le domaine backend si nécessaire
+  to = "https://grumpy-lynette-trackin-0b178a1f.koyeb.app/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/socket.io/*"
+  # Permet au frontend Netlify de charger socket.io depuis le backend
+  to = "https://grumpy-lynette-trackin-0b178a1f.koyeb.app/socket.io/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/receipts/*"
+  # Accès aux reçus uploadés côté backend
+  to = "https://grumpy-lynette-trackin-0b178a1f.koyeb.app/receipts/:splat"
+  status = 200
+  force = true
+
