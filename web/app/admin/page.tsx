@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Shipment, ChatConversation } from "@/lib/types";
@@ -121,9 +122,14 @@ export default function AdminDashboard() {
             </h1>
             <p className="text-sm text-text-secondary">Shipments, receipts, and live support</p>
           </div>
-          <button onClick={logout} className="btn-secondary shrink-0">
-            Sign out
-          </button>
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <Link href="/create" className="btn-primary">
+              Create Shipment
+            </Link>
+            <button onClick={logout} className="btn-secondary">
+              Sign out
+            </button>
+          </div>
         </div>
       </div>
 
