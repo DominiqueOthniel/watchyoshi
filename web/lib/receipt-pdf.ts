@@ -1,4 +1,4 @@
-import PDFDocument from "pdfkit";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import type { Shipment } from "./types";
 
 function currencySymbol(code?: string) {
@@ -13,127 +13,190 @@ function currencySymbol(code?: string) {
   return map[c] || c;
 }
 
+function line(text?: string | number | null) {
+  if (text == null || text === "") return "N/A";
+  return String(text);
+}
+
 export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ margin: 50, size: "LETTER" });
-    const chunks: Buffer[] = [];
-    doc.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
-    doc.on("end", () => resolve(Buffer.concat(chunks)));
-    doc.on("error", reject);
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([612, 792]); // LETTER
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    const primary = "#2563EB";
-    const currency = currencySymbol(
-      shipment.cost?.currency || shipment.package?.currency || "USD"
-    );
+  const primary = rgb(0.145, 0.388, 0.922); // #2563EB
+  const black = rgb(0.06, 0.09, 0.16);
+  const muted = rgb(0.39, 0.45, 0.55);
+  const lightBlue = rgb(0.94, 0.96, 1);
 
-    // Header
-    doc.rect(0, 0, doc.page.width, 100).fill(primary);
-    doc.fillColor("#ffffff").fontSize(28).font("Helvetica-Bold").text("CargoWatch", 50, 35);
-    doc.fontSize(12).font("Helvetica").text("SHIPMENT RECEIPT", doc.page.width - 220, 45, {
-      width: 170,
-      align: "right",
-    });
+  const currency = currencySymbol(
+    shipment.cost?.currency || shipment.package?.currency || "USD"
+  );
 
-    doc.fillColor("#000000");
-    let y = 130;
-
-    // Tracking box
-    doc.roundedRect(50, y, doc.page.width - 100, 55, 8).fillAndStroke("#EFF6FF", primary);
-    doc.fillColor(primary).fontSize(11).font("Helvetica").text("Tracking Number", 70, y + 10);
-    doc
-      .fillColor("#0f172a")
-      .fontSize(20)
-      .font("Helvetica-Bold")
-      .text(shipment.trackingId, 70, y + 28);
-    y += 80;
-
-    doc.fillColor(primary).fontSize(14).font("Helvetica-Bold").text("Shipment Information", 50, y);
-    y += 24;
-    doc
-      .fillColor("#0f172a")
-      .fontSize(11)
-      .font("Helvetica")
-      .text(`Status: ${(shipment.status || "pending").replaceAll("_", " ").toUpperCase()}`, 50, y);
-    y += 18;
-    doc.text(`Created: ${shipment.createdAt ? new Date(shipment.createdAt).toLocaleString() : "N/A"}`, 50, y);
-    y += 18;
-    doc.text(
-      `Estimated delivery: ${
-        shipment.estimatedDelivery ? new Date(shipment.estimatedDelivery).toLocaleString() : "N/A"
-      }`,
-      50,
-      y
-    );
-    y += 30;
-
-    // Sender / Recipient
-    const colW = (doc.page.width - 120) / 2;
-    doc.fillColor(primary).fontSize(13).font("Helvetica-Bold").text("Sender", 50, y);
-    doc.text("Recipient", 50 + colW + 20, y);
-    y += 18;
-    doc.fillColor("#0f172a").fontSize(10).font("Helvetica");
-    const senderBlock = [
-      shipment.sender?.name || "N/A",
-      shipment.sender?.email || "",
-      shipment.sender?.phone || "",
-      [shipment.sender?.address?.street, shipment.sender?.address?.city, shipment.sender?.address?.country]
-        .filter(Boolean)
-        .join(", "),
-    ]
-      .filter(Boolean)
-      .join("\n");
-    const recipientBlock = [
-      shipment.recipient?.name || "N/A",
-      shipment.recipient?.email || "",
-      shipment.recipient?.phone || "",
-      [
-        shipment.recipient?.address?.street,
-        shipment.recipient?.address?.city,
-        shipment.recipient?.address?.country,
-      ]
-        .filter(Boolean)
-        .join(", "),
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    doc.text(senderBlock, 50, y, { width: colW });
-    doc.text(recipientBlock, 50 + colW + 20, y, { width: colW });
-    y += 90;
-
-    doc.fillColor(primary).fontSize(13).font("Helvetica-Bold").text("Package", 50, y);
-    y += 18;
-    doc.fillColor("#0f172a").fontSize(10).font("Helvetica");
-    doc.text(`Type: ${shipment.package?.type || "N/A"}`, 50, y);
-    y += 14;
-    doc.text(`Weight: ${shipment.package?.weight ?? "N/A"} kg`, 50, y);
-    y += 14;
-    doc.text(`Description: ${shipment.package?.description || "N/A"}`, 50, y, {
-      width: doc.page.width - 100,
-    });
-    y += 30;
-
-    doc.fillColor(primary).fontSize(13).font("Helvetica-Bold").text("Costs", 50, y);
-    y += 18;
-    doc.fillColor("#0f172a").fontSize(10).font("Helvetica");
-    doc.text(`Base: ${currency}${shipment.cost?.base ?? 0}`, 50, y);
-    y += 14;
-    doc.text(`Shipping: ${currency}${shipment.cost?.shipping ?? 0}`, 50, y);
-    y += 14;
-    doc.text(`Insurance: ${currency}${shipment.cost?.insurance ?? 0}`, 50, y);
-    y += 14;
-    doc.font("Helvetica-Bold").text(`Total: ${currency}${shipment.cost?.total ?? 0}`, 50, y);
-
-    y += 40;
-    doc
-      .font("Helvetica")
-      .fontSize(9)
-      .fillColor("#64748b")
-      .text("This is an official receipt generated by CargoWatch.", 50, y, {
-        width: doc.page.width - 100,
-        align: "center",
-      });
-
-    doc.end();
+  // Header bar
+  page.drawRectangle({ x: 0, y: 692, width: 612, height: 100, color: primary });
+  page.drawText("CargoWatch", {
+    x: 50,
+    y: 745,
+    size: 26,
+    font: fontBold,
+    color: rgb(1, 1, 1),
   });
+  page.drawText("SHIPMENT RECEIPT", {
+    x: 380,
+    y: 748,
+    size: 12,
+    font,
+    color: rgb(1, 1, 1),
+  });
+
+  let y = 650;
+
+  // Tracking box
+  page.drawRectangle({
+    x: 50,
+    y: y - 20,
+    width: 512,
+    height: 50,
+    color: lightBlue,
+    borderColor: primary,
+    borderWidth: 1.5,
+  });
+  page.drawText("Tracking Number", { x: 65, y: y + 10, size: 10, font, color: primary });
+  page.drawText(shipment.trackingId, {
+    x: 65,
+    y: y - 8,
+    size: 18,
+    font: fontBold,
+    color: black,
+  });
+
+  y -= 60;
+  page.drawText("Shipment Information", { x: 50, y, size: 13, font: fontBold, color: primary });
+  y -= 20;
+  page.drawText(`Status: ${line(shipment.status).replaceAll("_", " ").toUpperCase()}`, {
+    x: 50,
+    y,
+    size: 10,
+    font,
+    color: black,
+  });
+  y -= 16;
+  page.drawText(
+    `Created: ${shipment.createdAt ? new Date(shipment.createdAt).toLocaleString() : "N/A"}`,
+    { x: 50, y, size: 10, font, color: black }
+  );
+  y -= 16;
+  page.drawText(
+    `Estimated delivery: ${
+      shipment.estimatedDelivery
+        ? new Date(shipment.estimatedDelivery).toLocaleString()
+        : "N/A"
+    }`,
+    { x: 50, y, size: 10, font, color: black }
+  );
+
+  y -= 30;
+  page.drawText("Sender", { x: 50, y, size: 12, font: fontBold, color: primary });
+  page.drawText("Recipient", { x: 320, y, size: 12, font: fontBold, color: primary });
+  y -= 18;
+
+  const senderLines = [
+    line(shipment.sender?.name),
+    line(shipment.sender?.email),
+    line(shipment.sender?.phone),
+    [shipment.sender?.address?.street, shipment.sender?.address?.city, shipment.sender?.address?.country]
+      .filter(Boolean)
+      .join(", ") || "N/A",
+  ];
+  const recipientLines = [
+    line(shipment.recipient?.name),
+    line(shipment.recipient?.email),
+    line(shipment.recipient?.phone),
+    [
+      shipment.recipient?.address?.street,
+      shipment.recipient?.address?.city,
+      shipment.recipient?.address?.country,
+    ]
+      .filter(Boolean)
+      .join(", ") || "N/A",
+  ];
+
+  for (let i = 0; i < 4; i++) {
+    page.drawText(senderLines[i].slice(0, 40), { x: 50, y: y - i * 14, size: 9, font, color: black });
+    page.drawText(recipientLines[i].slice(0, 40), {
+      x: 320,
+      y: y - i * 14,
+      size: 9,
+      font,
+      color: black,
+    });
+  }
+
+  y -= 80;
+  page.drawText("Package", { x: 50, y, size: 12, font: fontBold, color: primary });
+  y -= 18;
+  page.drawText(`Type: ${line(shipment.package?.type)}`, { x: 50, y, size: 10, font, color: black });
+  y -= 14;
+  page.drawText(`Weight: ${line(shipment.package?.weight)} kg`, {
+    x: 50,
+    y,
+    size: 10,
+    font,
+    color: black,
+  });
+  y -= 14;
+  page.drawText(`Description: ${line(shipment.package?.description).slice(0, 80)}`, {
+    x: 50,
+    y,
+    size: 10,
+    font,
+    color: black,
+  });
+
+  y -= 28;
+  page.drawText("Costs", { x: 50, y, size: 12, font: fontBold, color: primary });
+  y -= 18;
+  page.drawText(`Base: ${currency}${shipment.cost?.base ?? 0}`, {
+    x: 50,
+    y,
+    size: 10,
+    font,
+    color: black,
+  });
+  y -= 14;
+  page.drawText(`Shipping: ${currency}${shipment.cost?.shipping ?? 0}`, {
+    x: 50,
+    y,
+    size: 10,
+    font,
+    color: black,
+  });
+  y -= 14;
+  page.drawText(`Insurance: ${currency}${shipment.cost?.insurance ?? 0}`, {
+    x: 50,
+    y,
+    size: 10,
+    font,
+    color: black,
+  });
+  y -= 16;
+  page.drawText(`Total: ${currency}${shipment.cost?.total ?? 0}`, {
+    x: 50,
+    y,
+    size: 11,
+    font: fontBold,
+    color: black,
+  });
+
+  page.drawText("This is an official receipt generated by CargoWatch.", {
+    x: 50,
+    y: 50,
+    size: 9,
+    font,
+    color: muted,
+  });
+
+  const bytes = await pdfDoc.save();
+  return Buffer.from(bytes);
 }
