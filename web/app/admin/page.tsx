@@ -6,25 +6,43 @@ import { createClient } from "@/lib/supabase/client";
 import type { Shipment, ChatConversation } from "@/lib/types";
 import ChatPanel from "@/components/ChatPanel";
 
+type ReceiptRow = {
+  trackingId: string;
+  receipt: string | null;
+  receiptUploadedAt?: string | null;
+  status: string;
+  sender?: string;
+  recipient?: string;
+};
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [chats, setChats] = useState<ChatConversation[]>([]);
+  const [receipts, setReceipts] = useState<ReceiptRow[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [tab, setTab] = useState<"shipments" | "chat">("shipments");
+  const [tab, setTab] = useState<"shipments" | "chat" | "receipts">("shipments");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
     try {
-      const [sRes, cRes] = await Promise.all([fetch("/api/shipments"), fetch("/api/chat")]);
+      const [sRes, cRes, rRes] = await Promise.all([
+        fetch("/api/shipments"),
+        fetch("/api/chat"),
+        fetch("/api/receipts"),
+      ]);
       const sData = await sRes.json();
       const cData = await cRes.json();
+      const rData = await rRes.json();
       if (!sRes.ok) throw new Error(sData.error || "Failed to load shipments");
       if (!cRes.ok) throw new Error(cData.error || "Failed to load chats");
+      if (!rRes.ok) throw new Error(rData.error || "Failed to load receipts");
       setShipments(sData.shipments || []);
       setChats(cData.chats || []);
+      setReceipts(rData.receipts || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
@@ -71,50 +89,77 @@ export default function AdminDashboard() {
     if (res.ok) load();
   }
 
+  async function generateReceipt(trackingId: string) {
+    setBusyId(trackingId);
+    setError(null);
+    try {
+      const res = await fetch(`/api/shipments/${trackingId}/receipt/generate`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Receipt generation failed");
+      await load();
+      if (data.receipt && !String(data.receipt).startsWith("data:")) {
+        window.open(data.receipt, "_blank");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Receipt error");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   const activeChat = chats.find((c) => c.id === activeChatId) || null;
 
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b border-border bg-white">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-6 sm:px-6 lg:px-8">
-          <div>
-            <h1 className="text-3xl font-bold text-text-primary">Admin Dashboard</h1>
-            <p className="text-sm text-text-secondary">Shipments, statuses, and live support</p>
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-5 sm:px-6 lg:px-8">
+          <div className="min-w-0">
+            <h1 className="truncate text-2xl font-bold text-text-primary sm:text-3xl">
+              Admin Dashboard
+            </h1>
+            <p className="text-sm text-text-secondary">Shipments, receipts, and live support</p>
           </div>
-          <button onClick={logout} className="btn-secondary">
+          <button onClick={logout} className="btn-secondary shrink-0">
             Sign out
           </button>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-4">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {[
             ["Total", stats.total, "text-primary"],
             ["In Transit", stats.inTransit, "text-accent"],
             ["Delivered", stats.delivered, "text-success"],
             ["Pending", stats.pending, "text-text-secondary"],
           ].map(([label, value, color]) => (
-            <div key={label as string} className="rounded-2xl bg-white p-5 shadow-soft">
-              <p className="text-xs font-medium uppercase tracking-wide text-text-muted">{label}</p>
-              <p className={`mt-1 text-3xl font-bold ${color}`}>{value as number}</p>
+            <div key={label as string} className="rounded-2xl bg-white p-4 shadow-soft sm:p-5">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-text-muted sm:text-xs">
+                {label}
+              </p>
+              <p className={`mt-1 text-2xl font-bold sm:text-3xl ${color}`}>{value as number}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-8 flex gap-2">
-          <button
-            onClick={() => setTab("shipments")}
-            className={tab === "shipments" ? "btn-primary" : "btn-secondary"}
-          >
-            Shipments
-          </button>
-          <button
-            onClick={() => setTab("chat")}
-            className={tab === "chat" ? "btn-primary" : "btn-secondary"}
-          >
-            Chat ({chats.filter((c) => c.status !== "closed").length})
-          </button>
+        <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
+          {(
+            [
+              ["shipments", "Shipments"],
+              ["chat", `Chat (${chats.filter((c) => c.status !== "closed").length})`],
+              ["receipts", `Receipts (${receipts.length})`],
+            ] as const
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`shrink-0 ${tab === key ? "btn-primary" : "btn-secondary"}`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         {error && (
@@ -126,7 +171,7 @@ export default function AdminDashboard() {
 
         {tab === "shipments" && !loading && (
           <div className="mt-6 overflow-x-auto rounded-2xl bg-white shadow-large">
-            <table className="min-w-full text-left text-sm">
+            <table className="min-w-[720px] w-full text-left text-sm">
               <thead className="border-b border-border bg-surface text-xs uppercase text-text-muted">
                 <tr>
                   <th className="px-4 py-3">Tracking</th>
@@ -147,11 +192,7 @@ export default function AdminDashboard() {
                       {s.sender.address?.city || "?"} → {s.recipient.address?.city || "?"}
                     </td>
                     <td className="px-4 py-3">
-                      {s.autoProgress?.paused
-                        ? "Paused"
-                        : s.autoProgress?.enabled
-                          ? "On"
-                          : "Off"}
+                      {s.autoProgress?.paused ? "Paused" : s.autoProgress?.enabled ? "On" : "Off"}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">
@@ -176,6 +217,23 @@ export default function AdminDashboard() {
                         <button onClick={() => togglePause(s)} className="btn-secondary px-3 py-1 text-xs">
                           {s.autoProgress?.paused ? "Resume" : "Pause"}
                         </button>
+                        <button
+                          onClick={() => generateReceipt(s.trackingId)}
+                          disabled={busyId === s.trackingId}
+                          className="btn-primary px-3 py-1 text-xs disabled:opacity-60"
+                        >
+                          {busyId === s.trackingId ? "PDF…" : s.receipt ? "Regen PDF" : "PDF Receipt"}
+                        </button>
+                        {s.receipt && !s.receipt.startsWith("data:") && (
+                          <a
+                            href={s.receipt}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="btn-secondary px-3 py-1 text-xs"
+                          >
+                            Open
+                          </a>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -195,7 +253,7 @@ export default function AdminDashboard() {
         {tab === "chat" && !loading && (
           <div className="mt-6 grid gap-4 lg:grid-cols-[280px_1fr]">
             <div className="rounded-2xl bg-white p-3 shadow-large">
-              <ul className="space-y-2">
+              <ul className="max-h-[40vh] space-y-2 overflow-y-auto lg:max-h-none">
                 {chats.map((c) => (
                   <li key={c.id}>
                     <button
@@ -235,6 +293,54 @@ export default function AdminDashboard() {
                 <p className="text-sm text-text-muted">Select a conversation</p>
               )}
             </div>
+          </div>
+        )}
+
+        {tab === "receipts" && !loading && (
+          <div className="mt-6 overflow-x-auto rounded-2xl bg-white shadow-large">
+            <table className="min-w-[640px] w-full text-left text-sm">
+              <thead className="border-b border-border bg-surface text-xs uppercase text-text-muted">
+                <tr>
+                  <th className="px-4 py-3">Tracking</th>
+                  <th className="px-4 py-3">Parties</th>
+                  <th className="px-4 py-3">Generated</th>
+                  <th className="px-4 py-3">File</th>
+                </tr>
+              </thead>
+              <tbody>
+                {receipts.map((r) => (
+                  <tr key={r.trackingId} className="border-b border-border/60">
+                    <td className="px-4 py-3 font-semibold">{r.trackingId}</td>
+                    <td className="px-4 py-3 text-text-secondary">
+                      {r.sender || "?"} → {r.recipient || "?"}
+                    </td>
+                    <td className="px-4 py-3 text-text-muted">
+                      {r.receiptUploadedAt ? new Date(r.receiptUploadedAt).toLocaleString() : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {r.receipt && !r.receipt.startsWith("data:") ? (
+                        <a href={r.receipt} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                          Open PDF
+                        </a>
+                      ) : r.receipt ? (
+                        <a href={r.receipt} download={`${r.trackingId}.pdf`} className="text-primary hover:underline">
+                          Download PDF
+                        </a>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {receipts.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-10 text-center text-text-muted">
+                      No receipts yet — generate one from the Shipments tab
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

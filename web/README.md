@@ -78,6 +78,17 @@ ON CONFLICT (id) DO UPDATE SET role = 'admin';
 | POST | `/api/chat/:chatId/message` | Envoyer un message |
 | GET/POST | `/api/cron/auto-progress` | Progression auto (auth Bearer) |
 
+## Receipts PDF
+
+1. Create a **public** Storage bucket named `receipts` in Supabase (Storage → New bucket).
+2. In Admin → Shipments, click **PDF Receipt** on a shipment.
+3. Files appear in the **Receipts** tab.
+
+## Live chat
+
+A floating chat bubble appears on all public pages (hidden on `/admin`).
+Admin replies from **Admin → Chat**.
+
 ## Cron (progression automatique)
 
 Sur Netlify (ou cron-job.org), planifier **chaque minute** :

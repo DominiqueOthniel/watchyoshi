@@ -202,8 +202,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_messages;
 -- If already added, ignore the error.
 
 -- =====================================================
--- SEED ADMIN (manual steps)
+-- STORAGE (receipts PDF)
 -- =====================================================
+-- In Supabase Dashboard > Storage > New bucket:
+--   Name: receipts
+--   Public: YES
+-- Or run (requires storage admin):
+-- insert into storage.buckets (id, name, public) values ('receipts', 'receipts', true)
+--   on conflict (id) do update set public = true;
 -- 1. Authentication > Users > Add user
 --    email: admin@cargowatch.com
 --    password: (choose a strong password)
