@@ -76,7 +76,7 @@ export default function ChatPanel({
         body: JSON.stringify({ text: text.trim(), senderType, senderName }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Envoi échoué");
+      if (!res.ok) throw new Error(data.error || "Send failed");
       setText("");
       if (data.message) {
         setMessages((prev) =>
@@ -84,7 +84,7 @@ export default function ChatPanel({
         );
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Erreur");
+      alert(err instanceof Error ? err.message : "Error");
     } finally {
       setSending(false);
     }
@@ -96,18 +96,18 @@ export default function ChatPanel({
         <h3 className="font-semibold text-text-primary">Conversation</h3>
         {onClose && (
           <button onClick={onClose} className="text-xs text-primary hover:underline">
-            Fermer le chat
+            Close chat
           </button>
         )}
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto rounded-xl bg-primary-50 p-3">
+      <div className="flex-1 space-y-3 overflow-y-auto rounded-xl bg-surface/60 p-3">
         {messages.map((m) => (
           <div
             key={m.id}
             className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
               m.senderType === senderType
                 ? "ml-auto bg-primary text-white"
-                : "bg-white border border-border text-text-primary"
+                : "border border-border bg-white text-text-primary"
             }`}
           >
             <p className="text-[10px] opacity-70">{m.senderName || m.senderType}</p>
@@ -120,15 +120,11 @@ export default function ChatPanel({
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Votre message…"
-          className="flex-1 rounded-xl border border-emerald-900/15 px-3 py-2 outline-none ring-primary focus:ring-2"
+          placeholder="Type your message…"
+          className="input-field flex-1 px-3 py-2"
         />
-        <button
-          type="submit"
-          disabled={sending}
-          className="rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-        >
-          Envoyer
+        <button type="submit" disabled={sending} className="btn-primary px-4 py-2 text-sm disabled:opacity-60">
+          Send
         </button>
       </form>
     </div>

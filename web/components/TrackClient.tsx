@@ -8,7 +8,7 @@ import type { Shipment } from "@/lib/types";
 const TrackMap = dynamic(() => import("@/components/TrackMap"), {
   ssr: false,
   loading: () => (
-    <div className="card flex h-80 items-center justify-center text-sm text-text-muted">
+    <div className="flex h-80 items-center justify-center rounded-xl bg-surface text-sm text-text-muted">
       Loading map…
     </div>
   ),
@@ -76,58 +76,62 @@ export default function TrackClient() {
       : undefined;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      <h1 className="text-3xl font-bold text-text-primary">Track Shipment</h1>
-      <p className="mt-2 text-text-secondary">Enter your CargoWatch tracking ID.</p>
-
-      <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <input
-          value={trackingId}
-          onChange={(e) => setTrackingId(e.target.value)}
-          placeholder="e.g. CWAB12CD34"
-          className="input-field flex-1 px-4 py-3"
-          required
-        />
-        <button type="submit" disabled={loading} className="btn-primary px-6 py-3 disabled:opacity-60">
-          {loading ? "Searching…" : "Track"}
-        </button>
-      </form>
-
-      {error && (
-        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-error">
-          {error}
+    <div>
+      <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-16">
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+          <h1 className="mb-4 text-4xl font-bold text-text-primary lg:text-5xl">
+            Track Your <span className="text-gradient-primary">Shipment</span>
+          </h1>
+          <p className="mb-8 text-lg text-text-secondary">
+            Enter your tracking ID to see live status, timeline, and map location.
+          </p>
+          <form onSubmit={onSubmit} className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row">
+            <input
+              value={trackingId}
+              onChange={(e) => setTrackingId(e.target.value)}
+              placeholder="Enter tracking ID..."
+              className="input-field flex-1 px-4 py-3 text-lg"
+              required
+            />
+            <button type="submit" disabled={loading} className="btn-primary px-8 py-3 text-lg disabled:opacity-60">
+              {loading ? "Searching…" : "Track"}
+            </button>
+          </form>
+          {error && (
+            <div className="mx-auto mt-4 max-w-xl rounded-lg border border-red-200 bg-error-50 px-4 py-3 text-sm text-error">
+              {error}
+            </div>
+          )}
         </div>
-      )}
+      </section>
 
       {shipment && (
-        <div className="mt-8 space-y-6">
-          <div className="card p-6">
+        <section className="mx-auto max-w-5xl space-y-6 px-4 py-12 sm:px-6">
+          <div className="rounded-2xl bg-white p-6 shadow-large sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="text-sm text-text-muted">Tracking ID</p>
                 <p className="text-2xl font-bold text-text-primary">{shipment.trackingId}</p>
               </div>
-              <span className="rounded-full bg-primary-50 px-3 py-1 text-sm font-medium capitalize text-primary">
-                {shipment.status.replaceAll("_", " ")}
-              </span>
+              <span className="status-success capitalize">{shipment.status.replaceAll("_", " ")}</span>
             </div>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div>
-                <p className="text-xs uppercase tracking-wide text-text-muted">Sender</p>
-                <p className="font-medium text-text-primary">{shipment.sender.name}</p>
+                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-muted">From</p>
+                <p className="font-semibold text-text-primary">{shipment.sender.name}</p>
                 <p className="text-sm text-text-secondary">
-                  {shipment.sender.address?.city}
-                  {shipment.sender.address?.country ? `, ${shipment.sender.address.country}` : ""}
+                  {[shipment.sender.address?.city, shipment.sender.address?.country]
+                    .filter(Boolean)
+                    .join(", ")}
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-wide text-text-muted">Recipient</p>
-                <p className="font-medium text-text-primary">{shipment.recipient.name}</p>
+                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-muted">To</p>
+                <p className="font-semibold text-text-primary">{shipment.recipient.name}</p>
                 <p className="text-sm text-text-secondary">
-                  {shipment.recipient.address?.city}
-                  {shipment.recipient.address?.country
-                    ? `, ${shipment.recipient.address.country}`
-                    : ""}
+                  {[shipment.recipient.address?.city, shipment.recipient.address?.country]
+                    .filter(Boolean)
+                    .join(", ")}
                 </p>
               </div>
             </div>
@@ -139,27 +143,32 @@ export default function TrackClient() {
             )}
           </div>
 
-          <TrackMap origin={origin} destination={destination} current={current} />
+          <div className="overflow-hidden rounded-2xl bg-white p-2 shadow-large">
+            <TrackMap origin={origin} destination={destination} current={current} />
+          </div>
 
-          <div className="card p-6">
-            <h2 className="font-semibold text-text-primary">Timeline</h2>
-            <ul className="mt-4 space-y-3">
+          <div className="rounded-2xl bg-white p-6 shadow-large sm:p-8">
+            <h2 className="mb-4 text-lg font-semibold text-text-primary">Shipment Timeline</h2>
+            <div className="space-y-4">
               {(shipment.events || []).length === 0 && (
-                <li className="text-sm text-text-muted">No events yet.</li>
+                <p className="text-sm text-text-muted">No events yet.</p>
               )}
               {(shipment.events || []).map((ev, i) => (
-                <li key={`${ev.timestamp}-${i}`} className="border-l-2 border-primary pl-3">
-                  <p className="font-medium text-text-primary">{ev.title || ev.status}</p>
-                  {ev.description && <p className="text-sm text-text-secondary">{ev.description}</p>}
-                  <p className="text-xs text-text-muted">
-                    {ev.timestamp ? new Date(ev.timestamp).toLocaleString() : ""}
-                    {ev.location ? ` · ${ev.location}` : ""}
-                  </p>
-                </li>
+                <div key={`${ev.timestamp}-${i}`} className="flex items-start space-x-3">
+                  <div className="mt-1.5 h-3 w-3 shrink-0 rounded-full bg-success" />
+                  <div>
+                    <div className="text-sm font-medium text-text-primary">{ev.title || ev.status}</div>
+                    {ev.description && <div className="text-sm text-text-secondary">{ev.description}</div>}
+                    <div className="text-xs text-text-muted">
+                      {ev.timestamp ? new Date(ev.timestamp).toLocaleString() : ""}
+                      {ev.location ? ` · ${ev.location}` : ""}
+                    </div>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
-        </div>
+        </section>
       )}
     </div>
   );

@@ -29,81 +29,122 @@ export default function SupportPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Impossible de démarrer le chat");
+      if (!res.ok) throw new Error(data.error || "Could not start chat");
       setChat(data.chat);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : "Error");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold text-text-primary">Support</h1>
-      <p className="mt-2 text-text-secondary">
-        Discutez en direct avec l&apos;équipe CargoWatch (Supabase Realtime).
-      </p>
-
-      {!chat ? (
-        <form
-          onSubmit={startChat}
-          className="mt-8 space-y-3 rounded-2xl border card p-6"
-        >
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Votre nom"
-            required
-            className="w-full rounded-xl input-field border px-3 py-2.5 "
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-            className="w-full rounded-xl input-field border px-3 py-2.5 "
-          />
-          <input
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="Sujet"
-            className="w-full rounded-xl input-field border px-3 py-2.5 "
-          />
-          <input
-            value={trackingId}
-            onChange={(e) => setTrackingId(e.target.value)}
-            placeholder="Tracking ID (optionnel)"
-            className="w-full rounded-xl input-field border px-3 py-2.5 "
-          />
-          {error && <p className="text-sm text-error">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary px-5 py-3 disabled:opacity-60"
-          >
-            {loading ? "Ouverture…" : "Démarrer le chat"}
-          </button>
-        </form>
-      ) : (
-        <div className="mt-8 min-h-[480px] rounded-2xl border card p-4">
-          <ChatPanel
-            conversationId={chat.id}
-            initialMessages={chat.messages}
-            senderType="client"
-            senderName={name}
-          />
+    <div>
+      <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-16">
+        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <h1 className="mb-6 text-4xl font-bold text-text-primary lg:text-5xl">
+            How can we <span className="text-gradient-primary">help you</span> today?
+          </h1>
+          <p className="mx-auto mb-8 max-w-3xl text-xl text-text-secondary">
+            Find answers, get support, and discover resources to make your shipping experience
+            seamless.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a href="#contact" className="btn-primary">
+              Contact Support
+            </a>
+            <a href="#faq" className="btn-secondary">
+              Browse FAQ
+            </a>
+          </div>
         </div>
-      )}
+      </section>
 
-      <section className="mt-10 rounded-2xl border card p-6">
-        <h2 className="font-semibold text-text-primary">FAQ rapide</h2>
-        <ul className="mt-3 space-y-2 text-sm text-text-secondary">
-          <li>Le tracking ID commence par <strong>CW</strong>.</li>
-          <li>La position se met à jour automatiquement quand l&apos;envoi est en transit.</li>
-          <li>Pour toute urgence, indiquez votre tracking ID dans le chat.</li>
-        </ul>
+      <section id="faq" className="bg-white py-16">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
+          <h2 className="mb-8 text-center text-3xl font-bold text-text-primary">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4">
+            {[
+              {
+                q: "Where do I find my tracking ID?",
+                a: "Your tracking ID starts with CW and was sent in your confirmation email or shipment receipt.",
+              },
+              {
+                q: "How often is my location updated?",
+                a: "In-transit shipments refresh automatically. You can also reopen the tracking page anytime for the latest position.",
+              },
+              {
+                q: "How do I contact support?",
+                a: "Use the live chat below with your name, email, and optional tracking ID.",
+              },
+            ].map((item) => (
+              <div key={item.q} className="card p-5">
+                <h3 className="font-semibold text-text-primary">{item.q}</h3>
+                <p className="mt-2 text-sm text-text-secondary">{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="bg-surface py-16">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <h2 className="mb-2 text-center text-3xl font-bold text-text-primary">Live Support Chat</h2>
+          <p className="mb-8 text-center text-text-secondary">
+            Chat in realtime with the CargoWatch team.
+          </p>
+
+          {!chat ? (
+            <form onSubmit={startChat} className="card space-y-4 p-6 sm:p-8">
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                required
+                className="input-field px-4 py-3"
+              />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                required
+                className="input-field px-4 py-3"
+              />
+              <input
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Subject"
+                className="input-field px-4 py-3"
+              />
+              <input
+                value={trackingId}
+                onChange={(e) => setTrackingId(e.target.value)}
+                placeholder="Tracking ID (optional)"
+                className="input-field px-4 py-3"
+              />
+              {error && (
+                <div className="rounded-lg border border-red-200 bg-error-50 px-4 py-3 text-sm text-error">
+                  {error}
+                </div>
+              )}
+              <button type="submit" disabled={loading} className="btn-primary w-full py-3 disabled:opacity-60">
+                {loading ? "Opening…" : "Start Chat"}
+              </button>
+            </form>
+          ) : (
+            <div className="card min-h-[480px] p-4 sm:p-6">
+              <ChatPanel
+                conversationId={chat.id}
+                initialMessages={chat.messages}
+                senderType="client"
+                senderName={name}
+              />
+            </div>
+          )}
+        </div>
       </section>
     </div>
   );

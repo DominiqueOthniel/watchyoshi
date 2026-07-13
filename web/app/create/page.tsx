@@ -83,96 +83,99 @@ export default function CreateShipmentForm() {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Création échouée");
+      if (!res.ok) throw new Error(data.error || "Creation failed");
       setSuccessId(data.shipment.trackingId);
       setTimeout(() => router.push(`/track?id=${data.shipment.trackingId}`), 1200);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : "Error");
     } finally {
       setLoading(false);
     }
   }
 
-  const field =
-    "w-full rounded-xl input-field px-3 py-2.5 ";
-
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold text-text-primary">Créer un envoi</h1>
-      <p className="mt-2 text-text-secondary">Les coordonnées sont géocodées automatiquement via Nominatim.</p>
+    <div>
+      <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-12">
+        <div className="mx-auto max-w-3xl px-4 text-center">
+          <h1 className="text-3xl font-bold text-text-primary lg:text-4xl">
+            Create <span className="text-gradient-primary">Shipment</span>
+          </h1>
+          <p className="mt-3 text-text-secondary">
+            Fill in sender, recipient, and package details. Coordinates are geocoded automatically.
+          </p>
+        </div>
+      </section>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-8">
-        <section className="rounded-2xl border card p-6">
-          <h2 className="mb-4 font-semibold">Expéditeur</h2>
+      <form onSubmit={onSubmit} className="mx-auto max-w-3xl space-y-6 px-4 py-10 sm:px-6">
+        <section className="card p-6">
+          <h2 className="mb-4 text-lg font-semibold text-text-primary">Sender</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            <input name="senderName" placeholder="Nom" className={field} required />
-            <input name="senderEmail" type="email" placeholder="Email" className={field} required />
-            <input name="senderPhone" placeholder="Téléphone" className={field} />
-            <input name="senderStreet" placeholder="Adresse" className={field} />
-            <input name="senderCity" placeholder="Ville" className={field} required />
-            <input name="senderCountry" placeholder="Pays" className={field} required />
+            <input name="senderName" placeholder="Name" className="input-field px-3 py-2.5" required />
+            <input name="senderEmail" type="email" placeholder="Email" className="input-field px-3 py-2.5" required />
+            <input name="senderPhone" placeholder="Phone" className="input-field px-3 py-2.5" />
+            <input name="senderStreet" placeholder="Street" className="input-field px-3 py-2.5" />
+            <input name="senderCity" placeholder="City" className="input-field px-3 py-2.5" required />
+            <input name="senderCountry" placeholder="Country" className="input-field px-3 py-2.5" required />
           </div>
         </section>
 
-        <section className="rounded-2xl border card p-6">
-          <h2 className="mb-4 font-semibold">Destinataire</h2>
+        <section className="card p-6">
+          <h2 className="mb-4 text-lg font-semibold text-text-primary">Recipient</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            <input name="recipientName" placeholder="Nom" className={field} required />
-            <input name="recipientEmail" type="email" placeholder="Email" className={field} required />
-            <input name="recipientPhone" placeholder="Téléphone" className={field} />
-            <input name="recipientStreet" placeholder="Adresse" className={field} />
-            <input name="recipientCity" placeholder="Ville" className={field} required />
-            <input name="recipientCountry" placeholder="Pays" className={field} required />
+            <input name="recipientName" placeholder="Name" className="input-field px-3 py-2.5" required />
+            <input name="recipientEmail" type="email" placeholder="Email" className="input-field px-3 py-2.5" required />
+            <input name="recipientPhone" placeholder="Phone" className="input-field px-3 py-2.5" />
+            <input name="recipientStreet" placeholder="Street" className="input-field px-3 py-2.5" />
+            <input name="recipientCity" placeholder="City" className="input-field px-3 py-2.5" required />
+            <input name="recipientCountry" placeholder="Country" className="input-field px-3 py-2.5" required />
           </div>
         </section>
 
-        <section className="rounded-2xl border card p-6">
-          <h2 className="mb-4 font-semibold">Colis & service</h2>
+        <section className="card p-6">
+          <h2 className="mb-4 text-lg font-semibold text-text-primary">Package & service</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            <select name="packageType" className={field} defaultValue="parcel">
-              <option value="parcel">Colis</option>
+            <select name="packageType" className="input-field px-3 py-2.5" defaultValue="parcel">
+              <option value="parcel">Parcel</option>
               <option value="document">Document</option>
-              <option value="freight">Fret</option>
-              <option value="vehicle">Véhicule</option>
+              <option value="freight">Freight</option>
+              <option value="vehicle">Vehicle</option>
             </select>
-            <input name="packageWeight" type="number" step="0.1" placeholder="Poids (kg)" className={field} />
-            <input name="packageValue" type="number" step="0.01" placeholder="Valeur" className={field} />
-            <select name="currency" className={field} defaultValue="USD">
+            <input name="packageWeight" type="number" step="0.1" placeholder="Weight (kg)" className="input-field px-3 py-2.5" />
+            <input name="packageValue" type="number" step="0.01" placeholder="Value" className="input-field px-3 py-2.5" />
+            <select name="currency" className="input-field px-3 py-2.5" defaultValue="USD">
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
               <option value="XAF">XAF</option>
             </select>
-            <input name="packageDescription" placeholder="Description" className={`${field} sm:col-span-2`} />
-            <select name="serviceType" className={field} defaultValue="standard">
+            <input name="packageDescription" placeholder="Description" className="input-field px-3 py-2.5 sm:col-span-2" />
+            <select name="serviceType" className="input-field px-3 py-2.5" defaultValue="standard">
               <option value="standard">Standard</option>
               <option value="express">Express</option>
               <option value="economy">Economy</option>
             </select>
-            <select name="status" className={field} defaultValue="in_transit">
+            <select name="status" className="input-field px-3 py-2.5" defaultValue="in_transit">
               <option value="pending">Pending</option>
               <option value="picked_up">Picked up</option>
               <option value="in_transit">In transit</option>
             </select>
-            <input name="estimatedDelivery" type="datetime-local" className={field} />
-            <label className="flex items-center gap-2 text-sm">
-              <input name="insurance" type="checkbox" /> Assurance
+            <input name="estimatedDelivery" type="datetime-local" className="input-field px-3 py-2.5" />
+            <label className="flex items-center gap-2 text-sm text-text-secondary">
+              <input name="insurance" type="checkbox" /> Insurance
             </label>
           </div>
         </section>
 
-        {error && <p className="text-sm text-error">{error}</p>}
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-error-50 px-4 py-3 text-sm text-error">{error}</div>
+        )}
         {successId && (
-          <p className="text-sm text-success">
-            Envoi créé : <strong>{successId}</strong> — redirection…
-          </p>
+          <div className="rounded-lg border border-green-200 bg-success-50 px-4 py-3 text-sm text-success">
+            Created: <strong>{successId}</strong> — redirecting…
+          </div>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="btn-primary px-6 py-3 disabled:opacity-60"
-        >
-          {loading ? "Création…" : "Créer l'envoi"}
+        <button type="submit" disabled={loading} className="btn-primary px-8 py-3 text-lg disabled:opacity-60">
+          {loading ? "Creating…" : "Create Shipment"}
         </button>
       </form>
     </div>

@@ -49,13 +49,13 @@ export default function AdminLoginClient() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center bg-gradient-to-br from-primary-50 to-blue-100 px-4 py-12">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mb-4 flex items-center justify-center gap-2">
+          <div className="mb-4 flex items-center justify-center space-x-2">
             <Image
               src="/delivery-truck-logo.png"
-              alt="CargoWatch"
+              alt="CargoWatch Logo"
               width={48}
               height={48}
               className="h-12 w-12 object-contain"
@@ -67,10 +67,10 @@ export default function AdminLoginClient() {
           <p className="mt-2 text-text-secondary">Sign in to access the admin dashboard</p>
         </div>
 
-        <div className="card p-8 shadow-lg">
+        <div className="rounded-2xl bg-white p-8 shadow-large">
           <form onSubmit={onSubmit} className="space-y-6">
             {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-error">
+              <div className="rounded-lg border border-error bg-error-50 px-4 py-3 text-sm text-error">
                 {error}
               </div>
             )}
@@ -87,7 +87,7 @@ export default function AdminLoginClient() {
                 required
                 autoComplete="username"
                 placeholder="Enter your email"
-                className="input-field px-4 py-3"
+                className="input-field w-full px-4 py-3"
               />
             </div>
 
@@ -103,11 +103,11 @@ export default function AdminLoginClient() {
                 required
                 autoComplete="current-password"
                 placeholder="Enter your password"
-                className="input-field px-4 py-3"
+                className="input-field w-full px-4 py-3"
               />
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-lg disabled:opacity-60">
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-lg font-semibold disabled:opacity-60">
               {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
