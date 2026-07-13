@@ -23,6 +23,7 @@ export async function GET(_request: Request, { params }: Params) {
     }
 
     let shipment = transformShipmentFromDB(data);
+    let routeProgress: number | null = null;
 
     // Refresh position on read when auto-progress is active
     if (
@@ -33,6 +34,7 @@ export async function GET(_request: Request, { params }: Params) {
     ) {
       const autoPos = await calculateAutomaticProgression(shipment);
       if (autoPos) {
+        routeProgress = autoPos.progress;
         shipment = {
           ...shipment,
           currentLocation: {
@@ -58,7 +60,7 @@ export async function GET(_request: Request, { params }: Params) {
       }
     }
 
-    return NextResponse.json({ shipment });
+    return NextResponse.json({ shipment, routeProgress });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Failed to fetch shipment" },
@@ -104,6 +106,19 @@ export async function PATCH(request: Request, { params }: Params) {
       updates.events = events;
       if (body.status === "delivered") {
         updates.deliveredAt = new Date().toISOString();
+      }
+      // Start auto-progress clock when leaving pending
+      if (
+        shipment.status === "pending" &&
+        body.status !== "pending" &&
+        body.status !== "exception"
+      ) {
+        updates.autoProgress = {
+          ...shipment.autoProgress,
+          enabled: true,
+          startedAt: shipment.autoProgress?.startedAt || new Date().toISOString(),
+          lastUpdate: new Date().toISOString(),
+        };
       }
     }
 

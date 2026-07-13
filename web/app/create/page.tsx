@@ -73,7 +73,6 @@ export default function CreateShipmentForm() {
           priority: String(fd.get("servicePriority") || "normal"),
           insurance: fd.get("insurance") === "on",
         },
-        status: String(fd.get("status") || "in_transit"),
         estimatedDelivery: String(fd.get("estimatedDelivery") || "") || null,
       };
 
@@ -153,12 +152,11 @@ export default function CreateShipmentForm() {
               <option value="express">Express</option>
               <option value="economy">Economy</option>
             </select>
-            <select name="status" className="input-field px-3 py-2.5" defaultValue="in_transit">
-              <option value="pending">Pending</option>
-              <option value="picked_up">Picked up</option>
-              <option value="in_transit">In transit</option>
-            </select>
             <input name="estimatedDelivery" type="datetime-local" className="input-field px-3 py-2.5" />
+            <p className="sm:col-span-2 text-xs text-text-muted">
+              New shipments always start as <strong>Pending</strong>. Status advances from the admin
+              dashboard or auto-progress.
+            </p>
             <label className="flex items-center gap-2 text-sm text-text-secondary">
               <input name="insurance" type="checkbox" /> Insurance
             </label>

@@ -28,9 +28,10 @@ export async function POST(request: Request) {
     const now = new Date().toISOString();
     const trackingId = generateTrackingId();
 
+    // New shipments always start as pending — status advances via admin / auto-progress
     const shipment: Partial<Shipment> = {
       trackingId,
-      status: body.status || "pending",
+      status: "pending",
       createdAt: now,
       updatedAt: now,
       sender: body.sender || {},
@@ -39,9 +40,9 @@ export async function POST(request: Request) {
       service: body.service || {},
       events: [
         {
-          status: body.status || "pending",
+          status: "pending",
           title: "Shipment created",
-          description: "Your shipment has been registered in CargoWatch.",
+          description: "Your shipment has been registered and is awaiting pickup.",
           location: body.sender?.address?.city,
           timestamp: now,
         },
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
         pausedAt: null,
         pauseReason: null,
         pausedDuration: 0,
-        startedAt: now,
+        startedAt: null,
         lastUpdate: now,
       },
     };

@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import ShipmentProgress from "@/components/ShipmentProgress";
+import { routeProgressFromShipment } from "@/lib/progress";
 import type { Shipment } from "@/lib/types";
 
 const TrackMap = dynamic(() => import("@/components/TrackMap"), {
@@ -18,22 +20,32 @@ export default function TrackClient() {
   const searchParams = useSearchParams();
   const [trackingId, setTrackingId] = useState("");
   const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [routeProgress, setRouteProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const lookup = useCallback(async (id: string) => {
-    setLoading(true);
-    setError(null);
-    setShipment(null);
+  const lookup = useCallback(async (id: string, silent = false) => {
+    if (!silent) {
+      setLoading(true);
+      setError(null);
+    }
     try {
       const res = await fetch(`/api/shipments/${encodeURIComponent(id.trim())}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Shipment not found");
       setShipment(data.shipment);
+      setRouteProgress(
+        typeof data.routeProgress === "number"
+          ? data.routeProgress
+          : routeProgressFromShipment(data.shipment)
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      if (!silent) {
+        setShipment(null);
+        setError(err instanceof Error ? err.message : "Error");
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, []);
 
@@ -44,6 +56,18 @@ export default function TrackClient() {
       lookup(id);
     }
   }, [searchParams, lookup]);
+
+  // Live refresh while shipment is moving
+  useEffect(() => {
+    if (!shipment?.trackingId) return;
+    if (shipment.status === "delivered" || shipment.status === "pending") return;
+
+    const timer = setInterval(() => {
+      lookup(shipment.trackingId, true);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [shipment?.trackingId, shipment?.status, lookup]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -74,6 +98,8 @@ export default function TrackClient() {
           label: shipment.currentLocation.city || "Current",
         }
       : undefined;
+
+  const events = [...(shipment?.events || [])].reverse();
 
   return (
     <div>
@@ -113,8 +139,28 @@ export default function TrackClient() {
                 <p className="text-sm text-text-muted">Tracking ID</p>
                 <p className="text-2xl font-bold text-text-primary">{shipment.trackingId}</p>
               </div>
-              <span className="status-success capitalize">{shipment.status.replaceAll("_", " ")}</span>
+              <span
+                className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+                  shipment.status === "delivered"
+                    ? "bg-success-50 text-success"
+                    : shipment.status === "pending"
+                      ? "bg-amber-50 text-amber-700"
+                      : shipment.status === "exception"
+                        ? "bg-error-50 text-error"
+                        : "bg-primary-50 text-primary"
+                }`}
+              >
+                {shipment.status === "in_transit" || shipment.status === "out_for_delivery" ? (
+                  <span className="mr-1.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
+                ) : null}
+                {shipment.status.replaceAll("_", " ")}
+              </span>
             </div>
+
+            <div className="mt-6">
+              <ShipmentProgress status={shipment.status} routeProgress={routeProgress} />
+            </div>
+
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
               <div>
                 <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-muted">From</p>
@@ -148,17 +194,30 @@ export default function TrackClient() {
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow-large sm:p-8">
-            <h2 className="mb-4 text-lg font-semibold text-text-primary">Shipment Timeline</h2>
-            <div className="space-y-4">
-              {(shipment.events || []).length === 0 && (
+            <h2 className="mb-5 text-lg font-semibold text-text-primary">Shipment Timeline</h2>
+            <div className="relative space-y-0">
+              {events.length === 0 && (
                 <p className="text-sm text-text-muted">No events yet.</p>
               )}
-              {(shipment.events || []).map((ev, i) => (
-                <div key={`${ev.timestamp}-${i}`} className="flex items-start space-x-3">
-                  <div className="mt-1.5 h-3 w-3 shrink-0 rounded-full bg-success" />
-                  <div>
+              {events.map((ev, i) => (
+                <div
+                  key={`${ev.timestamp}-${i}`}
+                  className="timeline-item relative flex gap-4 pb-6 last:pb-0"
+                  style={{ animationDelay: `${i * 80}ms` }}
+                >
+                  {i < events.length - 1 && (
+                    <span className="absolute left-[7px] top-4 h-[calc(100%-8px)] w-0.5 bg-border" />
+                  )}
+                  <div
+                    className={`relative z-10 mt-1 h-3.5 w-3.5 shrink-0 rounded-full ring-4 ring-white ${
+                      i === 0 ? "step-pulse bg-primary" : "bg-success"
+                    }`}
+                  />
+                  <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium text-text-primary">{ev.title || ev.status}</div>
-                    {ev.description && <div className="text-sm text-text-secondary">{ev.description}</div>}
+                    {ev.description && (
+                      <div className="text-sm text-text-secondary">{ev.description}</div>
+                    )}
                     <div className="text-xs text-text-muted">
                       {ev.timestamp ? new Date(ev.timestamp).toLocaleString() : ""}
                       {ev.location ? ` · ${ev.location}` : ""}
