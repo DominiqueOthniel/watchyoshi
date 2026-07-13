@@ -205,6 +205,11 @@ a {
   }
 }
 
+.cw-pulse-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
 .cw-pulse-marker {
   position: relative;
   width: 28px;

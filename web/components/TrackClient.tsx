@@ -1,10 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ShipmentProgress from "@/components/ShipmentProgress";
-import { routeProgressFromShipment } from "@/lib/progress";
+import {
+  computeProgressFraction,
+  interpolatePosition,
+  resolveProgressStart,
+} from "@/lib/auto-progress";
 import type { Shipment } from "@/lib/types";
 
 const TrackMap = dynamic(() => import("@/components/TrackMap"), {
@@ -16,11 +20,25 @@ const TrackMap = dynamic(() => import("@/components/TrackMap"), {
   ),
 });
 
+function haversineMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 3959;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 export default function TrackClient() {
   const searchParams = useSearchParams();
   const [trackingId, setTrackingId] = useState("");
   const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [routeGeometry, setRouteGeometry] = useState<[number, number][] | null>(null);
   const [routeProgress, setRouteProgress] = useState<number | null>(null);
+  const [livePoint, setLivePoint] = useState<{ lat: number; lng: number; label?: string } | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -34,11 +52,12 @@ export default function TrackClient() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Shipment not found");
       setShipment(data.shipment);
-      setRouteProgress(
-        typeof data.routeProgress === "number"
-          ? data.routeProgress
-          : routeProgressFromShipment(data.shipment)
-      );
+      if (Array.isArray(data.routeGeometry) && data.routeGeometry.length >= 2) {
+        setRouteGeometry(data.routeGeometry);
+      }
+      if (typeof data.routeProgress === "number") {
+        setRouteProgress(data.routeProgress);
+      }
     } catch (err) {
       if (!silent) {
         setShipment(null);
@@ -57,47 +76,123 @@ export default function TrackClient() {
     }
   }, [searchParams, lookup]);
 
-  // Live refresh while shipment is moving
+  // Poll server for sync / route geometry
   useEffect(() => {
     if (!shipment?.trackingId) return;
-    if (shipment.status === "delivered" || shipment.status === "pending") return;
+    if (shipment.status === "delivered") return;
 
-    const timer = setInterval(() => {
-      lookup(shipment.trackingId, true);
-    }, 4000);
-
+    const timer = setInterval(() => lookup(shipment.trackingId, true), 3000);
     return () => clearInterval(timer);
   }, [shipment?.trackingId, shipment?.status, lookup]);
+
+  // Continuous client-side progress so the marker moves every second
+  useEffect(() => {
+    if (!shipment) {
+      setLivePoint(null);
+      return;
+    }
+
+    const originLat = Number(shipment.sender?.address?.lat);
+    const originLng = Number(shipment.sender?.address?.lng);
+    const destLat = Number(shipment.recipient?.address?.lat);
+    const destLng = Number(shipment.recipient?.address?.lng);
+    if (![originLat, originLng, destLat, destLng].every((n) => Number.isFinite(n))) {
+      setLivePoint(null);
+      return;
+    }
+
+    const tick = () => {
+      if (shipment.status === "pending") {
+        setLivePoint({
+          lat: originLat,
+          lng: originLng,
+          label: shipment.sender?.address?.city || "Awaiting pickup",
+        });
+        setRouteProgress(0.05);
+        return;
+      }
+
+      if (shipment.status === "delivered") {
+        setLivePoint({
+          lat: destLat,
+          lng: destLng,
+          label: shipment.recipient?.address?.city || "Delivered",
+        });
+        setRouteProgress(1);
+        return;
+      }
+
+      const startedAt = resolveProgressStart(shipment);
+      if (!startedAt) {
+        setLivePoint({
+          lat: originLat,
+          lng: originLng,
+          label: shipment.currentLocation?.city || "Origin",
+        });
+        return;
+      }
+
+      const distance =
+        shipment.routeDistanceMiles ||
+        haversineMiles(originLat, originLng, destLat, destLng);
+      const progress = computeProgressFraction(
+        startedAt,
+        distance,
+        shipment.autoProgress?.pausedDuration || 0,
+        shipment.autoProgress?.paused ? shipment.autoProgress.pausedAt : null
+      );
+      const pos = interpolatePosition(
+        progress,
+        originLat,
+        originLng,
+        destLat,
+        destLng,
+        routeGeometry
+      );
+      setRouteProgress(progress);
+      setLivePoint({
+        lat: pos.lat,
+        lng: pos.lng,
+        label:
+          progress < 0.05
+            ? shipment.sender?.address?.city || "Origin"
+            : progress >= 1
+              ? shipment.recipient?.address?.city || "Destination"
+              : "In transit",
+      });
+    };
+
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, [shipment, routeGeometry]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     await lookup(trackingId);
   }
 
-  const origin =
-    shipment?.sender?.address?.lat != null && shipment?.sender?.address?.lng != null
-      ? {
-          lat: shipment.sender.address.lat,
-          lng: shipment.sender.address.lng,
-          label: shipment.sender.address.city || "Origin",
-        }
-      : undefined;
-  const destination =
-    shipment?.recipient?.address?.lat != null && shipment?.recipient?.address?.lng != null
-      ? {
-          lat: shipment.recipient.address.lat,
-          lng: shipment.recipient.address.lng,
-          label: shipment.recipient.address.city || "Destination",
-        }
-      : undefined;
-  const current =
-    shipment?.currentLocation?.lat != null && shipment?.currentLocation?.lng != null
-      ? {
-          lat: shipment.currentLocation.lat,
-          lng: shipment.currentLocation.lng,
-          label: shipment.currentLocation.city || "Current",
-        }
-      : undefined;
+  const origin = useMemo(() => {
+    if (shipment?.sender?.address?.lat == null || shipment?.sender?.address?.lng == null) {
+      return undefined;
+    }
+    return {
+      lat: Number(shipment.sender.address.lat),
+      lng: Number(shipment.sender.address.lng),
+      label: shipment.sender.address.city || "Origin",
+    };
+  }, [shipment]);
+
+  const destination = useMemo(() => {
+    if (shipment?.recipient?.address?.lat == null || shipment?.recipient?.address?.lng == null) {
+      return undefined;
+    }
+    return {
+      lat: Number(shipment.recipient.address.lat),
+      lng: Number(shipment.recipient.address.lng),
+      label: shipment.recipient.address.city || "Destination",
+    };
+  }, [shipment]);
 
   const events = [...(shipment?.events || [])].reverse();
 
@@ -181,16 +276,25 @@ export default function TrackClient() {
                 </p>
               </div>
             </div>
-            {shipment.currentLocation?.city && (
+            {livePoint?.label && (
               <p className="mt-4 text-sm text-text-secondary">
                 Current location:{" "}
-                <strong className="text-text-primary">{shipment.currentLocation.city}</strong>
+                <strong className="text-text-primary">{livePoint.label}</strong>
+                {shipment.status !== "pending" && shipment.status !== "delivered" && (
+                  <span className="ml-2 text-xs text-primary">● live</span>
+                )}
               </p>
             )}
           </div>
 
           <div className="overflow-hidden rounded-2xl bg-white p-2 shadow-large">
-            <TrackMap origin={origin} destination={destination} current={current} />
+            <TrackMap
+              key={shipment.trackingId}
+              origin={origin}
+              destination={destination}
+              current={livePoint || undefined}
+              routeGeometry={routeGeometry}
+            />
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow-large sm:p-8">

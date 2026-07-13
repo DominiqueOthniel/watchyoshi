@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { transformShipmentFromDB, transformShipmentToDB } from "@/lib/shipments";
-import { calculateAutomaticProgression } from "@/lib/auto-progress";
+import {
+  calculateAutomaticProgression,
+  computeProgressFraction,
+  resolveProgressStart,
+} from "@/lib/auto-progress";
 
 interface Params {
   params: Promise<{ trackingId: string }>;
@@ -24,6 +28,7 @@ export async function GET(_request: Request, { params }: Params) {
 
     let shipment = transformShipmentFromDB(data);
     let routeProgress: number | null = null;
+    let routeGeometry: [number, number][] | null = null;
 
     // Refresh position on read when auto-progress is active
     if (
@@ -32,9 +37,51 @@ export async function GET(_request: Request, { params }: Params) {
       shipment.status !== "delivered" &&
       shipment.status !== "pending"
     ) {
+      const originLat = Number(shipment.sender?.address?.lat);
+      const originLng = Number(shipment.sender?.address?.lng);
+      const destLat = Number(shipment.recipient?.address?.lat);
+      const destLng = Number(shipment.recipient?.address?.lng);
+      const roughMiles =
+        Number.isFinite(originLat) &&
+        Number.isFinite(originLng) &&
+        Number.isFinite(destLat) &&
+        Number.isFinite(destLng)
+          ? Math.max(1, Math.hypot(destLat - originLat, destLng - originLng) * 69)
+          : 500;
+
+      let started = resolveProgressStart(shipment);
+      // Stale clocks leave the marker stuck at destination — restart so the map moves
+      if (
+        !started ||
+        computeProgressFraction(
+          started,
+          roughMiles,
+          shipment.autoProgress.pausedDuration || 0,
+          shipment.autoProgress.paused ? shipment.autoProgress.pausedAt : null
+        ) >= 1
+      ) {
+        started = new Date();
+        shipment = {
+          ...shipment,
+          autoProgress: {
+            ...shipment.autoProgress,
+            startedAt: started.toISOString(),
+          },
+        };
+      } else if (!shipment.autoProgress.startedAt) {
+        shipment = {
+          ...shipment,
+          autoProgress: {
+            ...shipment.autoProgress,
+            startedAt: started.toISOString(),
+          },
+        };
+      }
+
       const autoPos = await calculateAutomaticProgression(shipment);
       if (autoPos) {
         routeProgress = autoPos.progress;
+        routeGeometry = autoPos.routeGeometry || null;
         shipment = {
           ...shipment,
           currentLocation: {
@@ -42,6 +89,8 @@ export async function GET(_request: Request, { params }: Params) {
             lng: autoPos.lng,
             city: autoPos.city,
           },
+          routeGeometry: autoPos.routeGeometry,
+          routeDistanceMiles: autoPos.routeDistanceMiles,
           autoProgress: {
             ...shipment.autoProgress,
             lastUpdate: new Date().toISOString(),
@@ -60,7 +109,7 @@ export async function GET(_request: Request, { params }: Params) {
       }
     }
 
-    return NextResponse.json({ shipment, routeProgress });
+    return NextResponse.json({ shipment, routeProgress, routeGeometry });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Failed to fetch shipment" },
@@ -107,18 +156,29 @@ export async function PATCH(request: Request, { params }: Params) {
       if (body.status === "delivered") {
         updates.deliveredAt = new Date().toISOString();
       }
-      // Start auto-progress clock when leaving pending
+      // (Re)start auto-progress whenever status is set to an active shipping state
       if (
-        shipment.status === "pending" &&
+        body.status &&
         body.status !== "pending" &&
+        body.status !== "delivered" &&
         body.status !== "exception"
       ) {
         updates.autoProgress = {
           ...shipment.autoProgress,
           enabled: true,
-          startedAt: shipment.autoProgress?.startedAt || new Date().toISOString(),
+          paused: false,
+          pausedAt: null,
+          pauseReason: null,
+          startedAt: new Date().toISOString(),
           lastUpdate: new Date().toISOString(),
         };
+        if (shipment.sender?.address?.lat != null && shipment.sender?.address?.lng != null) {
+          updates.currentLocation = {
+            lat: shipment.sender.address.lat,
+            lng: shipment.sender.address.lng,
+            city: shipment.sender.address.city || "Origin",
+          };
+        }
       }
     }
 

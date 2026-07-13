@@ -76,7 +76,7 @@ export default function AdminDashboard() {
     const res = await fetch(`/api/shipments/${trackingId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, restartProgress: true }),
     });
     if (res.ok) load();
   }
