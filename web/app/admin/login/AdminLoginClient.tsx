@@ -1,16 +1,18 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function AdminLoginPage() {
+export default function AdminLoginClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(
-    searchParams.get("error") === "not_admin" ? "Ce compte n'est pas admin." : null
+    searchParams.get("error") === "not_admin" ? "This account is not an admin." : null
   );
   const [loading, setLoading] = useState(false);
 
@@ -34,49 +36,89 @@ export default function AdminLoginPage() {
 
       if (profile?.role !== "admin") {
         await supabase.auth.signOut();
-        throw new Error("Accès réservé aux administrateurs.");
+        throw new Error("Admin access only.");
       }
 
       router.push("/admin");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Connexion échouée");
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-12">
-      <h1 className="text-3xl font-bold text-emerald-950">Admin</h1>
-      <p className="mt-2 text-sm text-emerald-950/60">Connexion Supabase Auth</p>
+    <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center bg-gradient-to-br from-primary-50 to-blue-100 px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <div className="mb-4 flex items-center justify-center gap-2">
+            <Image
+              src="/delivery-truck-logo.png"
+              alt="CargoWatch"
+              width={48}
+              height={48}
+              className="h-12 w-12 object-contain"
+              priority
+            />
+            <span className="text-3xl font-bold text-primary">CargoWatch</span>
+          </div>
+          <h1 className="text-2xl font-bold text-text-primary">Admin Portal</h1>
+          <p className="mt-2 text-text-secondary">Sign in to access the admin dashboard</p>
+        </div>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-4 rounded-2xl border border-emerald-900/10 bg-white/80 p-6">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          required
-          className="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 outline-none ring-emerald-600 focus:ring-2"
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Mot de passe"
-          required
-          className="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 outline-none ring-emerald-600 focus:ring-2"
-        />
-        {error && <p className="text-sm text-red-700">{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-xl bg-emerald-700 py-3 font-semibold text-white hover:bg-emerald-600 disabled:opacity-60"
-        >
-          {loading ? "Connexion…" : "Se connecter"}
-        </button>
-      </form>
+        <div className="card p-8 shadow-lg">
+          <form onSubmit={onSubmit} className="space-y-6">
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-error">
+                {error}
+              </div>
+            )}
+
+            <div>
+              <label htmlFor="email" className="mb-2 block text-sm font-medium text-text-primary">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="username"
+                placeholder="Enter your email"
+                className="input-field px-4 py-3"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="mb-2 block text-sm font-medium text-text-primary">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                className="input-field px-4 py-3"
+              />
+            </div>
+
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-lg disabled:opacity-60">
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+        </div>
+
+        <div className="mt-6 text-center">
+          <Link href="/" className="text-sm text-primary hover:underline">
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

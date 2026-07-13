@@ -93,21 +93,21 @@ export default function ChatPanel({
   return (
     <div className="flex h-full min-h-[400px] flex-col">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-semibold text-emerald-950">Conversation</h3>
+        <h3 className="font-semibold text-text-primary">Conversation</h3>
         {onClose && (
-          <button onClick={onClose} className="text-xs text-emerald-700 hover:underline">
+          <button onClick={onClose} className="text-xs text-primary hover:underline">
             Fermer le chat
           </button>
         )}
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto rounded-xl bg-emerald-50/40 p-3">
+      <div className="flex-1 space-y-3 overflow-y-auto rounded-xl bg-primary-50 p-3">
         {messages.map((m) => (
           <div
             key={m.id}
             className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
               m.senderType === senderType
-                ? "ml-auto bg-emerald-700 text-white"
-                : "bg-white border border-emerald-900/10 text-emerald-950"
+                ? "ml-auto bg-primary text-white"
+                : "bg-white border border-border text-text-primary"
             }`}
           >
             <p className="text-[10px] opacity-70">{m.senderName || m.senderType}</p>
@@ -121,7 +121,7 @@ export default function ChatPanel({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Votre message…"
-          className="flex-1 rounded-xl border border-emerald-900/15 px-3 py-2 outline-none ring-emerald-600 focus:ring-2"
+          className="flex-1 rounded-xl border border-emerald-900/15 px-3 py-2 outline-none ring-primary focus:ring-2"
         />
         <button
           type="submit"

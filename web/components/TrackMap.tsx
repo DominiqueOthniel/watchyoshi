@@ -60,7 +60,7 @@ export default function TrackMap({ origin, destination, current }: TrackMapProps
             <Popup>{current.label || "Position actuelle"}</Popup>
           </Marker>
         )}
-        {line.length >= 2 && <Polyline positions={line} pathOptions={{ color: "#059669" }} />}
+        {line.length >= 2 && <Polyline positions={line} pathOptions={{ color: "#2563EB" }} />}
       </MapContainer>
     </div>
   );

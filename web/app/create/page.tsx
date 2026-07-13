@@ -94,15 +94,15 @@ export default function CreateShipmentForm() {
   }
 
   const field =
-    "w-full rounded-xl border border-emerald-900/15 bg-white px-3 py-2.5 outline-none ring-emerald-600 focus:ring-2";
+    "w-full rounded-xl input-field px-3 py-2.5 ";
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold text-emerald-950">Créer un envoi</h1>
-      <p className="mt-2 text-emerald-950/65">Les coordonnées sont géocodées automatiquement via Nominatim.</p>
+      <h1 className="text-3xl font-bold text-text-primary">Créer un envoi</h1>
+      <p className="mt-2 text-text-secondary">Les coordonnées sont géocodées automatiquement via Nominatim.</p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-8">
-        <section className="rounded-2xl border border-emerald-900/10 bg-white/80 p-6">
+        <section className="rounded-2xl border card p-6">
           <h2 className="mb-4 font-semibold">Expéditeur</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <input name="senderName" placeholder="Nom" className={field} required />
@@ -114,7 +114,7 @@ export default function CreateShipmentForm() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-emerald-900/10 bg-white/80 p-6">
+        <section className="rounded-2xl border card p-6">
           <h2 className="mb-4 font-semibold">Destinataire</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <input name="recipientName" placeholder="Nom" className={field} required />
@@ -126,7 +126,7 @@ export default function CreateShipmentForm() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-emerald-900/10 bg-white/80 p-6">
+        <section className="rounded-2xl border card p-6">
           <h2 className="mb-4 font-semibold">Colis & service</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <select name="packageType" className={field} defaultValue="parcel">
@@ -160,9 +160,9 @@ export default function CreateShipmentForm() {
           </div>
         </section>
 
-        {error && <p className="text-sm text-red-700">{error}</p>}
+        {error && <p className="text-sm text-error">{error}</p>}
         {successId && (
-          <p className="text-sm text-emerald-700">
+          <p className="text-sm text-success">
             Envoi créé : <strong>{successId}</strong> — redirection…
           </p>
         )}
@@ -170,7 +170,7 @@ export default function CreateShipmentForm() {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-xl bg-emerald-700 px-6 py-3 font-semibold text-white hover:bg-emerald-600 disabled:opacity-60"
+          className="btn-primary px-6 py-3 disabled:opacity-60"
         >
           {loading ? "Création…" : "Créer l'envoi"}
         </button>

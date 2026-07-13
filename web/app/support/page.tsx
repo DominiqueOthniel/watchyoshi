@@ -40,22 +40,22 @@ export default function SupportPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold text-emerald-950">Support</h1>
-      <p className="mt-2 text-emerald-950/65">
+      <h1 className="text-3xl font-bold text-text-primary">Support</h1>
+      <p className="mt-2 text-text-secondary">
         Discutez en direct avec l&apos;équipe CargoWatch (Supabase Realtime).
       </p>
 
       {!chat ? (
         <form
           onSubmit={startChat}
-          className="mt-8 space-y-3 rounded-2xl border border-emerald-900/10 bg-white/80 p-6"
+          className="mt-8 space-y-3 rounded-2xl border card p-6"
         >
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Votre nom"
             required
-            className="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 outline-none ring-emerald-600 focus:ring-2"
+            className="w-full rounded-xl input-field border px-3 py-2.5 "
           />
           <input
             type="email"
@@ -63,31 +63,31 @@ export default function SupportPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
             required
-            className="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 outline-none ring-emerald-600 focus:ring-2"
+            className="w-full rounded-xl input-field border px-3 py-2.5 "
           />
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="Sujet"
-            className="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 outline-none ring-emerald-600 focus:ring-2"
+            className="w-full rounded-xl input-field border px-3 py-2.5 "
           />
           <input
             value={trackingId}
             onChange={(e) => setTrackingId(e.target.value)}
             placeholder="Tracking ID (optionnel)"
-            className="w-full rounded-xl border border-emerald-900/15 px-3 py-2.5 outline-none ring-emerald-600 focus:ring-2"
+            className="w-full rounded-xl input-field border px-3 py-2.5 "
           />
-          {error && <p className="text-sm text-red-700">{error}</p>}
+          {error && <p className="text-sm text-error">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-600 disabled:opacity-60"
+            className="btn-primary px-5 py-3 disabled:opacity-60"
           >
             {loading ? "Ouverture…" : "Démarrer le chat"}
           </button>
         </form>
       ) : (
-        <div className="mt-8 min-h-[480px] rounded-2xl border border-emerald-900/10 bg-white/80 p-4">
+        <div className="mt-8 min-h-[480px] rounded-2xl border card p-4">
           <ChatPanel
             conversationId={chat.id}
             initialMessages={chat.messages}
@@ -97,9 +97,9 @@ export default function SupportPage() {
         </div>
       )}
 
-      <section className="mt-10 rounded-2xl border border-emerald-900/10 bg-white/70 p-6">
-        <h2 className="font-semibold text-emerald-950">FAQ rapide</h2>
-        <ul className="mt-3 space-y-2 text-sm text-emerald-950/70">
+      <section className="mt-10 rounded-2xl border card p-6">
+        <h2 className="font-semibold text-text-primary">FAQ rapide</h2>
+        <ul className="mt-3 space-y-2 text-sm text-text-secondary">
           <li>Le tracking ID commence par <strong>CW</strong>.</li>
           <li>La position se met à jour automatiquement quand l&apos;envoi est en transit.</li>
           <li>Pour toute urgence, indiquez votre tracking ID dans le chat.</li>
