@@ -8,7 +8,6 @@ import { usePathname, useRouter } from "next/navigation";
 const links = [
   { href: "/", label: "Home" },
   { href: "/track", label: "Track Shipment" },
-  { href: "/create", label: "Create Shipment" },
   { href: "/support", label: "Support" },
 ];
 
@@ -82,9 +81,6 @@ export default function SiteHeader() {
                 />
               </svg>
             </form>
-            <Link href="/admin/login" className="btn-secondary">
-              Admin
-            </Link>
           </div>
 
           <button
@@ -116,13 +112,6 @@ export default function SiteHeader() {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                href="/admin/login"
-                onClick={() => setMobileOpen(false)}
-                className="btn-secondary mt-2 py-2 text-center"
-              >
-                Admin
-              </Link>
             </nav>
           </div>
         )}

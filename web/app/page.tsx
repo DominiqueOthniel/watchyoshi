@@ -27,9 +27,6 @@ export default function HomePage() {
                 <Link href="/track" className="btn-secondary px-8 py-4 text-lg">
                   Track Package
                 </Link>
-                <Link href="/create" className="btn-primary px-8 py-4 text-lg">
-                  Create Shipment
-                </Link>
               </div>
 
               <div className="grid grid-cols-3 gap-6 text-center">
