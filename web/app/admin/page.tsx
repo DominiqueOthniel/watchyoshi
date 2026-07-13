@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { Shipment, ChatConversation } from "@/lib/types";
+import type { Shipment, ChatConversation, ShipmentStatus } from "@/lib/types";
 import ChatPanel from "@/components/ChatPanel";
+import { nextStatusInFlow, STATUS_FLOW, STATUS_META } from "@/lib/shipment-status";
 
 type ReceiptRow = {
   trackingId: string;
@@ -15,6 +16,21 @@ type ReceiptRow = {
   sender?: string;
   recipient?: string;
 };
+
+function statusBadgeClass(status: string) {
+  switch (status) {
+    case "delivered":
+      return "bg-success-50 text-success";
+    case "pending":
+      return "bg-amber-50 text-amber-700";
+    case "exception":
+      return "bg-error-50 text-error";
+    case "out_for_delivery":
+      return "bg-orange-50 text-orange-700";
+    default:
+      return "bg-primary-50 text-primary";
+  }
+}
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -26,6 +42,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [statusBusy, setStatusBusy] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -72,13 +89,37 @@ export default function AdminDashboard() {
     router.refresh();
   }
 
-  async function updateStatus(trackingId: string, status: string) {
-    const res = await fetch(`/api/shipments/${trackingId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, restartProgress: true }),
-    });
-    if (res.ok) load();
+  async function setStatus(
+    trackingId: string,
+    status: string,
+    opts: { force?: boolean; forceRestart?: boolean } = {}
+  ) {
+    setStatusBusy(trackingId);
+    setError(null);
+    try {
+      const res = await fetch(`/api/shipments/${trackingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status,
+          force: opts.force,
+          forceRestart: opts.forceRestart,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Status update failed");
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Status error");
+    } finally {
+      setStatusBusy(null);
+    }
+  }
+
+  async function advanceStatus(shipment: Shipment) {
+    const next = nextStatusInFlow(shipment.status);
+    if (!next) return;
+    await setStatus(shipment.trackingId, next);
   }
 
   async function togglePause(shipment: Shipment) {
@@ -120,7 +161,9 @@ export default function AdminDashboard() {
             <h1 className="truncate text-2xl font-bold text-text-primary sm:text-3xl">
               Admin Dashboard
             </h1>
-            <p className="text-sm text-text-secondary">Shipments, receipts, and live support</p>
+            <p className="text-sm text-text-secondary">
+              Professional shipment lifecycle, receipts, and live support
+            </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
             <Link href="/create" className="btn-primary">
@@ -176,83 +219,146 @@ export default function AdminDashboard() {
         {loading && <p className="mt-4 text-sm text-text-muted">Loading…</p>}
 
         {tab === "shipments" && !loading && (
-          <div className="mt-6 overflow-x-auto rounded-2xl bg-white shadow-large">
-            <table className="min-w-[720px] w-full text-left text-sm">
-              <thead className="border-b border-border bg-surface text-xs uppercase text-text-muted">
-                <tr>
-                  <th className="px-4 py-3">Tracking</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Route</th>
-                  <th className="px-4 py-3">Auto</th>
-                  <th className="px-4 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {shipments.map((s) => (
-                  <tr key={s.id} className="border-b border-border/60">
-                    <td className="px-4 py-3 font-semibold text-text-primary">{s.trackingId}</td>
-                    <td className="px-4 py-3 capitalize text-text-secondary">
-                      {s.status.replaceAll("_", " ")}
-                    </td>
-                    <td className="px-4 py-3 text-text-secondary">
-                      {s.sender.address?.city || "?"} → {s.recipient.address?.city || "?"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {s.autoProgress?.paused ? "Paused" : s.autoProgress?.enabled ? "On" : "Off"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-2">
-                        <select
-                          className="input-field px-2 py-1"
-                          value={s.status}
-                          onChange={(e) => updateStatus(s.trackingId, e.target.value)}
-                        >
-                          {[
-                            "pending",
-                            "picked_up",
-                            "in_transit",
-                            "out_for_delivery",
-                            "delivered",
-                            "exception",
-                          ].map((st) => (
-                            <option key={st} value={st}>
-                              {st}
-                            </option>
-                          ))}
-                        </select>
-                        <button onClick={() => togglePause(s)} className="btn-secondary px-3 py-1 text-xs">
-                          {s.autoProgress?.paused ? "Resume" : "Pause"}
-                        </button>
-                        <button
-                          onClick={() => generateReceipt(s.trackingId)}
-                          disabled={busyId === s.trackingId}
-                          className="btn-primary px-3 py-1 text-xs disabled:opacity-60"
-                        >
-                          {busyId === s.trackingId ? "PDF…" : s.receipt ? "Regen PDF" : "PDF Receipt"}
-                        </button>
-                        {s.receipt && !s.receipt.startsWith("data:") && (
-                          <a
-                            href={s.receipt}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="btn-secondary px-3 py-1 text-xs"
-                          >
-                            Open
-                          </a>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {shipments.length === 0 && (
+          <div className="mt-6 space-y-4">
+            <p className="text-sm text-text-secondary">
+              Lifecycle: Pending → Picked up → In transit → Out for delivery → Delivered. Use{" "}
+              <strong>Advance</strong> for the next step. Status also advances automatically with
+              map progress.
+            </p>
+            <div className="overflow-x-auto rounded-2xl bg-white shadow-large">
+              <table className="min-w-[900px] w-full text-left text-sm">
+                <thead className="border-b border-border bg-surface text-xs uppercase text-text-muted">
                   <tr>
-                    <td colSpan={5} className="px-4 py-10 text-center text-text-muted">
-                      No shipments yet
-                    </td>
+                    <th className="px-4 py-3">Tracking</th>
+                    <th className="px-4 py-3">Lifecycle</th>
+                    <th className="px-4 py-3">Route</th>
+                    <th className="px-4 py-3">Auto</th>
+                    <th className="px-4 py-3">Actions</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {shipments.map((s) => {
+                    const next = nextStatusInFlow(s.status);
+                    const busy = statusBusy === s.trackingId;
+                    const currentIdx = STATUS_FLOW.indexOf(s.status as ShipmentStatus);
+                    return (
+                      <tr key={s.id} className="border-b border-border/60 align-top">
+                        <td className="px-4 py-3">
+                          <p className="font-semibold text-text-primary">{s.trackingId}</p>
+                          <Link
+                            href={`/track?id=${s.trackingId}`}
+                            className="text-xs text-primary hover:underline"
+                          >
+                            Open tracking
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusBadgeClass(s.status)}`}
+                          >
+                            {STATUS_META[s.status as ShipmentStatus]?.label || s.status}
+                          </span>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {STATUS_FLOW.map((st, idx) => {
+                              const active = s.status === st;
+                              const done = currentIdx >= 0 && idx < currentIdx;
+                              return (
+                                <button
+                                  key={st}
+                                  type="button"
+                                  title={STATUS_META[st].label}
+                                  disabled={busy || s.status === "exception"}
+                                  onClick={() =>
+                                    setStatus(s.trackingId, st, {
+                                      force: currentIdx >= 0 && idx < currentIdx,
+                                    })
+                                  }
+                                  className={`h-2 w-8 rounded-full transition ${
+                                    active
+                                      ? "bg-primary"
+                                      : done
+                                        ? "bg-primary/40"
+                                        : "bg-border hover:bg-primary/20"
+                                  }`}
+                                />
+                              );
+                            })}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-text-secondary">
+                          {s.sender.address?.city || "?"} → {s.recipient.address?.city || "?"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {s.autoProgress?.paused
+                            ? "Paused"
+                            : s.autoProgress?.enabled
+                              ? "On"
+                              : "Off"}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap gap-2">
+                            {next && (
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => advanceStatus(s)}
+                                className="btn-primary px-3 py-1 text-xs disabled:opacity-60"
+                              >
+                                {busy ? "…" : `Advance → ${STATUS_META[next].label}`}
+                              </button>
+                            )}
+                            {s.status !== "exception" && s.status !== "delivered" && (
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => setStatus(s.trackingId, "exception")}
+                                className="btn-secondary px-3 py-1 text-xs text-error disabled:opacity-60"
+                              >
+                                Exception
+                              </button>
+                            )}
+                            {s.status === "exception" && (
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() =>
+                                  setStatus(s.trackingId, "in_transit", { force: true })
+                                }
+                                className="btn-primary px-3 py-1 text-xs disabled:opacity-60"
+                              >
+                                Resume transit
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => togglePause(s)}
+                              className="btn-secondary px-3 py-1 text-xs"
+                            >
+                              {s.autoProgress?.paused ? "Resume auto" : "Pause auto"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => generateReceipt(s.trackingId)}
+                              disabled={busyId === s.trackingId}
+                              className="btn-secondary px-3 py-1 text-xs disabled:opacity-60"
+                            >
+                              {busyId === s.trackingId ? "PDF…" : s.receipt ? "Regen PDF" : "PDF"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {shipments.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-10 text-center text-text-muted">
+                        No shipments yet
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
@@ -325,11 +431,20 @@ export default function AdminDashboard() {
                     </td>
                     <td className="px-4 py-3">
                       {r.receipt && !r.receipt.startsWith("data:") ? (
-                        <a href={r.receipt} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                        <a
+                          href={r.receipt}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary hover:underline"
+                        >
                           Open PDF
                         </a>
                       ) : r.receipt ? (
-                        <a href={r.receipt} download={`${r.trackingId}.pdf`} className="text-primary hover:underline">
+                        <a
+                          href={r.receipt}
+                          download={`${r.trackingId}.pdf`}
+                          className="text-primary hover:underline"
+                        >
                           Download PDF
                         </a>
                       ) : (

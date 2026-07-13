@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { transformShipmentFromDB, transformShipmentToDB } from "@/lib/shipments";
+import { calculateAutomaticProgression } from "@/lib/auto-progress";
 import {
-  calculateAutomaticProgression,
-  computeProgressFraction,
-  resolveProgressStart,
-} from "@/lib/auto-progress";
+  applyStatusChange,
+  buildStatusEvent,
+  statusFromProgress,
+  statusRank,
+} from "@/lib/shipment-status";
+import type { Shipment, ShipmentStatus } from "@/lib/types";
 
 interface Params {
   params: Promise<{ trackingId: string }>;
@@ -30,50 +33,20 @@ export async function GET(_request: Request, { params }: Params) {
     let routeProgress: number | null = null;
     let routeGeometry: [number, number][] | null = null;
 
-    // Refresh position on read when auto-progress is active
     if (
       shipment.autoProgress?.enabled &&
       !shipment.autoProgress?.paused &&
       shipment.status !== "delivered" &&
-      shipment.status !== "pending"
+      shipment.status !== "pending" &&
+      shipment.status !== "exception"
     ) {
-      const originLat = Number(shipment.sender?.address?.lat);
-      const originLng = Number(shipment.sender?.address?.lng);
-      const destLat = Number(shipment.recipient?.address?.lat);
-      const destLng = Number(shipment.recipient?.address?.lng);
-      const roughMiles =
-        Number.isFinite(originLat) &&
-        Number.isFinite(originLng) &&
-        Number.isFinite(destLat) &&
-        Number.isFinite(destLng)
-          ? Math.max(1, Math.hypot(destLat - originLat, destLng - originLng) * 69)
-          : 500;
-
-      let started = resolveProgressStart(shipment);
-      // Stale clocks leave the marker stuck at destination — restart so the map moves
-      if (
-        !started ||
-        computeProgressFraction(
-          started,
-          roughMiles,
-          shipment.autoProgress.pausedDuration || 0,
-          shipment.autoProgress.paused ? shipment.autoProgress.pausedAt : null
-        ) >= 1
-      ) {
-        started = new Date();
+      // Ensure clock exists once movement has begun — never restart a healthy journey
+      if (!shipment.autoProgress.startedAt) {
         shipment = {
           ...shipment,
           autoProgress: {
             ...shipment.autoProgress,
-            startedAt: started.toISOString(),
-          },
-        };
-      } else if (!shipment.autoProgress.startedAt) {
-        shipment = {
-          ...shipment,
-          autoProgress: {
-            ...shipment.autoProgress,
-            startedAt: started.toISOString(),
+            startedAt: new Date().toISOString(),
           },
         };
       }
@@ -82,8 +55,17 @@ export async function GET(_request: Request, { params }: Params) {
       if (autoPos) {
         routeProgress = autoPos.progress;
         routeGeometry = autoPos.routeGeometry || null;
+
+        const suggested = statusFromProgress(autoPos.progress, shipment.status);
+        const statusChanged = suggested !== shipment.status;
+        const events = statusChanged
+          ? [...(shipment.events || []), buildStatusEvent(suggested, shipment)]
+          : shipment.events;
+
         shipment = {
           ...shipment,
+          status: suggested,
+          events,
           currentLocation: {
             lat: autoPos.lat,
             lng: autoPos.lng,
@@ -95,13 +77,18 @@ export async function GET(_request: Request, { params }: Params) {
             ...shipment.autoProgress,
             lastUpdate: new Date().toISOString(),
           },
+          ...(suggested === "delivered" ? { deliveredAt: new Date().toISOString() } : {}),
         };
+
         await supabase
           .from("shipments")
           .update(
             transformShipmentToDB({
+              status: shipment.status,
+              events: shipment.events,
               currentLocation: shipment.currentLocation,
               autoProgress: shipment.autoProgress,
+              deliveredAt: shipment.deliveredAt,
               updatedAt: new Date().toISOString(),
             })
           )
@@ -136,54 +123,38 @@ export async function PATCH(request: Request, { params }: Params) {
     }
 
     const shipment = transformShipmentFromDB(existing);
-    const updates: Record<string, unknown> = {
+    let updates: Record<string, unknown> = {
       updatedAt: new Date().toISOString(),
     };
 
     if (body.status) {
-      updates.status = body.status;
-      const events = [
-        ...(shipment.events || []),
-        {
-          status: body.status,
-          title: `Status: ${body.status}`,
-          description: body.note || `Status updated to ${body.status}`,
-          timestamp: new Date().toISOString(),
-          location: shipment.currentLocation?.city,
-        },
-      ];
-      updates.events = events;
-      if (body.status === "delivered") {
-        updates.deliveredAt = new Date().toISOString();
-      }
-      // (Re)start auto-progress whenever status is set to an active shipping state
+      const next = String(body.status) as ShipmentStatus;
+      // Optional: block illegal backward jumps unless force=true
       if (
-        body.status &&
-        body.status !== "pending" &&
-        body.status !== "delivered" &&
-        body.status !== "exception"
+        !body.force &&
+        next !== "exception" &&
+        statusRank(next) < statusRank(shipment.status) &&
+        shipment.status !== "exception"
       ) {
-        updates.autoProgress = {
-          ...shipment.autoProgress,
-          enabled: true,
-          paused: false,
-          pausedAt: null,
-          pauseReason: null,
-          startedAt: new Date().toISOString(),
-          lastUpdate: new Date().toISOString(),
-        };
-        if (shipment.sender?.address?.lat != null && shipment.sender?.address?.lng != null) {
-          updates.currentLocation = {
-            lat: shipment.sender.address.lat,
-            lng: shipment.sender.address.lng,
-            city: shipment.sender.address.city || "Origin",
-          };
-        }
+        return NextResponse.json(
+          {
+            error: `Cannot move from ${shipment.status} back to ${next}. Use force=true to override.`,
+          },
+          { status: 400 }
+        );
       }
+
+      const changed = applyStatusChange(shipment, next, {
+        note: body.note,
+        forceRestart: Boolean(body.forceRestart),
+      });
+      updates = { ...updates, ...changed };
     }
 
     if (typeof body.pause === "boolean") {
-      const auto = { ...shipment.autoProgress };
+      const auto = {
+        ...((updates.autoProgress as Shipment["autoProgress"]) || shipment.autoProgress),
+      };
       if (body.pause && !auto.paused) {
         auto.paused = true;
         auto.pausedAt = new Date().toISOString();

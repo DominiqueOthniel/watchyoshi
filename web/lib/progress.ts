@@ -10,9 +10,9 @@ export const PROGRESS_STEPS: { key: ShipmentStatus; label: string }[] = [
 
 const STATUS_BASE: Record<string, number> = {
   pending: 0.05,
-  picked_up: 0.2,
-  in_transit: 0.45,
-  out_for_delivery: 0.8,
+  picked_up: 0.08,
+  in_transit: 0.2,
+  out_for_delivery: 0.88,
   delivered: 1,
   exception: 0.5,
 };
@@ -31,9 +31,9 @@ export function shipmentProgressPercent(
     !Number.isNaN(routeProgress) &&
     (status === "in_transit" || status === "out_for_delivery" || status === "picked_up")
   ) {
-    const base = STATUS_BASE[status] ?? 0.2;
-    const ceiling = status === "out_for_delivery" ? 0.95 : 0.78;
-    const blended = Math.max(base, Math.min(ceiling, routeProgress));
+    const floor = STATUS_BASE[status] ?? 0.08;
+    const ceiling = status === "out_for_delivery" ? 0.98 : status === "picked_up" ? 0.12 : 0.87;
+    const blended = Math.max(floor, Math.min(ceiling, routeProgress));
     return Math.round(blended * 100);
   }
 

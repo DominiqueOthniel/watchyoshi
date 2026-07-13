@@ -1,4 +1,5 @@
 import type { Shipment } from "./types";
+import { STATUS_META, statusFromProgress } from "./shipment-status";
 
 /** Wall-clock seconds at origin before the marker starts moving */
 const HANDLING_DELAY_SEC = 12;
@@ -8,8 +9,7 @@ const HANDLING_DELAY_SEC = 12;
  * so the map clearly animates while the user watches.
  */
 function journeyDurationSec(distanceMiles: number) {
-  // ~400 miles per real minute of travel, min 90s, max 10 min
-  return Math.min(600, Math.max(90, distanceMiles / 400 * 60));
+  return Math.min(600, Math.max(90, (distanceMiles / 400) * 60));
 }
 
 function haversineMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -121,7 +121,7 @@ export function interpolatePosition(
 export async function calculateAutomaticProgression(shipment: Shipment) {
   if (!shipment.autoProgress?.enabled || shipment.status === "delivered") return null;
   if (shipment.autoProgress?.paused) return null;
-  if (shipment.status === "pending") return null;
+  if (shipment.status === "pending" || shipment.status === "exception") return null;
 
   const originLat = Number(shipment.sender?.address?.lat);
   const originLng = Number(shipment.sender?.address?.lng);
@@ -147,12 +147,16 @@ export async function calculateAutomaticProgression(shipment: Shipment) {
     routeDistanceMiles || haversineMiles(originLat, originLng, destLat, destLng);
   if (!totalDistanceMiles) return null;
 
-  const progress = computeProgressFraction(
+  const timed = computeProgressFraction(
     startedAt,
     totalDistanceMiles,
     shipment.autoProgress.pausedDuration || 0,
     shipment.autoProgress.paused ? shipment.autoProgress.pausedAt : null
   );
+
+  const floor = STATUS_META[shipment.status as keyof typeof STATUS_META]?.progressFloor ?? 0;
+  const progress = Math.min(1, Math.max(timed, floor));
+  const suggestedStatus = statusFromProgress(progress, shipment.status);
 
   if (progress >= 1) {
     return {
@@ -160,6 +164,7 @@ export async function calculateAutomaticProgression(shipment: Shipment) {
       lng: destLng,
       city: shipment.recipient?.address?.city || "Destination",
       progress: 1,
+      suggestedStatus: "delivered" as const,
       routeGeometry,
       routeDistanceMiles: totalDistanceMiles,
     };
@@ -179,10 +184,13 @@ export async function calculateAutomaticProgression(shipment: Shipment) {
     city:
       progress < 0.05
         ? shipment.sender?.address?.city || "Origin"
-        : progress > 0.9
-          ? "Near destination"
+        : progress >= 0.88
+          ? shipment.recipient?.address?.city
+            ? `Near ${shipment.recipient.address.city}`
+            : "Near destination"
           : "In Transit",
     progress,
+    suggestedStatus,
     routeGeometry,
     routeDistanceMiles: totalDistanceMiles,
   };
