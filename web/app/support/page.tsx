@@ -1,7 +1,12 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
+import {
+  clearChatSession,
+  loadChatSession,
+  saveChatSession,
+} from "@/lib/chat-session";
 import type { ChatConversation } from "@/lib/types";
 
 export default function SupportPage() {
@@ -12,6 +17,43 @@ export default function SupportPage() {
   const [chat, setChat] = useState<ChatConversation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [restoring, setRestoring] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function restore() {
+      const session = loadChatSession();
+      if (!session) {
+        if (!cancelled) setRestoring(false);
+        return;
+      }
+
+      setName(session.clientName);
+      setEmail(session.clientEmail);
+      if (session.subject) setSubject(session.subject);
+      if (session.trackingId) setTrackingId(session.trackingId);
+
+      try {
+        const res = await fetch(`/api/chat/${session.chatId}`);
+        const data = await res.json();
+        if (!res.ok || !data.chat || data.chat.status === "closed") {
+          clearChatSession();
+          return;
+        }
+        if (!cancelled) setChat(data.chat);
+      } catch {
+        // ignore — form remains available
+      } finally {
+        if (!cancelled) setRestoring(false);
+      }
+    }
+
+    restore();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function startChat(e: FormEvent) {
     e.preventDefault();
@@ -31,11 +73,23 @@ export default function SupportPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not start chat");
       setChat(data.chat);
+      saveChatSession({
+        chatId: data.chat.id,
+        clientName: name,
+        clientEmail: email,
+        subject: subject || "Support",
+        trackingId: trackingId || null,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
       setLoading(false);
     }
+  }
+
+  function endLocalSession() {
+    clearChatSession();
+    setChat(null);
   }
 
   return (
@@ -93,10 +147,14 @@ export default function SupportPage() {
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <h2 className="mb-2 text-center text-3xl font-bold text-text-primary">Live Support Chat</h2>
           <p className="mb-8 text-center text-text-secondary">
-            Chat in realtime with the CargoWatch team.
+            Chat in realtime with the CargoWatch team. Your conversation stays saved on this device.
           </p>
 
-          {!chat ? (
+          {restoring ? (
+            <div className="card p-8 text-center text-sm text-text-muted">
+              Restoring your conversation…
+            </div>
+          ) : !chat ? (
             <form onSubmit={startChat} className="card space-y-4 p-6 sm:p-8">
               <input
                 value={name}
@@ -140,7 +198,8 @@ export default function SupportPage() {
                 conversationId={chat.id}
                 initialMessages={chat.messages}
                 senderType="client"
-                senderName={name}
+                senderName={name || chat.clientName}
+                onClose={endLocalSession}
               />
             </div>
           )}

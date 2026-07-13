@@ -3,6 +3,11 @@
 import { FormEvent, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import ChatPanel from "@/components/ChatPanel";
+import {
+  clearChatSession,
+  loadChatSession,
+  saveChatSession,
+} from "@/lib/chat-session";
 import type { ChatConversation } from "@/lib/types";
 
 export default function ChatBubbleWidget() {
@@ -16,11 +21,53 @@ export default function ChatBubbleWidget() {
   const [chat, setChat] = useState<ChatConversation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [restoring, setRestoring] = useState(true);
 
   useEffect(() => {
-    // Close widget when navigating to admin
     if (hideOnAdmin) setOpen(false);
   }, [hideOnAdmin]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function restore() {
+      const session = loadChatSession();
+      if (!session) {
+        if (!cancelled) setRestoring(false);
+        return;
+      }
+
+      setName(session.clientName);
+      setEmail(session.clientEmail);
+      if (session.subject) setSubject(session.subject);
+      if (session.trackingId) setTrackingId(session.trackingId);
+
+      try {
+        const res = await fetch(`/api/chat/${session.chatId}`);
+        const data = await res.json();
+        if (!res.ok || !data.chat) {
+          clearChatSession();
+          return;
+        }
+        if (data.chat.status === "closed") {
+          clearChatSession();
+          return;
+        }
+        if (!cancelled) {
+          setChat(data.chat);
+        }
+      } catch {
+        // Keep form ready; user can restart
+      } finally {
+        if (!cancelled) setRestoring(false);
+      }
+    }
+
+    restore();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (hideOnAdmin) return null;
 
@@ -42,6 +89,13 @@ export default function ChatBubbleWidget() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not start chat");
       setChat(data.chat);
+      saveChatSession({
+        chatId: data.chat.id,
+        clientName: name,
+        clientEmail: email,
+        subject: subject || "Live support",
+        trackingId: trackingId || null,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
@@ -49,9 +103,13 @@ export default function ChatBubbleWidget() {
     }
   }
 
+  function endLocalSession() {
+    clearChatSession();
+    setChat(null);
+  }
+
   return (
     <>
-      {/* Floating bubble */}
       {!open && (
         <div className="fixed bottom-4 right-4 z-[9999] sm:bottom-5 sm:right-5">
           <button
@@ -68,18 +126,22 @@ export default function ChatBubbleWidget() {
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
+            {chat && (
+              <span className="absolute right-0 top-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400" />
+            )}
             <span className="pointer-events-none absolute -inset-1 animate-pulse-soft rounded-full bg-primary/30" />
           </button>
         </div>
       )}
 
-      {/* Chat panel */}
       {open && (
         <div className="fixed inset-3 z-[9999] flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-large sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(640px,85vh)] sm:w-[min(400px,92vw)]">
           <div className="flex items-center justify-between bg-gradient-to-r from-primary to-primary-700 px-4 py-3 text-white">
             <div>
               <p className="font-semibold">CargoWatch Support</p>
-              <p className="text-xs text-white/80">We typically reply instantly</p>
+              <p className="text-xs text-white/80">
+                {chat ? "Your conversation is saved" : "We typically reply instantly"}
+              </p>
             </div>
             <button
               type="button"
@@ -94,7 +156,11 @@ export default function ChatBubbleWidget() {
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col">
-            {!chat ? (
+            {restoring ? (
+              <div className="flex flex-1 items-center justify-center p-6 text-sm text-text-muted">
+                Restoring conversation…
+              </div>
+            ) : !chat ? (
               <form onSubmit={startChat} className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
                 <input
                   value={name}
@@ -142,7 +208,8 @@ export default function ChatBubbleWidget() {
                   conversationId={chat.id}
                   initialMessages={chat.messages}
                   senderType="client"
-                  senderName={name}
+                  senderName={name || chat.clientName}
+                  onClose={endLocalSession}
                 />
               </div>
             )}

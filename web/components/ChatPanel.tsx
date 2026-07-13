@@ -95,8 +95,8 @@ export default function ChatPanel({
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-semibold text-text-primary">Conversation</h3>
         {onClose && (
-          <button onClick={onClose} className="text-xs text-primary hover:underline">
-            Close chat
+          <button type="button" onClick={onClose} className="text-xs text-primary hover:underline">
+            {senderType === "client" ? "New conversation" : "Close chat"}
           </button>
         )}
       </div>
