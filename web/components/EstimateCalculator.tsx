@@ -65,7 +65,7 @@ export default function EstimateCalculator() {
 
   return (
     <div className="overflow-hidden border border-border bg-secondary shadow-soft">
-      <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
         <form onSubmit={onSubmit} className="space-y-5 p-6 text-white sm:p-8 lg:p-10">
           <div>
             <h2 className="font-display text-2xl font-bold leading-tight sm:text-3xl">
@@ -168,32 +168,41 @@ export default function EstimateCalculator() {
           >
             {t("est.calculate")}
           </button>
-        </form>
 
-        <div className="flex flex-col justify-between border-t border-white/10 bg-[#0a1628] p-6 sm:p-8 lg:border-l lg:border-t-0 lg:p-10">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-white/45">{t("est.cost")}</p>
+          <div className="rounded-md border border-white/10 bg-black/25 px-4 py-3">
+            <p className="text-xs uppercase tracking-wide text-white/50">{t("est.cost")}</p>
             {!revealed ? (
-              <p className="mt-3 font-display text-3xl font-bold text-white/35">—</p>
+              <p className="mt-1 font-display text-2xl font-bold text-white/35">—</p>
             ) : (
-              <div className="mt-3">
-                <p className="font-display text-4xl font-extrabold tabular-nums text-white">
+              <div className="mt-1">
+                <p className="font-display text-3xl font-extrabold tabular-nums text-white">
                   ${estimate.total}
                 </p>
-                <p className="mt-2 text-sm text-white/55">
+                <p className="mt-1 text-xs text-white/55">
                   {t("est.aboutDays")
                     .replace("{days}", String(estimate.days))
                     .replace("{ins}", String(estimate.insurance))}
                 </p>
               </div>
             )}
-            <p className="mt-4 text-xs leading-relaxed text-white/45">{t("est.disclaimer")}</p>
+            <p className="mt-2 text-[11px] leading-relaxed text-white/40">{t("est.disclaimer")}</p>
           </div>
+        </form>
 
-          <div className="mt-10 space-y-3 border-t border-white/10 pt-6">
-            <p className="font-display text-lg font-bold text-white">{t("est.panelTitle")}</p>
-            <p className="text-sm leading-relaxed text-white/65">{t("est.panelSub")}</p>
-            <div className="flex flex-col gap-2 pt-2 sm:flex-row">
+        <div className="relative min-h-[420px] overflow-hidden bg-[#0a1628] lg:min-h-full">
+          <Image
+            src="/images/brand-courier-avatar.png"
+            alt="CargoWatch courier"
+            fill
+            className="object-cover object-[center_18%]"
+            sizes="(max-width: 1024px) 100vw, 45vw"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/55 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-6 pt-24 sm:p-8">
+            <p className="font-display text-lg font-bold text-white">{t("est.courierTitle")}</p>
+            <p className="mt-1 text-sm leading-relaxed text-white/70">{t("est.courierSub")}</p>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <Link href="/track" className="btn-primary text-center text-sm">
                 {t("est.track")}
               </Link>

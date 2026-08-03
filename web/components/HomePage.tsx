@@ -50,36 +50,43 @@ export default function HomePage() {
     { title: t("home.fact3Title"), text: t("home.fact3Text") },
   ];
 
+  const gallery = [
+    { src: "/images/brand-port.png", alt: t("home.port"), label: t("home.port"), tall: true },
+    { src: "/images/brand-warehouse.png", alt: t("home.warehouse"), label: t("home.warehouse") },
+    { src: "/images/brand-highway-night.png", alt: t("home.highway"), label: t("home.highway") },
+    { src: "/images/brand-air-cargo.png", alt: t("home.airHubs"), label: t("home.airHubs") },
+  ];
+
   return (
     <div>
-      <section className="relative min-h-[82vh] overflow-hidden bg-secondary text-white">
+      <section className="relative min-h-[100svh] overflow-hidden bg-secondary text-white">
         <div className="absolute inset-0">
           <Image
             src="/images/brand-highway-night.png"
             alt="Freight truck on night highway"
             fill
             priority
-            className="object-cover"
+            className="object-cover object-center scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/88 to-secondary/45" />
-          <div className="absolute inset-0 bg-gradient-to-t from-secondary/92 via-transparent to-secondary/35" />
+          <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(7,26,46,0.94)_0%,rgba(7,26,46,0.72)_48%,rgba(7,26,46,0.28)_100%)]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-secondary via-transparent to-secondary/25" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[82vh] max-w-7xl flex-col justify-end px-4 pb-16 pt-28 sm:px-6 sm:pb-20 lg:px-8 lg:pb-24">
-          <p className="reveal-up font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+        <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-20 pt-32 sm:px-6 sm:pb-24 lg:px-8 lg:pb-28">
+          <p className="reveal-up font-display text-[2.75rem] font-extrabold leading-none tracking-tight text-white sm:text-6xl lg:text-7xl">
             CargoWatch
           </p>
-          <h1 className="reveal-up-delay mt-5 max-w-2xl font-display text-2xl font-semibold leading-snug text-white/95 sm:text-3xl lg:text-[2.15rem]">
+          <h1 className="reveal-up-delay mt-6 max-w-2xl font-display text-[1.65rem] font-semibold leading-[1.2] text-white sm:text-3xl lg:text-4xl">
             {t("home.heroTitle")}
           </h1>
-          <p className="reveal-up-delay-2 mt-4 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
+          <p className="reveal-up-delay-2 mt-5 max-w-lg text-base leading-relaxed text-white/72 sm:text-lg">
             {t("home.heroSub")}
           </p>
-          <div className="reveal-up-delay-2 mt-9 flex flex-col gap-3 sm:flex-row">
-            <Link href="/track" className="btn-primary">
+          <div className="reveal-up-delay-2 mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Link href="/track" className="btn-primary px-7 py-3.5 text-base">
               {t("home.ctaTrack")}
             </Link>
-            <Link href="/estimate" className="btn-on-dark">
+            <Link href="/estimate" className="btn-on-dark px-7 py-3.5 text-base">
               {t("home.ctaEstimate")}
             </Link>
           </div>
@@ -198,7 +205,39 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-background py-16 sm:py-20 lg:py-24">
+      <section className="bg-background py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <Reveal>
+              <div>
+                <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">
+                  {t("home.opsTitle")}
+                </h2>
+              </div>
+            </Reveal>
+            <p className="max-w-md text-sm text-text-secondary sm:text-base">{t("home.opsSub")}</p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+            {gallery.map((g, i) => (
+              <Reveal key={g.label} delayMs={i * 50} className={g.tall ? "sm:col-span-2 sm:row-span-2" : ""}>
+                <figure
+                  className={`relative overflow-hidden ${
+                    g.tall ? "min-h-[280px] sm:min-h-full sm:h-full" : "min-h-[200px]"
+                  }`}
+                >
+                  <Image src={g.src} alt={g.alt} fill className="object-cover" />
+                  <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 py-4 text-sm font-semibold text-white">
+                    {g.label}
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-panel py-16 sm:py-20 lg:py-24">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
           <Reveal>
             <div className="relative min-h-[300px] overflow-hidden sm:min-h-[400px]">
@@ -236,7 +275,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="faq" className="bg-panel py-16 sm:py-20 lg:py-24">
+      <section id="faq" className="bg-background py-16 sm:py-20 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
           <Reveal>
             <div>
@@ -244,6 +283,14 @@ export default function HomePage() {
                 {t("home.faqTitle")}
               </h2>
               <p className="mt-3 text-text-secondary">{t("home.faqSub")}</p>
+              <div className="relative mt-8 hidden min-h-[240px] overflow-hidden lg:block">
+                <Image
+                  src="/images/brand-air-cargo.png"
+                  alt="Support and operations"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
           </Reveal>
           <Reveal delayMs={80}>
@@ -252,9 +299,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-secondary py-16 text-white sm:py-20">
-        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h2 className="font-display text-2xl font-bold sm:text-3xl">{t("home.finalTitle")}</h2>
+      <section className="relative overflow-hidden py-20 text-white">
+        <div className="absolute inset-0">
+          <Image src="/images/brand-port.png" alt="Cargo port" fill className="object-cover" />
+          <div className="absolute inset-0 bg-secondary/82" />
+        </div>
+        <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
+          <p className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">CargoWatch</p>
+          <h2 className="mt-4 font-display text-2xl font-bold sm:text-3xl">{t("home.finalTitle")}</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">{t("home.finalSub")}</p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href="/track" className="btn-primary">
