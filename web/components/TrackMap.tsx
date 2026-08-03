@@ -179,7 +179,7 @@ export default function TrackMap({
     <div className="relative h-[min(58vh,420px)] w-full overflow-hidden rounded-xl border border-border sm:h-80 md:h-96">
       {!routeReady && (
         <div className="pointer-events-none absolute inset-x-0 top-2 z-[500] flex justify-center px-3">
-          <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-medium text-text-secondary shadow-soft sm:text-xs">
+          <span className="rounded-full bg-panel/95 px-3 py-1 text-[11px] font-medium text-text-secondary shadow-soft sm:text-xs">
             Loading road route…
           </span>
         </div>

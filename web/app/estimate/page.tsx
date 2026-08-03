@@ -52,7 +52,7 @@ export default function EstimatePage() {
               },
             ].map((item, i) => (
               <Reveal key={item.title} delayMs={i * 80}>
-                <div className="rounded-2xl border border-border bg-white p-6 shadow-soft">
+                <div className="rounded-2xl border border-border bg-panel p-6 shadow-soft">
                   <h3 className="font-display text-lg font-bold text-text-primary">{item.title}</h3>
                   <p className="mt-2 text-sm text-text-secondary">{item.text}</p>
                 </div>

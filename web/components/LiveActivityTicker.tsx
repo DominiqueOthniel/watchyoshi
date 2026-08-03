@@ -32,7 +32,7 @@ export default function LiveActivityTicker() {
   const item = EVENTS[index];
 
   return (
-    <div className="border-b border-border bg-white">
+    <div className="border-b border-border bg-panel">
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <span className="relative flex h-2.5 w-2.5 shrink-0">

@@ -40,7 +40,7 @@ export default function FaqAccordion() {
           <div
             key={item.q}
             className={`overflow-hidden rounded-xl border transition ${
-              active ? "border-primary/30 bg-white shadow-soft" : "border-border bg-white/80"
+              active ? "border-primary/30 bg-panel shadow-soft" : "border-border bg-panel/80"
             }`}
           >
             <button

@@ -17,7 +17,7 @@ export default function AgencyLogos() {
   const { t } = useI18n();
 
   return (
-    <section className="border-b border-border bg-white py-10 sm:py-12">
+    <section className="border-b border-border bg-panel py-10 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">
           {t("home.agenciesEyebrow")}
@@ -30,7 +30,7 @@ export default function AgencyLogos() {
           {AGENCIES.map((agency) => (
             <div
               key={agency.name}
-              className="flex h-16 items-center justify-center rounded-xl border border-border/80 bg-surface/50 px-3 transition hover:border-primary/20 hover:bg-white hover:shadow-soft"
+              className="flex h-16 items-center justify-center rounded-xl border border-border/80 bg-surface/50 px-3 transition hover:border-primary/20 hover:bg-panel hover:shadow-soft"
               title={agency.name}
             >
               <span className={`select-none text-[15px] sm:text-base ${agency.className}`}>

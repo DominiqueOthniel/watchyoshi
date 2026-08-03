@@ -19,7 +19,7 @@ export default function StickyTrackCue() {
 
   return (
     <div className="fixed bottom-20 left-1/2 z-[40] w-[min(92vw,420px)] -translate-x-1/2 sm:bottom-6">
-      <div className="flex items-center justify-between gap-3 rounded-full border border-border bg-white/95 px-3 py-2 shadow-large backdrop-blur">
+      <div className="flex items-center justify-between gap-3 rounded-full border border-border bg-panel/95 px-3 py-2 shadow-large backdrop-blur">
         <p className="pl-2 text-xs text-text-secondary sm:text-sm">{t("home.stickyHint")}</p>
         <Link
           href="/track"

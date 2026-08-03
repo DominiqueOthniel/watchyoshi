@@ -67,7 +67,7 @@ export default function AdminLoginClient() {
           <p className="mt-2 text-text-secondary">Sign in to access the admin dashboard</p>
         </div>
 
-        <div className="rounded-2xl bg-white p-8 shadow-large">
+        <div className="rounded-2xl bg-panel p-8 shadow-large">
           <form onSubmit={onSubmit} className="space-y-6">
             {error && (
               <div className="rounded-lg border border-error bg-error-50 px-4 py-3 text-sm text-error">

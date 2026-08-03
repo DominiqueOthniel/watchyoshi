@@ -301,7 +301,7 @@ export default function TrackClient() {
 
       {shipment && (
         <section className="mx-auto max-w-5xl space-y-4 px-3 py-6 sm:space-y-6 sm:px-6 sm:py-12">
-          <div className="rounded-2xl bg-white p-4 shadow-large sm:p-8">
+          <div className="rounded-2xl bg-panel p-4 shadow-large sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-sm text-text-muted">{t("track.id")}</p>
@@ -369,7 +369,7 @@ export default function TrackClient() {
             )}
           </div>
 
-          <div className="overflow-hidden rounded-2xl bg-white p-1.5 shadow-large sm:p-2">
+          <div className="overflow-hidden rounded-2xl bg-panel p-1.5 shadow-large sm:p-2">
             <TrackMap
               key={shipment.trackingId}
               origin={origin}
@@ -393,7 +393,7 @@ export default function TrackClient() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white p-4 shadow-large sm:p-8">
+          <div className="rounded-2xl bg-panel p-4 shadow-large sm:p-8">
             <h2 className="mb-4 text-lg font-semibold text-text-primary sm:mb-5">
               {t("track.timeline")}
             </h2>

@@ -117,7 +117,7 @@ export default function HomePage() {
       <LiveActivityTicker />
       <AgencyLogos />
 
-      <section className="border-b border-border bg-white">
+      <section className="border-b border-border bg-panel">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:grid-cols-3 sm:px-6 lg:px-8">
           {[
             { href: "/estimate", label: t("home.cardEstimate"), hint: t("home.cardEstimateHint") },
@@ -127,7 +127,7 @@ export default function HomePage() {
             <Link
               key={item.href}
               href={item.href}
-              className="group rounded-2xl border border-border bg-surface/60 px-5 py-4 transition hover:border-primary/30 hover:bg-white hover:shadow-soft"
+              className="group rounded-2xl border border-border bg-surface/60 px-5 py-4 transition hover:border-primary/30 hover:bg-panel hover:shadow-soft"
             >
               <p className="font-display text-lg font-bold text-text-primary group-hover:text-primary">
                 {item.label}
@@ -155,7 +155,7 @@ export default function HomePage() {
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {services.map((s, i) => (
               <Reveal key={s.href} delayMs={i * 70}>
-                <Link href={s.href} className="group block overflow-hidden rounded-2xl bg-white shadow-soft">
+                <Link href={s.href} className="group block overflow-hidden rounded-2xl bg-panel shadow-soft">
                   <div className="relative h-44 overflow-hidden">
                     <Image
                       src={s.img}
@@ -178,7 +178,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="estimate" className="bg-white py-16 sm:py-20 lg:py-24">
+      <section id="estimate" className="bg-panel py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="mb-8 max-w-2xl">
@@ -240,7 +240,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="process" className="bg-white py-16 sm:py-20 lg:py-24">
+      <section id="process" className="bg-panel py-16 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="max-w-2xl">
@@ -308,7 +308,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-20 lg:py-24">
+      <section className="bg-panel py-16 sm:py-20 lg:py-24">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
           <Reveal>
             <div className="relative min-h-[320px] overflow-hidden rounded-3xl sm:min-h-[420px]">
@@ -366,7 +366,7 @@ export default function HomePage() {
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {testimonials.map((item, i) => (
               <Reveal key={item.name} delayMs={i * 80}>
-                <blockquote className="rounded-2xl bg-white p-6 shadow-soft">
+                <blockquote className="rounded-2xl bg-panel p-6 shadow-soft">
                   <p className="text-sm leading-relaxed text-text-secondary">“{item.quote}”</p>
                   <div className="mt-5 flex items-center gap-3">
                     <Image
@@ -388,7 +388,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="faq" className="bg-white py-16 sm:py-20 lg:py-24">
+      <section id="faq" className="bg-panel py-16 sm:py-20 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
           <Reveal>
             <div>

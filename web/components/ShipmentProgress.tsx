@@ -71,8 +71,8 @@ export default function ShipmentProgress({ status, routeProgress }: Props) {
                     done
                       ? "border-primary bg-primary text-white"
                       : active
-                        ? "step-pulse border-primary bg-white text-primary"
-                        : "border-border bg-white text-text-muted"
+                        ? "step-pulse border-primary bg-panel text-primary"
+                        : "border-border bg-panel text-text-muted"
                   }`}
                 >
                   {done ? "✓" : active ? "●" : ""}

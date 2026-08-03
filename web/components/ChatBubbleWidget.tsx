@@ -135,7 +135,7 @@ export default function ChatBubbleWidget() {
       )}
 
       {open && (
-        <div className="fixed inset-3 z-[9999] flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-large sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(640px,85vh)] sm:w-[min(400px,92vw)]">
+        <div className="fixed inset-3 z-[9999] flex flex-col overflow-hidden rounded-2xl border border-border bg-panel shadow-large sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(640px,85vh)] sm:w-[min(400px,92vw)]">
           <div className="flex items-center justify-between bg-gradient-to-r from-primary to-primary-700 px-4 py-3 text-white">
             <div>
               <p className="font-semibold">CargoWatch Support</p>

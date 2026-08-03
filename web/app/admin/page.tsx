@@ -155,7 +155,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="border-b border-border bg-white">
+      <div className="border-b border-border bg-panel">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-5 sm:px-6 lg:px-8">
           <div className="min-w-0">
             <h1 className="truncate text-2xl font-bold text-text-primary sm:text-3xl">
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
             ["Delivered", stats.delivered, "text-success"],
             ["Pending", stats.pending, "text-text-secondary"],
           ].map(([label, value, color]) => (
-            <div key={label as string} className="rounded-2xl bg-white p-4 shadow-soft sm:p-5">
+            <div key={label as string} className="rounded-2xl bg-panel p-4 shadow-soft sm:p-5">
               <p className="text-[10px] font-medium uppercase tracking-wide text-text-muted sm:text-xs">
                 {label}
               </p>
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
               <strong>Advance</strong> for the next step. Status also advances automatically with
               map progress.
             </p>
-            <div className="overflow-x-auto rounded-2xl bg-white shadow-large">
+            <div className="overflow-x-auto rounded-2xl bg-panel shadow-large">
               <table className="min-w-[900px] w-full text-left text-sm">
                 <thead className="border-b border-border bg-surface text-xs uppercase text-text-muted">
                   <tr>
@@ -364,7 +364,7 @@ export default function AdminDashboard() {
 
         {tab === "chat" && !loading && (
           <div className="mt-6 grid gap-4 lg:grid-cols-[280px_1fr]">
-            <div className="rounded-2xl bg-white p-3 shadow-large">
+            <div className="rounded-2xl bg-panel p-3 shadow-large">
               <ul className="max-h-[40vh] space-y-2 overflow-y-auto lg:max-h-none">
                 {chats.map((c) => (
                   <li key={c.id}>
@@ -384,7 +384,7 @@ export default function AdminDashboard() {
                 )}
               </ul>
             </div>
-            <div className="min-h-[420px] rounded-2xl bg-white p-4 shadow-large">
+            <div className="min-h-[420px] rounded-2xl bg-panel p-4 shadow-large">
               {activeChat ? (
                 <ChatPanel
                   conversationId={activeChat.id}
@@ -409,7 +409,7 @@ export default function AdminDashboard() {
         )}
 
         {tab === "receipts" && !loading && (
-          <div className="mt-6 overflow-x-auto rounded-2xl bg-white shadow-large">
+          <div className="mt-6 overflow-x-auto rounded-2xl bg-panel shadow-large">
             <table className="min-w-[640px] w-full text-left text-sm">
               <thead className="border-b border-border bg-surface text-xs uppercase text-text-muted">
                 <tr>

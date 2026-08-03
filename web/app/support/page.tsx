@@ -114,7 +114,7 @@ export default function SupportPage() {
         </div>
       </section>
 
-      <section id="faq" className="bg-white py-16">
+      <section id="faq" className="bg-panel py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <h2 className="mb-8 text-center text-3xl font-bold text-text-primary">
             Frequently Asked Questions

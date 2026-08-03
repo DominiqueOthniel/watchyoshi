@@ -70,7 +70,7 @@ export default function CoveragePage() {
           <div className="mt-10 grid gap-5 sm:grid-cols-2">
             {corridors.map((c, i) => (
               <Reveal key={c.region} delayMs={i * 70}>
-                <article className="group overflow-hidden rounded-3xl bg-white shadow-soft">
+                <article className="group overflow-hidden rounded-3xl bg-panel shadow-soft">
                   <div className="relative h-48 overflow-hidden">
                     <Image
                       src={c.img}

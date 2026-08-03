@@ -9,7 +9,7 @@ export default function LanguageSwitcher({ variant = "dark" }: { variant?: "dark
   const selectClass =
     variant === "dark"
       ? "rounded-md border border-white/15 bg-white/10 py-1.5 pl-2 pr-7 text-xs font-medium text-white outline-none focus:border-accent"
-      : "rounded-md border border-border bg-white py-1.5 pl-2 pr-7 text-xs font-medium text-text-primary outline-none focus:border-primary";
+      : "rounded-md border border-border bg-panel py-1.5 pl-2 pr-7 text-xs font-medium text-text-primary outline-none focus:border-primary";
 
   return (
     <div className="flex items-center gap-1.5" title={t("nav.language")}>

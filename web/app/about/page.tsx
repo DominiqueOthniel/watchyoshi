@@ -52,7 +52,7 @@ export default function AboutPage() {
         }
       />
 
-      <section className="bg-white py-14 sm:py-20">
+      <section className="bg-panel py-14 sm:py-20">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
           <Reveal>
             <div>
@@ -99,7 +99,7 @@ export default function AboutPage() {
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {timeline.map((t, i) => (
               <Reveal key={t.year} delayMs={i * 80}>
-                <div className="border-t-2 border-primary bg-white p-5 shadow-soft">
+                <div className="border-t-2 border-primary bg-panel p-5 shadow-soft">
                   <p className="font-display text-sm font-bold text-primary">{t.year}</p>
                   <h3 className="mt-2 font-display text-xl font-bold text-text-primary">{t.title}</h3>
                   <p className="mt-2 text-sm text-text-secondary">{t.text}</p>

@@ -66,7 +66,7 @@ export default function ServicesPage() {
             <Reveal key={s.slug} delayMs={i * 60}>
               <article
                 id={s.slug}
-                className={`grid items-center gap-6 overflow-hidden rounded-3xl bg-white shadow-soft lg:grid-cols-2 ${
+                className={`grid items-center gap-6 overflow-hidden rounded-3xl bg-panel shadow-soft lg:grid-cols-2 ${
                   i % 2 === 1 ? "lg:[&>div:first-child]:order-2" : ""
                 }`}
               >
@@ -104,7 +104,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="bg-white py-16">
+      <section className="bg-panel py-16">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="font-display text-3xl font-bold text-text-primary">Not sure which mode fits?</h2>
           <p className="mx-auto mt-3 max-w-xl text-text-secondary">

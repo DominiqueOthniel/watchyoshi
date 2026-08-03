@@ -107,7 +107,7 @@ export default function ChatPanel({
             className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
               m.senderType === senderType
                 ? "ml-auto bg-primary text-white"
-                : "border border-border bg-white text-text-primary"
+                : "border border-border bg-panel text-text-primary"
             }`}
           >
             <p className="text-[10px] opacity-70">{m.senderName || m.senderType}</p>
