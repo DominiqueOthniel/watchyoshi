@@ -5,12 +5,18 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useMemo, useRef } from "react";
 
-const baseIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
+const originIcon = L.divIcon({
+  className: "cw-pin-icon",
+  html: `<div class="cw-map-pin cw-map-pin-origin" title="Origin"><span></span></div>`,
+  iconSize: [22, 28],
+  iconAnchor: [11, 28],
+});
+
+const destIcon = L.divIcon({
+  className: "cw-pin-icon",
+  html: `<div class="cw-map-pin cw-map-pin-dest" title="Destination"><span></span></div>`,
+  iconSize: [22, 28],
+  iconAnchor: [11, 28],
 });
 
 const pulseIcon = L.divIcon({
@@ -31,19 +37,42 @@ interface TrackMapProps {
   destination?: Point;
   current?: Point;
   routeGeometry?: [number, number][] | null;
+  showLiveMarker?: boolean;
 }
 
-function FitOnce({ points }: { points: [number, number][] }) {
+function MapReady({ points }: { points: [number, number][] }) {
   const map = useMap();
-  const done = useRef(false);
+  const fittedKey = useRef("");
 
   useEffect(() => {
-    if (done.current || points.length === 0) return;
-    done.current = true;
+    const invalidate = () => map.invalidateSize({ animate: false });
+    invalidate();
+    const t1 = window.setTimeout(invalidate, 80);
+    const t2 = window.setTimeout(invalidate, 320);
+    window.addEventListener("orientationchange", invalidate);
+    window.addEventListener("resize", invalidate);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.removeEventListener("orientationchange", invalidate);
+      window.removeEventListener("resize", invalidate);
+    };
+  }, [map]);
+
+  useEffect(() => {
+    if (points.length === 0) return;
+    const key = `${points.length}:${points[0][0].toFixed(3)},${points[0][1].toFixed(3)}:${points[points.length - 1][0].toFixed(3)},${points[points.length - 1][1].toFixed(3)}`;
+    if (fittedKey.current === key) return;
+    fittedKey.current = key;
+
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+    const padding: [number, number] = isMobile ? [28, 28] : [48, 48];
+    const maxZoom = isMobile ? 6 : 7;
+
     if (points.length >= 2) {
-      map.fitBounds(L.latLngBounds(points), { padding: [40, 40], maxZoom: 7 });
+      map.fitBounds(L.latLngBounds(points), { padding, maxZoom });
     } else {
-      map.setView(points[0], 6);
+      map.setView(points[0], isMobile ? 5 : 6);
     }
   }, [map, points]);
 
@@ -67,7 +96,6 @@ function MovingMarker({ current }: { current: Point }) {
       let [lat, lng] = displayRef.current;
       const dLat = tLat - lat;
       const dLng = tLng - lng;
-      // Smooth chase — visibly crawls toward latest progress point
       lat += dLat * 0.12;
       lng += dLng * 0.12;
       if (Math.abs(dLat) < 0.00001 && Math.abs(dLng) < 0.00001) {
@@ -104,22 +132,20 @@ export default function TrackMap({
   destination,
   current,
   routeGeometry,
+  showLiveMarker = true,
 }: TrackMapProps) {
   const centerLat = current?.lat ?? origin?.lat ?? destination?.lat ?? 20;
   const centerLng = current?.lng ?? origin?.lng ?? destination?.lng ?? 0;
 
   const fullRoute = useMemo(() => {
     if (routeGeometry && routeGeometry.length >= 2) return routeGeometry;
-    const line: [number, number][] = [];
-    if (origin) line.push([origin.lat, origin.lng]);
-    if (destination) line.push([destination.lat, destination.lng]);
-    return line;
-  }, [routeGeometry, origin, destination]);
+    // Avoid ugly straight line while waiting for OSRM road geometry
+    return [] as [number, number][];
+  }, [routeGeometry]);
 
   const traveledLine = useMemo(() => {
     if (!current || !origin) return [] as [number, number][];
     if (routeGeometry && routeGeometry.length >= 2) {
-      // Approximate traveled portion by nearest index to current
       let best = 0;
       let bestD = Infinity;
       routeGeometry.forEach((p, i) => {
@@ -131,10 +157,7 @@ export default function TrackMap({
       });
       return routeGeometry.slice(0, Math.max(2, best + 1));
     }
-    return [
-      [origin.lat, origin.lng],
-      [current.lat, current.lng],
-    ] as [number, number][];
+    return [] as [number, number][];
   }, [origin, current, routeGeometry]);
 
   const fitPoints = useMemo(() => {
@@ -145,36 +168,58 @@ export default function TrackMap({
     return pts;
   }, [fullRoute, origin, destination]);
 
+  const nearDestination =
+    current &&
+    destination &&
+    Math.hypot(current.lat - destination.lat, current.lng - destination.lng) < 0.08;
+
+  const routeReady = fullRoute.length >= 2;
+
   return (
-    <div className="h-56 w-full overflow-hidden rounded-xl border border-border sm:h-80">
+    <div className="relative h-[min(58vh,420px)] w-full overflow-hidden rounded-xl border border-border sm:h-80 md:h-96">
+      {!routeReady && (
+        <div className="pointer-events-none absolute inset-x-0 top-2 z-[500] flex justify-center px-3">
+          <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-medium text-text-secondary shadow-soft sm:text-xs">
+            Loading road route…
+          </span>
+        </div>
+      )}
       <MapContainer
         center={[centerLat, centerLng]}
         zoom={5}
         scrollWheelZoom={false}
+        dragging
+        touchZoom
         className="h-full w-full"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <FitOnce points={fitPoints} />
-        {fullRoute.length >= 2 && (
-          <Polyline positions={fullRoute} pathOptions={{ color: "#bfdbfe", weight: 5, opacity: 0.9 }} />
+        <MapReady points={fitPoints} />
+        {routeReady && (
+          <Polyline
+            positions={fullRoute}
+            pathOptions={{ color: "#93c5fd", weight: 6, opacity: 0.85, lineJoin: "round", lineCap: "round" }}
+          />
         )}
         {traveledLine.length >= 2 && (
-          <Polyline positions={traveledLine} pathOptions={{ color: "#2563EB", weight: 5 }} />
+          <Polyline
+            positions={traveledLine}
+            pathOptions={{ color: "#2563EB", weight: 5, lineJoin: "round", lineCap: "round" }}
+          />
         )}
         {origin && (
-          <Marker position={[origin.lat, origin.lng]} icon={baseIcon}>
+          <Marker position={[origin.lat, origin.lng]} icon={originIcon}>
             <Popup>{origin.label || "Origin"}</Popup>
           </Marker>
         )}
         {destination && (
-          <Marker position={[destination.lat, destination.lng]} icon={baseIcon}>
+          <Marker position={[destination.lat, destination.lng]} icon={destIcon}>
             <Popup>{destination.label || "Destination"}</Popup>
           </Marker>
         )}
-        {current && <MovingMarker current={current} />}
+        {showLiveMarker && current && !nearDestination && <MovingMarker current={current} />}
       </MapContainer>
     </div>
   );

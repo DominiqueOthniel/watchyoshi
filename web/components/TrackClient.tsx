@@ -14,7 +14,7 @@ import type { Shipment } from "@/lib/types";
 const TrackMap = dynamic(() => import("@/components/TrackMap"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-80 items-center justify-center rounded-xl bg-surface text-sm text-text-muted">
+    <div className="flex h-[min(58vh,420px)] items-center justify-center rounded-xl bg-surface text-sm text-text-muted sm:h-80">
       Loading map…
     </div>
   ),
@@ -54,6 +54,8 @@ export default function TrackClient() {
       setShipment(data.shipment);
       if (Array.isArray(data.routeGeometry) && data.routeGeometry.length >= 2) {
         setRouteGeometry(data.routeGeometry);
+      } else if (!silent) {
+        setRouteGeometry(null);
       }
       if (typeof data.routeProgress === "number") {
         setRouteProgress(data.routeProgress);
@@ -76,7 +78,54 @@ export default function TrackClient() {
     }
   }, [searchParams, lookup]);
 
-  // Poll server for sync / route geometry
+  useEffect(() => {
+    if (!shipment) return;
+    if (routeGeometry && routeGeometry.length >= 2) return;
+
+    const originLat = Number(shipment.sender?.address?.lat);
+    const originLng = Number(shipment.sender?.address?.lng);
+    const destLat = Number(shipment.recipient?.address?.lat);
+    const destLng = Number(shipment.recipient?.address?.lng);
+    if (![originLat, originLng, destLat, destLng].every((n) => Number.isFinite(n))) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const qs = new URLSearchParams({
+          oLat: String(originLat),
+          oLng: String(originLng),
+          dLat: String(destLat),
+          dLng: String(destLng),
+        });
+        const res = await fetch(`/api/route/driving?${qs.toString()}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (
+          !cancelled &&
+          Array.isArray(data.geometry) &&
+          data.geometry.length >= 2
+        ) {
+          setRouteGeometry(data.geometry);
+          setShipment((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  routeGeometry: data.geometry,
+                  routeDistanceMiles: data.distanceMiles ?? prev.routeDistanceMiles,
+                }
+              : prev
+          );
+        }
+      } catch {
+        // Keep map usable even if routing fails
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [shipment, routeGeometry]);
+
   useEffect(() => {
     if (!shipment?.trackingId) return;
     if (shipment.status === "delivered") return;
@@ -85,7 +134,6 @@ export default function TrackClient() {
     return () => clearInterval(timer);
   }, [shipment?.trackingId, shipment?.status, lookup]);
 
-  // Continuous client-side progress so the marker moves every second
   useEffect(() => {
     if (!shipment) {
       setLivePoint(null);
@@ -195,26 +243,44 @@ export default function TrackClient() {
   }, [shipment]);
 
   const events = [...(shipment?.events || [])].reverse();
+  const hasResult = Boolean(shipment);
 
   return (
-    <div>
-      <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-16">
+    <div className="pb-24 sm:pb-10">
+      <section
+        className={`bg-gradient-to-br from-primary-50 to-secondary-50 ${
+          hasResult ? "py-6 sm:py-10" : "py-12 sm:py-16"
+        }`}
+      >
         <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h1 className="mb-4 text-4xl font-bold text-text-primary lg:text-5xl">
-            Track Your <span className="text-gradient-primary">Shipment</span>
-          </h1>
-          <p className="mb-8 text-lg text-text-secondary">
-            Enter your tracking ID to see live status, timeline, and map location.
-          </p>
+          {!hasResult && (
+            <>
+              <h1 className="mb-3 text-3xl font-bold text-text-primary sm:mb-4 sm:text-4xl lg:text-5xl">
+                Track Your <span className="text-gradient-primary">Shipment</span>
+              </h1>
+              <p className="mb-6 text-base text-text-secondary sm:mb-8 sm:text-lg">
+                Enter your tracking ID to see live status, timeline, and map location.
+              </p>
+            </>
+          )}
+          {hasResult && (
+            <h1 className="mb-4 text-xl font-bold text-text-primary sm:text-2xl">
+              Live tracking
+            </h1>
+          )}
           <form onSubmit={onSubmit} className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row">
             <input
               value={trackingId}
               onChange={(e) => setTrackingId(e.target.value)}
               placeholder="Enter tracking ID..."
-              className="input-field flex-1 px-4 py-3 text-lg"
+              className="input-field min-w-0 flex-1 px-4 py-3 text-base sm:text-lg"
               required
             />
-            <button type="submit" disabled={loading} className="btn-primary px-8 py-3 text-lg disabled:opacity-60">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary shrink-0 px-8 py-3 text-base disabled:opacity-60 sm:text-lg"
+            >
               {loading ? "Searching…" : "Track"}
             </button>
           </form>
@@ -227,12 +293,14 @@ export default function TrackClient() {
       </section>
 
       {shipment && (
-        <section className="mx-auto max-w-5xl space-y-6 px-4 py-12 sm:px-6">
-          <div className="rounded-2xl bg-white p-6 shadow-large sm:p-8">
+        <section className="mx-auto max-w-5xl space-y-4 px-3 py-6 sm:space-y-6 sm:px-6 sm:py-12">
+          <div className="rounded-2xl bg-white p-4 shadow-large sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm text-text-muted">Tracking ID</p>
-                <p className="text-2xl font-bold text-text-primary">{shipment.trackingId}</p>
+                <p className="break-all text-xl font-bold text-text-primary sm:text-2xl">
+                  {shipment.trackingId}
+                </p>
               </div>
               <span
                 className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize ${
@@ -252,25 +320,32 @@ export default function TrackClient() {
               </span>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-5 sm:mt-6">
               <ShipmentProgress status={shipment.status} routeProgress={routeProgress} />
             </div>
 
-            <div className="mt-6 grid gap-6 sm:grid-cols-2">
+            <div className="mt-5 grid gap-4 sm:mt-6 sm:grid-cols-2 sm:gap-6">
               <div>
-                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-muted">From</p>
+                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-muted">
+                  From
+                </p>
                 <p className="font-semibold text-text-primary">{shipment.sender.name}</p>
                 <p className="text-sm text-text-secondary">
-                  {[shipment.sender.address?.city, shipment.sender.address?.country]
+                  {[shipment.sender.address?.city, shipment.sender.address?.state || shipment.sender.address?.country]
                     .filter(Boolean)
                     .join(", ")}
                 </p>
               </div>
               <div>
-                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-muted">To</p>
+                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-muted">
+                  To
+                </p>
                 <p className="font-semibold text-text-primary">{shipment.recipient.name}</p>
                 <p className="text-sm text-text-secondary">
-                  {[shipment.recipient.address?.city, shipment.recipient.address?.country]
+                  {[
+                    shipment.recipient.address?.city,
+                    shipment.recipient.address?.state || shipment.recipient.address?.country,
+                  ]
                     .filter(Boolean)
                     .join(", ")}
                 </p>
@@ -287,18 +362,34 @@ export default function TrackClient() {
             )}
           </div>
 
-          <div className="overflow-hidden rounded-2xl bg-white p-2 shadow-large">
+          <div className="overflow-hidden rounded-2xl bg-white p-1.5 shadow-large sm:p-2">
             <TrackMap
               key={shipment.trackingId}
               origin={origin}
               destination={destination}
               current={livePoint || undefined}
               routeGeometry={routeGeometry}
+              showLiveMarker={shipment.status !== "delivered" && shipment.status !== "pending"}
             />
+            <div className="flex flex-wrap items-center gap-3 px-2 py-2 text-[11px] text-text-muted sm:gap-4 sm:text-xs">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Origin
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> Destination
+              </span>
+              {shipment.status !== "delivered" && shipment.status !== "pending" && (
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-primary" /> Live package
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="rounded-2xl bg-white p-6 shadow-large sm:p-8">
-            <h2 className="mb-5 text-lg font-semibold text-text-primary">Shipment Timeline</h2>
+          <div className="rounded-2xl bg-white p-4 shadow-large sm:p-8">
+            <h2 className="mb-4 text-lg font-semibold text-text-primary sm:mb-5">
+              Shipment Timeline
+            </h2>
             <div className="relative space-y-0">
               {events.length === 0 && (
                 <p className="text-sm text-text-muted">No events yet.</p>
@@ -306,7 +397,7 @@ export default function TrackClient() {
               {events.map((ev, i) => (
                 <div
                   key={`${ev.timestamp}-${i}`}
-                  className="timeline-item relative flex gap-4 pb-6 last:pb-0"
+                  className="timeline-item relative flex gap-3 pb-5 last:pb-0 sm:gap-4 sm:pb-6"
                   style={{ animationDelay: `${i * 80}ms` }}
                 >
                   {i < events.length - 1 && (
@@ -318,9 +409,11 @@ export default function TrackClient() {
                     }`}
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-text-primary">{ev.title || ev.status}</div>
+                    <div className="text-sm font-medium text-text-primary">
+                      {ev.title || ev.status}
+                    </div>
                     {ev.description && (
-                      <div className="text-sm text-text-secondary">{ev.description}</div>
+                      <div className="break-words text-sm text-text-secondary">{ev.description}</div>
                     )}
                     <div className="text-xs text-text-muted">
                       {ev.timestamp ? new Date(ev.timestamp).toLocaleString() : ""}

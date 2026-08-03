@@ -49,16 +49,21 @@ export async function fetchOsrmRoute(
 ) {
   try {
     const url = `https://router.project-osrm.org/route/v1/driving/${originLng},${originLat};${destLng},${destLat}?overview=full&geometries=geojson&alternatives=false`;
-    const res = await fetch(url, { next: { revalidate: 3600 } });
+    const res = await fetch(url, {
+      cache: "force-cache",
+      next: { revalidate: 86400 },
+    });
     if (!res.ok) return null;
     const json = await res.json();
     if (json.code !== "Ok" || !json.routes?.[0]) return null;
     const route = json.routes[0];
+    const geometry = route.geometry.coordinates.map((coord: [number, number]) => [
+      coord[1],
+      coord[0],
+    ]) as [number, number][];
+    if (geometry.length < 2) return null;
     return {
-      geometry: route.geometry.coordinates.map((coord: [number, number]) => [
-        coord[1],
-        coord[0],
-      ]) as [number, number][],
+      geometry,
       distanceMiles: (route.distance / 1000) * 0.621371,
     };
   } catch {

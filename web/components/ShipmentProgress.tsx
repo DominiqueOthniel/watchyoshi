@@ -90,33 +90,33 @@ export default function ShipmentProgress({ status, routeProgress }: Props) {
         </div>
       </div>
 
-      {/* Mobile compact steps */}
-      <ol className="space-y-3 sm:hidden">
-        {PROGRESS_STEPS.map((step) => {
-          const done = isStepComplete(step.key, status);
-          const active = isStepActive(step.key, status);
-          return (
-            <li key={step.key} className="flex items-center gap-3">
-              <span
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                  done
-                    ? "bg-primary text-white"
-                    : active
-                      ? "step-pulse bg-primary-100 text-primary ring-2 ring-primary"
-                      : "bg-surface text-text-muted"
-                }`}
-              >
-                {done ? "✓" : activeIdx >= 0 && PROGRESS_STEPS[activeIdx].key === step.key ? "●" : "·"}
-              </span>
-              <span
-                className={`text-sm ${done || active ? "font-medium text-text-primary" : "text-text-muted"}`}
-              >
-                {step.label}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
+      {/* Mobile: horizontal chips (avoids a tall vertical list) */}
+      <div className="-mx-1 overflow-x-auto px-1 sm:hidden">
+        <ol className="flex min-w-max items-center gap-1.5 pb-1">
+          {PROGRESS_STEPS.map((step, idx) => {
+            const done = isStepComplete(step.key, status);
+            const active = isStepActive(step.key, status);
+            return (
+              <li key={step.key} className="flex items-center gap-1.5">
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                    done
+                      ? "bg-primary text-white"
+                      : active
+                        ? "bg-primary-100 text-primary ring-1 ring-primary"
+                        : "bg-surface text-text-muted"
+                  }`}
+                >
+                  {done ? "✓" : active ? "●" : idx + 1} {step.label}
+                </span>
+                {idx < PROGRESS_STEPS.length - 1 && (
+                  <span className="text-border">›</span>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </div>
     </div>
   );
 }

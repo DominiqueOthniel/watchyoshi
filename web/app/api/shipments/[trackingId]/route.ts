@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { transformShipmentFromDB, transformShipmentToDB } from "@/lib/shipments";
-import { calculateAutomaticProgression } from "@/lib/auto-progress";
+import { calculateAutomaticProgression, fetchOsrmRoute } from "@/lib/auto-progress";
 import {
   applyStatusChange,
   buildStatusEvent,
@@ -33,13 +33,20 @@ export async function GET(_request: Request, { params }: Params) {
     let routeProgress: number | null = null;
     let routeGeometry: [number, number][] | null = null;
 
-    if (
+    const originLat = Number(shipment.sender?.address?.lat);
+    const originLng = Number(shipment.sender?.address?.lng);
+    const destLat = Number(shipment.recipient?.address?.lat);
+    const destLng = Number(shipment.recipient?.address?.lng);
+    const hasCoords = [originLat, originLng, destLat, destLng].every((n) => Number.isFinite(n));
+
+    const isActiveLive =
       shipment.autoProgress?.enabled &&
       !shipment.autoProgress?.paused &&
       shipment.status !== "delivered" &&
       shipment.status !== "pending" &&
-      shipment.status !== "exception"
-    ) {
+      shipment.status !== "exception";
+
+    if (isActiveLive) {
       // Ensure clock exists once movement has begun — never restart a healthy journey
       if (!shipment.autoProgress.startedAt) {
         shipment = {
@@ -94,6 +101,19 @@ export async function GET(_request: Request, { params }: Params) {
           )
           .eq("tracking_id", shipment.trackingId);
       }
+    } else if (hasCoords) {
+      // Still load road geometry for pending / delivered so the map is not a straight line
+      const routeData = await fetchOsrmRoute(originLat, originLng, destLat, destLng);
+      if (routeData) {
+        routeGeometry = routeData.geometry;
+        shipment = {
+          ...shipment,
+          routeGeometry: routeData.geometry,
+          routeDistanceMiles: routeData.distanceMiles,
+        };
+      }
+      if (shipment.status === "delivered") routeProgress = 1;
+      if (shipment.status === "pending") routeProgress = 0.05;
     }
 
     return NextResponse.json({ shipment, routeProgress, routeGeometry });
