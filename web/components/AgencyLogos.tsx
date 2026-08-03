@@ -26,11 +26,11 @@ export default function AgencyLogos() {
           {t("home.agenciesSub")}
         </p>
 
-        <div className="mt-8 grid grid-cols-2 items-center gap-4 sm:grid-cols-4 lg:grid-cols-8">
+        <div className="mt-8 grid grid-cols-2 items-center gap-3 sm:grid-cols-4 lg:grid-cols-8">
           {AGENCIES.map((agency) => (
             <div
               key={agency.name}
-              className="flex h-16 items-center justify-center rounded-xl border border-border/80 bg-surface/50 px-3 transition hover:border-primary/20 hover:bg-panel hover:shadow-soft"
+              className="flex h-14 items-center justify-center border border-border/70 bg-panel px-3 transition hover:border-primary/25"
               title={agency.name}
             >
               <span className={`select-none text-[15px] sm:text-base ${agency.className}`}>

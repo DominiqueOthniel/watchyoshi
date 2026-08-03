@@ -5,6 +5,7 @@ import Link from "next/link";
 import FaqAccordion from "@/components/FaqAccordion";
 import Reveal from "@/components/Reveal";
 import EstimateCalculator from "@/components/EstimateCalculator";
+import AgencyLogos from "@/components/AgencyLogos";
 import { useI18n } from "@/lib/i18n/context";
 
 export default function HomePage() {
@@ -92,6 +93,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <AgencyLogos />
 
       <section className="border-b border-border bg-panel">
         <div className="mx-auto grid max-w-7xl divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
