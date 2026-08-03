@@ -32,24 +32,13 @@ export default function SiteFooter() {
         { href: "/about", label: t("footer.about") },
         { href: "/support", label: t("footer.contact") },
         { href: "/#faq", label: t("footer.faq") },
-        { href: "/admin/login", label: t("footer.admin") },
       ],
     },
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-secondary text-white">
-      <div className="pointer-events-none absolute inset-0 opacity-30">
-        <Image
-          src="/images/brand-warehouse.png"
-          alt=""
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/90 to-secondary/80" />
-      </div>
-
-      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
+    <footer className="bg-secondary text-white">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="mb-4 inline-flex items-center gap-2">
@@ -62,7 +51,7 @@ export default function SiteFooter() {
               />
               <span className="font-display text-2xl font-bold tracking-tight">CargoWatch</span>
             </Link>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/70">{t("footer.blurb")}</p>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65">{t("footer.blurb")}</p>
             <a
               href="mailto:support@cargowatch.com"
               className="mt-5 inline-flex text-sm font-semibold text-accent hover:underline"
@@ -73,7 +62,7 @@ export default function SiteFooter() {
 
           {footerLinks.map((col) => (
             <div key={col.title}>
-              <p className="font-display text-sm font-bold uppercase tracking-wider text-white/50">
+              <p className="text-xs font-semibold uppercase tracking-wider text-white/45">
                 {col.title}
               </p>
               <ul className="mt-4 space-y-2.5">
@@ -81,7 +70,7 @@ export default function SiteFooter() {
                   <li key={`${col.title}-${link.label}`}>
                     <Link
                       href={link.href}
-                      className="text-sm text-white/75 transition hover:text-white"
+                      className="text-sm text-white/70 transition hover:text-white"
                     >
                       {link.label}
                     </Link>
@@ -93,10 +82,10 @@ export default function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center">
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-white/45">
             © {new Date().getFullYear()} CargoWatch. {t("footer.tagline")}
           </p>
-          <div className="flex flex-wrap gap-4 text-xs text-white/50">
+          <div className="flex flex-wrap gap-4 text-xs text-white/45">
             <span>{t("footer.modes")}</span>
             <span>{t("footer.liveTracking")}</span>
             <span>{t("footer.insured")}</span>

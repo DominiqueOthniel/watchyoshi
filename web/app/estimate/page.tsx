@@ -1,21 +1,20 @@
 import Link from "next/link";
-import Image from "next/image";
 import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 import EstimateCalculator from "@/components/EstimateCalculator";
 
 export const metadata = {
   title: "Estimate | CargoWatch",
-  description: "Get a quick shipping estimate for road, air, sea, or vehicle transport.",
+  description: "Get an indicative shipping estimate for road, air, sea, or vehicle transport.",
 };
 
 export default function EstimatePage() {
   return (
     <div>
       <PageHero
-        eyebrow="Pricing preview"
-        title="A calm estimate before you commit."
-        subtitle="Slide, compare, and see a ballpark total. No spam forms. Just clear feedback."
+        eyebrow="Estimates"
+        title="Indicative pricing before you book."
+        subtitle="Set mode, weight, and distance to review a ballpark total. Support confirms firm quotes."
         image="/images/brand-highway-night.png"
         imageAlt="Night highway freight truck"
         actions={
@@ -36,25 +35,25 @@ export default function EstimatePage() {
             <EstimateCalculator />
           </Reveal>
 
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
+          <div className="mt-12 grid gap-8 border-t border-border pt-10 md:grid-cols-3">
             {[
               {
                 title: "Transparent ranges",
-                text: "You see how mode, distance, and speed shift the total before booking.",
+                text: "See how mode, distance, and speed change the indicative total before booking.",
               },
               {
-                title: "No dark patterns",
-                text: "No fake urgency timers. Just useful numbers and a path to support.",
+                title: "Clear next steps",
+                text: "Use the estimate to plan, then request a firm quote from support when ready.",
               },
               {
-                title: "Then track live",
-                text: "Once booked, the same clarity continues on the live map and timeline.",
+                title: "Same clarity after booking",
+                text: "Once shipped, follow progress on the live map and structured timeline.",
               },
             ].map((item, i) => (
-              <Reveal key={item.title} delayMs={i * 80}>
-                <div className="rounded-2xl border border-border bg-panel p-6 shadow-soft">
+              <Reveal key={item.title} delayMs={i * 60}>
+                <div>
                   <h3 className="font-display text-lg font-bold text-text-primary">{item.title}</h3>
-                  <p className="mt-2 text-sm text-text-secondary">{item.text}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-text-secondary">{item.text}</p>
                 </div>
               </Reveal>
             ))}
@@ -62,20 +61,15 @@ export default function EstimatePage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden py-16 text-white">
-        <Image
-          src="/images/brand-warehouse.png"
-          alt="Warehouse operations"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-secondary/80" />
-        <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h2 className="font-display text-3xl font-bold">Ready to move from estimate to tracking?</h2>
-          <p className="mt-3 text-white/75">Support can lock a quote, then you follow every mile.</p>
+      <section className="bg-secondary py-16 text-white">
+        <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+          <h2 className="font-display text-3xl font-bold">From estimate to live tracking</h2>
+          <p className="mt-3 text-white/70">
+            Support can confirm pricing, then you follow the shipment with the same operational clarity.
+          </p>
           <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href="/support" className="btn-primary">
-              Chat with support
+              Contact support
             </Link>
             <Link href="/track" className="btn-on-dark">
               Open tracker

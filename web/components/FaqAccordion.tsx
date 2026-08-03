@@ -17,35 +17,26 @@ export default function FaqAccordion() {
   ];
 
   return (
-    <div className="space-y-3">
+    <div className="divide-y divide-border border-y border-border">
       {faqs.map((item, i) => {
         const active = open === i;
         return (
-          <div
-            key={item.q}
-            className={`overflow-hidden rounded-xl border transition ${
-              active ? "border-primary/30 bg-panel shadow-soft" : "border-border bg-panel/80"
-            }`}
-          >
+          <div key={item.q}>
             <button
               type="button"
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+              className="flex w-full items-center justify-between gap-4 py-4 text-left sm:py-5"
               onClick={() => setOpen(active ? null : i)}
               aria-expanded={active}
             >
               <span className="font-display text-base font-semibold text-text-primary sm:text-lg">
                 {item.q}
               </span>
-              <span
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-lg font-bold transition ${
-                  active ? "bg-primary text-white" : "bg-surface text-text-secondary"
-                }`}
-              >
+              <span className="shrink-0 text-lg font-medium text-text-muted" aria-hidden>
                 {active ? "−" : "+"}
               </span>
             </button>
             {active && (
-              <div className="border-t border-border px-5 py-4 text-sm leading-relaxed text-text-secondary sm:text-base">
+              <div className="pb-5 text-sm leading-relaxed text-text-secondary sm:text-base">
                 {item.a}
               </div>
             )}

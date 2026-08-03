@@ -16,11 +16,8 @@ export default function SiteHeader() {
 
   const links = useMemo(
     () => [
-      { href: "/", label: t("nav.home") },
       { href: "/services", label: t("nav.services") },
       { href: "/coverage", label: t("nav.coverage") },
-      { href: "/estimate", label: t("nav.estimate") },
-      { href: "/about", label: t("nav.about") },
       { href: "/track", label: t("nav.track") },
       { href: "/support", label: t("nav.support") },
     ],
@@ -29,13 +26,16 @@ export default function SiteHeader() {
 
   function onTrack(e: FormEvent) {
     e.preventDefault();
-    if (!trackingId.trim()) return;
+    if (!trackingId.trim()) {
+      router.push("/track");
+      return;
+    }
     setMobileOpen(false);
     router.push(`/track?id=${encodeURIComponent(trackingId.trim())}`);
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-secondary/95 text-white backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-secondary/97 text-white backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-3 sm:h-[4.25rem]">
           <Link href="/" className="flex min-w-0 items-center gap-2.5">
@@ -52,9 +52,9 @@ export default function SiteHeader() {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-5 xl:flex">
+          <nav className="hidden items-center gap-6 lg:flex">
             {links.map((link) => {
-              const active = pathname === link.href;
+              const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
               return (
                 <Link
                   key={link.href}
@@ -62,7 +62,7 @@ export default function SiteHeader() {
                   className={
                     active
                       ? "text-sm font-semibold text-white"
-                      : "text-sm font-medium text-white/70 transition hover:text-white"
+                      : "text-sm font-medium text-white/65 transition hover:text-white"
                   }
                 >
                   {link.label}
@@ -79,10 +79,10 @@ export default function SiteHeader() {
                 value={trackingId}
                 onChange={(e) => setTrackingId(e.target.value)}
                 placeholder={t("nav.trackingPlaceholder")}
-                className="w-36 rounded-md border border-white/15 bg-white/10 py-2 pl-9 pr-3 text-sm text-white placeholder:text-white/45 outline-none focus:border-accent lg:w-44"
+                className="w-32 rounded-md border border-white/15 bg-white/10 py-2 pl-8 pr-2 text-sm text-white placeholder:text-white/40 outline-none focus:border-accent lg:w-40"
               />
               <svg
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50"
+                className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/45"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -96,14 +96,14 @@ export default function SiteHeader() {
               </svg>
             </form>
             <Link
-              href="/estimate"
+              href="/track"
               className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110"
             >
-              {t("nav.trackNow")}
+              {t("nav.trackBtn")}
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 xl:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <div className="md:hidden">
               <LanguageSwitcher />
             </div>
@@ -125,7 +125,7 @@ export default function SiteHeader() {
         </div>
 
         {mobileOpen && (
-          <div className="border-t border-white/10 pb-4 xl:hidden">
+          <div className="border-t border-white/10 pb-4 lg:hidden">
             <nav className="flex flex-col gap-1 py-3">
               {links.map((link) => (
                 <Link
@@ -137,13 +137,27 @@ export default function SiteHeader() {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href="/estimate"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-white/80 hover:bg-white/10 hover:text-white"
+              >
+                {t("nav.estimate")}
+              </Link>
+              <Link
+                href="/about"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-white/80 hover:bg-white/10 hover:text-white"
+              >
+                {t("nav.about")}
+              </Link>
               <form onSubmit={onTrack} className="mt-2 space-y-2 px-3">
                 <input
                   type="text"
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
                   placeholder={t("nav.trackingPlaceholder")}
-                  className="w-full rounded-md border border-white/15 bg-white/10 px-3 py-2.5 text-white placeholder:text-white/45 outline-none"
+                  className="w-full rounded-md border border-white/15 bg-white/10 px-3 py-2.5 text-base text-white placeholder:text-white/45 outline-none"
                 />
                 <button
                   type="submit"

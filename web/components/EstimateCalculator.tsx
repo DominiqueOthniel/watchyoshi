@@ -3,34 +3,52 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
+import { useI18n } from "@/lib/i18n/context";
 
-const MODES = [
-  { id: "road", label: "Road", base: 180, perKg: 1.8 },
-  { id: "air", label: "Air", base: 320, perKg: 4.2 },
-  { id: "sea", label: "Sea", base: 140, perKg: 0.9 },
-  { id: "vehicle", label: "Vehicle", base: 650, perKg: 0 },
-] as const;
+const MODE_IDS = ["road", "air", "sea", "vehicle"] as const;
+const SPEED_IDS = ["standard", "express", "same"] as const;
 
-const SPEEDS = [
-  { id: "standard", label: "Standard (4 days)", mult: 1 },
-  { id: "express", label: "Express (2 days)", mult: 1.35 },
-  { id: "same", label: "Same day", mult: 1.9 },
-] as const;
+const MODE_RATES: Record<(typeof MODE_IDS)[number], { base: number; perKg: number }> = {
+  road: { base: 180, perKg: 1.8 },
+  air: { base: 320, perKg: 4.2 },
+  sea: { base: 140, perKg: 0.9 },
+  vehicle: { base: 650, perKg: 0 },
+};
+
+const SPEED_MULT: Record<(typeof SPEED_IDS)[number], number> = {
+  standard: 1,
+  express: 1.35,
+  same: 1.9,
+};
 
 export default function EstimateCalculator() {
-  const [mode, setMode] = useState<(typeof MODES)[number]["id"]>("road");
-  const [speed, setSpeed] = useState<(typeof SPEEDS)[number]["id"]>("standard");
+  const { t } = useI18n();
+  const [mode, setMode] = useState<(typeof MODE_IDS)[number]>("road");
+  const [speed, setSpeed] = useState<(typeof SPEED_IDS)[number]>("standard");
   const [weight, setWeight] = useState(25);
   const [distance, setDistance] = useState(800);
   const [insured, setInsured] = useState(true);
   const [revealed, setRevealed] = useState(false);
 
+  const modeLabels: Record<(typeof MODE_IDS)[number], string> = {
+    road: t("est.road"),
+    air: t("est.air"),
+    sea: t("est.sea"),
+    vehicle: t("est.vehicle"),
+  };
+
+  const speedLabels: Record<(typeof SPEED_IDS)[number], string> = {
+    standard: t("est.standard"),
+    express: t("est.express"),
+    same: t("est.same"),
+  };
+
   const estimate = useMemo(() => {
-    const m = MODES.find((x) => x.id === mode)!;
-    const s = SPEEDS.find((x) => x.id === speed)!;
+    const m = MODE_RATES[mode];
+    const mult = SPEED_MULT[speed];
     const distanceFee = distance * 0.42;
     const weightFee = weight * m.perKg;
-    const sub = (m.base + distanceFee + weightFee) * s.mult;
+    const sub = (m.base + distanceFee + weightFee) * mult;
     const insurance = insured ? Math.max(45, sub * 0.08) : 0;
     const total = Math.round(sub + insurance);
     return {
@@ -46,47 +64,42 @@ export default function EstimateCalculator() {
   }
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-border bg-secondary shadow-large">
-      <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
+    <div className="overflow-hidden border border-border bg-secondary shadow-soft">
+      <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
         <form onSubmit={onSubmit} className="space-y-5 p-6 text-white sm:p-8 lg:p-10">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-              Affordable transport
-            </p>
-            <h2 className="mt-2 font-display text-2xl font-bold leading-tight sm:text-3xl">
-              Clear rates.
-              <span className="block text-accent">Efficient service.</span>
+            <h2 className="font-display text-2xl font-bold leading-tight sm:text-3xl">
+              {t("est.title1")}{" "}
+              <span className="text-accent">{t("est.title2")}</span>
             </h2>
-            <p className="mt-3 text-sm text-white/65">
-              Adjust the options, hit calculate, and get a calm ballpark before you book.
-            </p>
+            <p className="mt-3 text-sm leading-relaxed text-white/65">{t("est.sub")}</p>
           </div>
 
           <fieldset>
-            <legend className="mb-2 text-sm font-medium text-white/85">Delivery mode</legend>
+            <legend className="mb-2 text-sm font-medium text-white/85">{t("est.mode")}</legend>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {MODES.map((m) => (
+              {MODE_IDS.map((id) => (
                 <button
-                  key={m.id}
+                  key={id}
                   type="button"
                   onClick={() => {
-                    setMode(m.id);
+                    setMode(id);
                     setRevealed(false);
                   }}
-                  className={`rounded-lg border px-3 py-2.5 text-sm font-semibold transition ${
-                    mode === m.id
+                  className={`rounded-md border px-3 py-2.5 text-sm font-semibold transition ${
+                    mode === id
                       ? "border-accent bg-accent text-white"
                       : "border-white/15 bg-white/5 text-white/75 hover:border-white/35"
                   }`}
                 >
-                  {m.label}
+                  {modeLabels[id]}
                 </button>
               ))}
             </div>
           </fieldset>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-white/85">Weight (kg)</span>
+            <span className="mb-1.5 block text-sm font-medium text-white/85">{t("est.weight")}</span>
             <input
               type="range"
               min={1}
@@ -102,7 +115,7 @@ export default function EstimateCalculator() {
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-white/85">Distance (miles)</span>
+            <span className="mb-1.5 block text-sm font-medium text-white/85">{t("est.distance")}</span>
             <input
               type="range"
               min={50}
@@ -119,18 +132,18 @@ export default function EstimateCalculator() {
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-white/85">Delivery speed</span>
+            <span className="mb-1.5 block text-sm font-medium text-white/85">{t("est.speed")}</span>
             <select
               value={speed}
               onChange={(e) => {
                 setSpeed(e.target.value as typeof speed);
                 setRevealed(false);
               }}
-              className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2.5 text-white outline-none focus:border-accent"
+              className="w-full rounded-md border border-white/15 bg-white/10 px-3 py-2.5 text-base text-white outline-none focus:border-accent"
             >
-              {SPEEDS.map((s) => (
-                <option key={s.id} value={s.id} className="text-text-primary">
-                  {s.label}
+              {SPEED_IDS.map((id) => (
+                <option key={id} value={id} className="text-text-primary">
+                  {speedLabels[id]}
                 </option>
               ))}
             </select>
@@ -146,54 +159,46 @@ export default function EstimateCalculator() {
               }}
               className="h-4 w-4 accent-accent"
             />
-            Include insurance cushion
+            {t("est.insurance")}
           </label>
 
           <button
             type="submit"
-            className="w-full rounded-lg bg-accent py-3.5 text-sm font-bold text-white transition hover:brightness-110"
+            className="w-full rounded-md bg-accent py-3.5 text-sm font-bold text-white transition hover:brightness-110"
           >
-            Calculate
+            {t("est.calculate")}
           </button>
+        </form>
 
-          <div className="rounded-xl border border-white/10 bg-black/25 px-4 py-3">
-            <p className="text-xs uppercase tracking-wide text-white/50">Estimated cost</p>
+        <div className="flex flex-col justify-between border-t border-white/10 bg-[#0a1628] p-6 sm:p-8 lg:border-l lg:border-t-0 lg:p-10">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-white/45">{t("est.cost")}</p>
             {!revealed ? (
-              <p className="mt-1 font-display text-2xl font-bold text-white/40">$0</p>
+              <p className="mt-3 font-display text-3xl font-bold text-white/35">—</p>
             ) : (
-              <div className="mt-1 animate-[reveal-up_0.45s_ease-out]">
-                <p className="font-display text-3xl font-extrabold tabular-nums text-white">
+              <div className="mt-3">
+                <p className="font-display text-4xl font-extrabold tabular-nums text-white">
                   ${estimate.total}
                 </p>
-                <p className="mt-1 text-xs text-white/55">
-                  About {estimate.days} day{estimate.days > 1 ? "s" : ""} · insurance ${estimate.insurance}
+                <p className="mt-2 text-sm text-white/55">
+                  {t("est.aboutDays")
+                    .replace("{days}", String(estimate.days))
+                    .replace("{ins}", String(estimate.insurance))}
                 </p>
               </div>
             )}
+            <p className="mt-4 text-xs leading-relaxed text-white/45">{t("est.disclaimer")}</p>
           </div>
-        </form>
 
-        <div className="relative min-h-[420px] overflow-hidden bg-[#0a1628] lg:min-h-full">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_30%,rgba(255,107,26,0.22),transparent_55%)]" />
-          <Image
-            src="/images/brand-courier-avatar.png"
-            alt="CargoWatch courier ready to deliver your package"
-            fill
-            className="object-cover object-[center_15%] sm:object-[center_20%]"
-            sizes="(max-width: 1024px) 100vw, 45vw"
-            priority
-          />
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-secondary via-secondary/70 to-transparent p-6 pt-24">
-            <p className="font-display text-lg font-bold text-white">Your move, our watch</p>
-            <p className="mt-1 text-sm text-white/70">
-              Friendly handoff energy, professional tracking behind it.
-            </p>
-            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-10 space-y-3 border-t border-white/10 pt-6">
+            <p className="font-display text-lg font-bold text-white">{t("est.panelTitle")}</p>
+            <p className="text-sm leading-relaxed text-white/65">{t("est.panelSub")}</p>
+            <div className="flex flex-col gap-2 pt-2 sm:flex-row">
               <Link href="/track" className="btn-primary text-center text-sm">
-                Track a shipment
+                {t("est.track")}
               </Link>
               <Link href="/support" className="btn-on-dark text-center text-sm">
-                Ask for a firm quote
+                {t("est.quote")}
               </Link>
             </div>
           </div>
