@@ -78,6 +78,15 @@ export const en: Dict = {
   "home.agenciesSub": "The same logistics world as DHL, FedEx, UPS and peers. CargoWatch focuses on clear live tracking for your moves.",
   "home.clientsEyebrow": "Clients",
   "home.clientsTitle": "What shippers say",
+  "home.rev1Name": "Denise Okonkwo",
+  "home.rev1City": "Houston, TX",
+  "home.rev1Quote": "I moved my Civic from LA to Houston and honestly just needed to know it wasn’t stuck somewhere. The map updated the whole way. One delay near Phoenix, but at least I saw it.",
+  "home.rev2Name": "Patrice Moreau",
+  "home.rev2City": "Lyon",
+  "home.rev2Quote": "We ship spare parts to a workshop in New Jersey. Not fancy, just reliable updates so we stop getting the same call every morning: where is it?",
+  "home.rev3Name": "Sheila Nguyen",
+  "home.rev3City": "Orlando, FL",
+  "home.rev3Quote": "Support picked up on chat when the status sat on picked up longer than expected. Turned out the truck left late. Fine. Better than radio silence.",
   "home.faqEyebrow": "FAQ",
   "home.faqTitle": "Questions, answered",
   "home.faqSub": "Need something else? Open support chat or send a message from the Support page.",
@@ -148,6 +157,19 @@ export const en: Dict = {
 
   "lang.auto": "Auto (region)",
   "lang.changed": "Language updated",
+
+  "faq.q1": "What can I actually ship with CargoWatch?",
+  "faq.a1": "Mostly road, air, and sea freight, plus cars between US states. You get a tracking ID, a live map, and a timeline. Insurance and PDF receipts are optional extras.",
+  "faq.q2": "How do I track a package?",
+  "faq.a2": "Paste the tracking ID on the Track page. You should see the current status, the map, and the event history. If nothing loads, double-check the ID first.",
+  "faq.q3": "Do you move cars state to state?",
+  "faq.a3": "Yes. Open or enclosed carriers, depending on what you book. You’ll still get the same live tracking view as a regular shipment.",
+  "faq.q4": "My status has not moved. What now?",
+  "faq.a4": "Open the timeline. If it looks stuck, use the chat and drop your tracking ID. Sometimes the truck just left late. We’ll tell you either way.",
+  "faq.q5": "Is everything insured by default?",
+  "faq.a5": "No. You can add coverage when the shipment is set up. Declared value and insurance show up on the receipt if you chose that option.",
+  "faq.q6": "Can a small business manage several loads?",
+  "faq.a6": "Yes. Admins can create shipments, move statuses, pause auto progress, generate receipts, and answer chat from one dashboard.",
 };
 
 export const fr: Dict = {
@@ -228,6 +250,15 @@ export const fr: Dict = {
   "home.agenciesSub": "Le même univers logistique que DHL, FedEx, UPS et les autres. CargoWatch se concentre sur un suivi live clair pour vos envois.",
   "home.clientsEyebrow": "Clients",
   "home.clientsTitle": "Ce que disent les expéditeurs",
+  "home.rev1Name": "Denise Okonkwo",
+  "home.rev1City": "Houston, TX",
+  "home.rev1Quote": "J’ai fait déménager ma Civic de LA à Houston. Je voulais juste savoir qu’elle n’était pas bloquée nulle part. La carte a suivi tout le trajet. Un retard près de Phoenix, mais au moins je l’ai vu.",
+  "home.rev2Name": "Patrice Moreau",
+  "home.rev2City": "Lyon",
+  "home.rev2Quote": "On envoie des pièces détachées à un atelier dans le New Jersey. Rien de flashy, juste des updates fiables pour arrêter d’avoir le même coup de fil chaque matin : ça en est où ?",
+  "home.rev3Name": "Sheila Nguyen",
+  "home.rev3City": "Orlando, FL",
+  "home.rev3Quote": "Le support a répondu sur le chat quand le statut est resté bloqué sur ramassé trop longtemps. Le camion était parti en retard. Ok. Mieux que le silence radio.",
   "home.faqEyebrow": "FAQ",
   "home.faqTitle": "Questions, réponses",
   "home.faqSub": "Besoin d’autre chose ? Ouvrez le chat ou écrivez depuis Support.",
@@ -298,6 +329,19 @@ export const fr: Dict = {
 
   "lang.auto": "Auto (région)",
   "lang.changed": "Langue mise à jour",
+
+  "faq.q1": "Qu’est-ce que je peux vraiment envoyer avec CargoWatch ?",
+  "faq.a1": "Surtout du fret route, air et mer, plus des voitures entre États US. Tu as un N° de suivi, une carte live et une timeline. Assurance et reçu PDF en option.",
+  "faq.q2": "Comment je suis un colis ?",
+  "faq.a2": "Colle le N° de suivi sur la page Suivi. Tu dois voir le statut, la carte et l’historique. Si rien ne charge, vérifie d’abord le numéro.",
+  "faq.q3": "Vous faites du transport de voitures d’un État à l’autre ?",
+  "faq.a3": "Oui. Transporteur ouvert ou fermé, selon ce qui est réservé. Le suivi live reste le même qu’un envoi classique.",
+  "faq.q4": "Mon statut n’avance plus. Je fais quoi ?",
+  "faq.a4": "Ouvre la timeline. Si ça a l’air bloqué, passe par le chat avec ton N° de suivi. Parfois le camion est juste parti en retard. On te le dira.",
+  "faq.q5": "Tout est assuré par défaut ?",
+  "faq.a5": "Non. Tu peux ajouter une couverture à la création. La valeur déclarée et l’assurance apparaissent sur le reçu si tu as coché l’option.",
+  "faq.q6": "Une petite boîte peut gérer plusieurs chargements ?",
+  "faq.a6": "Oui. Les admins créent les envois, font avancer les statuts, mettent en pause l’auto-progress, génèrent les reçus et répondent au chat depuis un seul dashboard.",
 };
 
 export const es: Dict = {
@@ -378,6 +422,15 @@ export const es: Dict = {
   "home.agenciesSub": "El mismo mundo logístico que DHL, FedEx, UPS y similares. CargoWatch se centra en un rastreo en vivo claro para tus envíos.",
   "home.clientsEyebrow": "Clientes",
   "home.clientsTitle": "Lo que dicen los remitentes",
+  "home.rev1Name": "Denise Okonkwo",
+  "home.rev1City": "Houston, TX",
+  "home.rev1Quote": "Moví mi Civic de LA a Houston y solo quería saber que no estaba atascado en algún lado. El mapa actualizó todo el camino. Hubo demora cerca de Phoenix, pero al menos lo vi.",
+  "home.rev2Name": "Patrice Moreau",
+  "home.rev2City": "Lyon",
+  "home.rev2Quote": "Enviamos repuestos a un taller en New Jersey. Nada fancy, solo updates fiables para dejar de recibir la misma llamada cada mañana: ¿dónde va?",
+  "home.rev3Name": "Sheila Nguyen",
+  "home.rev3City": "Orlando, FL",
+  "home.rev3Quote": "Soporte contestó por chat cuando el estado se quedó en recogido más de lo normal. El camión salió tarde. Está bien. Mejor que silencio total.",
   "home.faqEyebrow": "FAQ",
   "home.faqTitle": "Preguntas, respuestas",
   "home.faqSub": "¿Necesitas otra cosa? Abre el chat o escribe desde Soporte.",
@@ -448,6 +501,19 @@ export const es: Dict = {
 
   "lang.auto": "Auto (región)",
   "lang.changed": "Idioma actualizado",
+
+  "faq.q1": "¿Qué puedo enviar realmente con CargoWatch?",
+  "faq.a1": "Sobre todo flete por ruta, aire y mar, más autos entre estados de EE. UU. Tienes ID de rastreo, mapa en vivo y timeline. Seguro y recibo PDF son opcionales.",
+  "faq.q2": "¿Cómo rastreo un paquete?",
+  "faq.a2": "Pega el ID en la página de Rastreo. Deberías ver el estado, el mapa y el historial. Si no carga, revisa primero el número.",
+  "faq.q3": "¿Mueven autos de un estado a otro?",
+  "faq.a3": "Sí. Transportador abierto o cerrado, según lo reservado. El rastreo en vivo es el mismo que un envío normal.",
+  "faq.q4": "Mi estado no avanza. ¿Qué hago?",
+  "faq.a4": "Abre la timeline. Si se ve trabado, usa el chat y deja tu ID. A veces el camión solo salió tarde. Te lo decimos igual.",
+  "faq.q5": "¿Todo viene asegurado por defecto?",
+  "faq.a5": "No. Puedes añadir cobertura al crear el envío. El valor declarado y el seguro salen en el recibo si elegiste esa opción.",
+  "faq.q6": "¿Un negocio chico puede manejar varias cargas?",
+  "faq.a6": "Sí. Los admins crean envíos, avanzan estados, pausan el auto-progress, generan recibos y responden el chat desde un solo panel.",
 };
 
 export const dictionaries: Record<"en" | "fr" | "es", Dict> = { en, fr, es };

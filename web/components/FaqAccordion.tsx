@@ -1,36 +1,20 @@
 "use client";
 
 import { useState } from "react";
-
-const faqs = [
-  {
-    q: "What services does CargoWatch offer?",
-    a: "CargoWatch covers road, air, and sea freight with live GPS tracking, vehicle transport, insured shipping, PDF receipts, and 24/7 support chat.",
-  },
-  {
-    q: "How do I track my shipment?",
-    a: "Enter your tracking ID on the Track page. You get live map movement, status timeline, and automatic progress updates from pickup to delivery.",
-  },
-  {
-    q: "Do you ship vehicles between US states?",
-    a: "Yes. Open carrier and enclosed options are available for cars and light trucks, with route-level tracking across interstate corridors.",
-  },
-  {
-    q: "What if my delivery is delayed?",
-    a: "Check the live timeline first. If the status shows an exception or stall, contact support from the chat widget with your tracking ID.",
-  },
-  {
-    q: "Is my cargo insured?",
-    a: "Optional insurance can be added per shipment. Declared value and coverage details appear on the receipt once the shipment is created.",
-  },
-  {
-    q: "Can businesses manage multiple shipments?",
-    a: "Admins can create shipments, advance lifecycle steps, pause auto-progress, generate receipts, and handle live support from one dashboard.",
-  },
-];
+import { useI18n } from "@/lib/i18n/context";
 
 export default function FaqAccordion() {
+  const { t } = useI18n();
   const [open, setOpen] = useState<number | null>(0);
+
+  const faqs = [
+    { q: t("faq.q1"), a: t("faq.a1") },
+    { q: t("faq.q2"), a: t("faq.a2") },
+    { q: t("faq.q3"), a: t("faq.a3") },
+    { q: t("faq.q4"), a: t("faq.a4") },
+    { q: t("faq.q5"), a: t("faq.a5") },
+    { q: t("faq.q6"), a: t("faq.a6") },
+  ];
 
   return (
     <div className="space-y-3">
