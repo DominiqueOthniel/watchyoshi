@@ -5,35 +5,35 @@ import Reveal from "@/components/Reveal";
 
 export const metadata = {
   title: "Services | CargoWatch",
-  description: "Road, air, sea, and vehicle transport with live tracking and clear timelines.",
+  description: "Worldwide road, air, sea, and vehicle transport with live tracking and clear timelines.",
 };
 
 const services = [
   {
     slug: "road",
     title: "Road freight",
-    lead: "Interstate trucking with corridor-level visibility.",
-    points: ["Live map progress", "ETA updates", "Open or dedicated lanes"],
+    lead: "Regional and long-haul trucking with corridor-level visibility worldwide.",
+    points: ["Live map progress", "ETA updates", "Domestic and cross-border lanes"],
     img: "/images/brand-highway-night.png",
   },
   {
     slug: "air",
     title: "Air cargo",
-    lead: "Priority lanes when hours matter more than dollars.",
+    lead: "Priority international lanes when hours matter more than dollars.",
     points: ["Hub-to-hub milestones", "Document & parts friendly", "Express windows"],
     img: "/images/brand-air-cargo.png",
   },
   {
     slug: "sea",
     title: "Ocean freight",
-    lead: "Container moves with port events you can actually follow.",
+    lead: "Global container moves with port events you can actually follow.",
     points: ["Departure & arrival marks", "Final-mile handoff", "Cost-efficient bulk"],
     img: "/images/brand-port.png",
   },
   {
     slug: "vehicle",
     title: "Vehicle transport",
-    lead: "Car and light truck moves between US states.",
+    lead: "Car and light truck moves on domestic and international routes.",
     points: ["Open or enclosed options", "VIN on the record", "Door-to-door tracking"],
     img: "/images/brand-vehicle-carrier.png",
   },
@@ -44,8 +44,8 @@ export default function ServicesPage() {
     <div>
       <PageHero
         eyebrow="Services"
-        title="Every mode. One tracking experience."
-        subtitle="Pick the lane that fits the load. CargoWatch keeps the journey readable from start to finish."
+        title="Every mode. One tracking experience worldwide."
+        subtitle="Pick the lane that fits the load, domestic or international. CargoWatch keeps the journey readable from start to finish."
         image="/images/brand-port.png"
         imageAlt="Port containers and cargo ship"
         actions={

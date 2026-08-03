@@ -5,32 +5,32 @@ import Reveal from "@/components/Reveal";
 
 export const metadata = {
   title: "Coverage | CargoWatch",
-  description: "CargoWatch corridors across US regions and international freight partners.",
+  description: "CargoWatch corridors across Americas, Europe, Asia-Pacific, Middle East, Africa, and global ocean lanes.",
 };
 
 const corridors = [
   {
-    region: "West Coast",
-    hubs: ["Los Angeles", "Seattle", "San Francisco", "Phoenix"],
-    focus: "Vehicle & road freight",
+    region: "Americas",
+    hubs: ["Los Angeles", "New York", "São Paulo", "Mexico City"],
+    focus: "Road, air, and vehicle freight",
     img: "/images/brand-highway-night.png",
   },
   {
-    region: "Central",
-    hubs: ["Dallas", "Chicago", "Denver", "Houston"],
-    focus: "Cross-country trucking",
+    region: "Europe",
+    hubs: ["Rotterdam", "Frankfurt", "Lyon", "Madrid"],
+    focus: "Cross-border trucking and air",
     img: "/images/brand-warehouse.png",
   },
   {
-    region: "East Coast",
-    hubs: ["New York", "Miami", "Atlanta", "Boston"],
-    focus: "Air + last mile",
+    region: "Asia-Pacific",
+    hubs: ["Singapore", "Shanghai", "Tokyo", "Sydney"],
+    focus: "Air hubs and regional road",
     img: "/images/brand-air-cargo.png",
   },
   {
-    region: "Ports & ocean",
-    hubs: ["Long Beach", "Houston Port", "Savannah", "Newark"],
-    focus: "Container milestones",
+    region: "Ocean & MEA",
+    hubs: ["Dubai", "Lagos", "Cape Town", "Long Beach"],
+    focus: "Ports and container milestones",
     img: "/images/brand-port.png",
   },
 ];
@@ -40,8 +40,8 @@ export default function CoveragePage() {
     <div>
       <PageHero
         eyebrow="Network"
-        title="Corridors that stay visible."
-        subtitle="Major US hubs, interstate lanes, and partner ports. Coverage you can follow on the map."
+        title="Worldwide corridors that stay visible."
+        subtitle="Global hubs, cross-border lanes, and partner ports. Coverage you can follow on the map, wherever the load travels."
         image="/images/brand-warehouse.png"
         imageAlt="Distribution warehouse network"
         actions={
@@ -60,9 +60,12 @@ export default function CoveragePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="max-w-2xl">
-              <h2 className="font-display text-3xl font-bold text-text-primary">Where CargoWatch runs strong</h2>
+              <h2 className="font-display text-3xl font-bold text-text-primary">
+                Where CargoWatch operates
+              </h2>
               <p className="mt-3 text-text-secondary">
-                Each region card is a recognition cue: hubs you know, focus you can scan in seconds.
+                Domestic and international lanes across major regions, with the same tracking
+                language from origin to destination.
               </p>
             </div>
           </Reveal>
@@ -70,7 +73,7 @@ export default function CoveragePage() {
           <div className="mt-10 grid gap-5 sm:grid-cols-2">
             {corridors.map((c, i) => (
               <Reveal key={c.region} delayMs={i * 70}>
-                <article className="group overflow-hidden rounded-3xl bg-panel shadow-soft">
+                <article className="group overflow-hidden border border-border bg-panel">
                   <div className="relative h-48 overflow-hidden">
                     <Image
                       src={c.img}
@@ -89,7 +92,7 @@ export default function CoveragePage() {
                       {c.hubs.map((h) => (
                         <span
                           key={h}
-                          className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-secondary"
+                          className="border border-border bg-surface px-3 py-1 text-xs font-medium text-text-secondary"
                         >
                           {h}
                         </span>
@@ -107,19 +110,19 @@ export default function CoveragePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-8 lg:grid-cols-2">
             <div>
-              <h2 className="font-display text-3xl font-bold">Status you can trust while it moves</h2>
+              <h2 className="font-display text-3xl font-bold">One status language worldwide</h2>
               <p className="mt-3 text-white/70">
-                Pending → picked up → in transit → out for delivery → delivered. Same language
-                everywhere, so you never relearn codes.
+                Pending to picked up to in transit to out for delivery to delivered. Same lifecycle
+                everywhere, so teams never relearn codes by region.
               </p>
               <Link href="/track" className="btn-primary mt-7 inline-flex">
                 Open live tracking
               </Link>
             </div>
-            <div className="relative min-h-[260px] overflow-hidden rounded-3xl">
+            <div className="relative min-h-[260px] overflow-hidden">
               <Image
                 src="/images/brand-vehicle-carrier.png"
-                alt="Vehicle carrier on interstate"
+                alt="Vehicle carrier on freight corridor"
                 fill
                 className="object-cover"
               />

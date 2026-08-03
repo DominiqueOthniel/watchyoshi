@@ -5,7 +5,7 @@ import Reveal from "@/components/Reveal";
 
 export const metadata = {
   title: "About | CargoWatch",
-  description: "CargoWatch builds calm, visible logistics for shippers who need clarity every mile.",
+  description: "CargoWatch builds clear, visible logistics worldwide for shippers who need clarity every mile.",
 };
 
 const timeline = [
@@ -37,7 +37,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="About"
         title="Logistics should feel calm, not chaotic."
-        subtitle="CargoWatch exists so every shipment has a readable story: where it is, what happens next, who can help."
+        subtitle="CargoWatch exists so every shipment worldwide has a readable story: where it is, what happens next, who can help."
         image="/images/brand-air-cargo.png"
         imageAlt="Air cargo operations at dusk"
         actions={

@@ -8,7 +8,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "CargoWatch | Live freight tracking & logistics",
   description:
-    "Track road, air, sea, and vehicle shipments in real time. Clear timelines, live maps, and support built for modern logistics.",
+    "Track road, air, sea, and vehicle shipments worldwide in real time. Clear timelines, live maps, and support for domestic and international freight.",
 };
 
 export const viewport: Viewport = {
