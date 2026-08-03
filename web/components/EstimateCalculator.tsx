@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { FormEvent, useMemo, useState } from "react";
 
 const MODES = [
   { id: "road", label: "Road", base: 180, perKg: 1.8 },
@@ -32,7 +33,11 @@ export default function EstimateCalculator() {
     const sub = (m.base + distanceFee + weightFee) * s.mult;
     const insurance = insured ? Math.max(45, sub * 0.08) : 0;
     const total = Math.round(sub + insurance);
-    return { total, insurance: Math.round(insurance), days: speed === "same" ? 1 : speed === "express" ? 2 : 4 };
+    return {
+      total,
+      insurance: Math.round(insurance),
+      days: speed === "same" ? 1 : speed === "express" ? 2 : 4,
+    };
   }, [mode, speed, weight, distance, insured]);
 
   function onSubmit(e: FormEvent) {
@@ -41,21 +46,24 @@ export default function EstimateCalculator() {
   }
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-border bg-white shadow-large">
-      <div className="grid lg:grid-cols-2">
-        <form onSubmit={onSubmit} className="space-y-5 p-6 sm:p-8">
+    <div className="overflow-hidden rounded-3xl border border-border bg-secondary shadow-large">
+      <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
+        <form onSubmit={onSubmit} className="space-y-5 p-6 text-white sm:p-8 lg:p-10">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Estimate</p>
-            <h2 className="mt-2 font-display text-2xl font-bold text-text-primary sm:text-3xl">
-              See a ballpark in seconds
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
+              Affordable transport
+            </p>
+            <h2 className="mt-2 font-display text-2xl font-bold leading-tight sm:text-3xl">
+              Clear rates.
+              <span className="block text-accent">Efficient service.</span>
             </h2>
-            <p className="mt-2 text-sm text-text-secondary">
-              Instant feedback keeps decisions light. Final quotes confirm after shipment details.
+            <p className="mt-3 text-sm text-white/65">
+              Adjust the options, hit calculate, and get a calm ballpark before you book.
             </p>
           </div>
 
           <fieldset>
-            <legend className="mb-2 text-sm font-medium text-text-primary">Mode</legend>
+            <legend className="mb-2 text-sm font-medium text-white/85">Delivery mode</legend>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {MODES.map((m) => (
                 <button
@@ -67,8 +75,8 @@ export default function EstimateCalculator() {
                   }}
                   className={`rounded-lg border px-3 py-2.5 text-sm font-semibold transition ${
                     mode === m.id
-                      ? "border-primary bg-primary text-white"
-                      : "border-border bg-surface text-text-secondary hover:border-primary/40"
+                      ? "border-accent bg-accent text-white"
+                      : "border-white/15 bg-white/5 text-white/75 hover:border-white/35"
                   }`}
                 >
                   {m.label}
@@ -78,7 +86,7 @@ export default function EstimateCalculator() {
           </fieldset>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-text-primary">Weight (kg)</span>
+            <span className="mb-1.5 block text-sm font-medium text-white/85">Weight (kg)</span>
             <input
               type="range"
               min={1}
@@ -88,13 +96,13 @@ export default function EstimateCalculator() {
                 setWeight(Number(e.target.value));
                 setRevealed(false);
               }}
-              className="w-full accent-primary"
+              className="w-full accent-accent"
             />
-            <span className="mt-1 block text-sm font-semibold tabular-nums text-primary">{weight} kg</span>
+            <span className="mt-1 block text-sm font-semibold tabular-nums text-accent">{weight} kg</span>
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-text-primary">Distance (miles)</span>
+            <span className="mb-1.5 block text-sm font-medium text-white/85">Distance (miles)</span>
             <input
               type="range"
               min={50}
@@ -105,30 +113,30 @@ export default function EstimateCalculator() {
                 setDistance(Number(e.target.value));
                 setRevealed(false);
               }}
-              className="w-full accent-primary"
+              className="w-full accent-accent"
             />
-            <span className="mt-1 block text-sm font-semibold tabular-nums text-primary">{distance} mi</span>
+            <span className="mt-1 block text-sm font-semibold tabular-nums text-accent">{distance} mi</span>
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-text-primary">Speed</span>
+            <span className="mb-1.5 block text-sm font-medium text-white/85">Delivery speed</span>
             <select
               value={speed}
               onChange={(e) => {
                 setSpeed(e.target.value as typeof speed);
                 setRevealed(false);
               }}
-              className="input-field px-3 py-2.5"
+              className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2.5 text-white outline-none focus:border-accent"
             >
               {SPEEDS.map((s) => (
-                <option key={s.id} value={s.id}>
+                <option key={s.id} value={s.id} className="text-text-primary">
                   {s.label}
                 </option>
               ))}
             </select>
           </label>
 
-          <label className="flex items-center gap-3 text-sm text-text-secondary">
+          <label className="flex items-center gap-3 text-sm text-white/70">
             <input
               type="checkbox"
               checked={insured}
@@ -136,47 +144,58 @@ export default function EstimateCalculator() {
                 setInsured(e.target.checked);
                 setRevealed(false);
               }}
-              className="h-4 w-4 accent-primary"
+              className="h-4 w-4 accent-accent"
             />
             Include insurance cushion
           </label>
 
-          <button type="submit" className="btn-primary w-full">
-            Calculate estimate
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-accent py-3.5 text-sm font-bold text-white transition hover:brightness-110"
+          >
+            Calculate
           </button>
-        </form>
 
-        <div className="relative flex flex-col justify-between bg-secondary p-6 text-white sm:p-8">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Result</p>
+          <div className="rounded-xl border border-white/10 bg-black/25 px-4 py-3">
+            <p className="text-xs uppercase tracking-wide text-white/50">Estimated cost</p>
             {!revealed ? (
-              <div className="mt-6">
-                <p className="font-display text-3xl font-bold text-white/35">$···</p>
-                <p className="mt-3 text-sm text-white/55">
-                  Adjust the sliders, then calculate. Small choices update the outcome.
-                </p>
-              </div>
+              <p className="mt-1 font-display text-2xl font-bold text-white/40">$0</p>
             ) : (
-              <div className="mt-6 animate-[reveal-up_0.55s_ease-out]">
-                <p className="text-sm text-white/60">Estimated total</p>
-                <p className="font-display text-5xl font-extrabold tabular-nums tracking-tight">
+              <div className="mt-1 animate-[reveal-up_0.45s_ease-out]">
+                <p className="font-display text-3xl font-extrabold tabular-nums text-white">
                   ${estimate.total}
                 </p>
-                <div className="mt-5 space-y-2 text-sm text-white/75">
-                  <p>Typical window: about {estimate.days} day{estimate.days > 1 ? "s" : ""}</p>
-                  <p>Insurance cushion: ${estimate.insurance}</p>
-                  <p className="text-white/50">Indicative only. Final pricing confirms at booking.</p>
-                </div>
+                <p className="mt-1 text-xs text-white/55">
+                  About {estimate.days} day{estimate.days > 1 ? "s" : ""} · insurance ${estimate.insurance}
+                </p>
               </div>
             )}
           </div>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/track" className="btn-primary text-center">
-              Track a shipment
-            </Link>
-            <Link href="/support" className="btn-on-dark text-center">
-              Ask for a firm quote
-            </Link>
+        </form>
+
+        <div className="relative min-h-[420px] overflow-hidden bg-[#0a1628] lg:min-h-full">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_60%_30%,rgba(255,107,26,0.22),transparent_55%)]" />
+          <Image
+            src="/images/brand-courier-avatar.png"
+            alt="CargoWatch courier ready to deliver your package"
+            fill
+            className="object-cover object-[center_15%] sm:object-[center_20%]"
+            sizes="(max-width: 1024px) 100vw, 45vw"
+            priority
+          />
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-secondary via-secondary/70 to-transparent p-6 pt-24">
+            <p className="font-display text-lg font-bold text-white">Your move, our watch</p>
+            <p className="mt-1 text-sm text-white/70">
+              Friendly handoff energy, professional tracking behind it.
+            </p>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+              <Link href="/track" className="btn-primary text-center text-sm">
+                Track a shipment
+              </Link>
+              <Link href="/support" className="btn-on-dark text-center text-sm">
+                Ask for a firm quote
+              </Link>
+            </div>
           </div>
         </div>
       </div>

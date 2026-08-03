@@ -4,6 +4,7 @@ import FaqAccordion from "@/components/FaqAccordion";
 import LiveActivityTicker from "@/components/LiveActivityTicker";
 import StickyTrackCue from "@/components/StickyTrackCue";
 import Reveal from "@/components/Reveal";
+import EstimateCalculator from "@/components/EstimateCalculator";
 
 const services = [
   {
@@ -183,6 +184,25 @@ export default function HomePage() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section id="estimate" className="bg-white py-16 sm:py-20 lg:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <div className="mb-8 max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Rates</p>
+              <h2 className="mt-3 font-display text-3xl font-bold text-text-primary sm:text-4xl">
+                Get a feel for the price before you ship
+              </h2>
+              <p className="mt-3 text-text-secondary">
+                Play with the options, see the number update, and keep a human face on the journey.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delayMs={80}>
+            <EstimateCalculator />
+          </Reveal>
         </div>
       </section>
 
