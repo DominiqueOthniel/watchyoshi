@@ -23,13 +23,14 @@ export default function ChatPanel({
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMessages(initialMessages);
   }, [initialMessages, conversationId]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
 
   useEffect(() => {
@@ -91,8 +92,8 @@ export default function ChatPanel({
   }
 
   return (
-    <div className="flex h-full min-h-[400px] flex-col">
-      <div className="mb-3 flex items-center justify-between">
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="mb-2 flex shrink-0 items-center justify-between">
         <h3 className="font-semibold text-text-primary">Conversation</h3>
         {onClose && (
           <button type="button" onClick={onClose} className="text-xs text-primary hover:underline">
@@ -100,7 +101,10 @@ export default function ChatPanel({
           </button>
         )}
       </div>
-      <div className="flex-1 space-y-3 overflow-y-auto rounded-xl bg-surface/60 p-3">
+      <div
+        ref={listRef}
+        className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain rounded-xl bg-surface/60 p-3"
+      >
         {messages.map((m) => (
           <div
             key={m.id}
@@ -111,19 +115,28 @@ export default function ChatPanel({
             }`}
           >
             <p className="text-[10px] opacity-70">{m.senderName || m.senderType}</p>
-            <p>{m.text}</p>
+            <p className="break-words">{m.text}</p>
           </div>
         ))}
         <div ref={bottomRef} />
       </div>
-      <form onSubmit={send} className="mt-3 flex gap-2">
+      <form
+        onSubmit={send}
+        className="mt-2 flex shrink-0 gap-2 border-t border-border/60 bg-panel pt-3"
+      >
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type your message…"
-          className="input-field flex-1 px-3 py-2"
+          enterKeyHint="send"
+          autoComplete="off"
+          className="input-field min-w-0 flex-1 px-3 py-3 text-base"
         />
-        <button type="submit" disabled={sending} className="btn-primary px-4 py-2 text-sm disabled:opacity-60">
+        <button
+          type="submit"
+          disabled={sending}
+          className="btn-primary shrink-0 px-4 py-3 text-sm disabled:opacity-60"
+        >
           Send
         </button>
       </form>

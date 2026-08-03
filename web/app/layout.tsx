@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ChatBubbleWidget from "@/components/ChatBubbleWidget";
@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   title: "CargoWatch | Live freight tracking & logistics",
   description:
     "Track road, air, sea, and vehicle shipments in real time. Clear timelines, live maps, and support built for modern logistics.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

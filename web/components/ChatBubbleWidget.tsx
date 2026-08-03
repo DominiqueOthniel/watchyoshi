@@ -28,6 +28,15 @@ export default function ChatBubbleWidget() {
   }, [hideOnAdmin]);
 
   useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  useEffect(() => {
     let cancelled = false;
 
     async function restore() {
@@ -135,8 +144,14 @@ export default function ChatBubbleWidget() {
       )}
 
       {open && (
-        <div className="fixed inset-3 z-[9999] flex flex-col overflow-hidden rounded-2xl border border-border bg-panel shadow-large sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(640px,85vh)] sm:w-[min(400px,92vw)]">
-          <div className="flex items-center justify-between bg-gradient-to-r from-primary to-primary-700 px-4 py-3 text-white">
+        <div
+          className="cw-chat-shell fixed inset-0 z-[9999] flex flex-col overflow-hidden border-border bg-panel shadow-large sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(640px,85dvh)] sm:w-[min(400px,92vw)] sm:rounded-2xl sm:border"
+          style={{
+            paddingTop: "env(safe-area-inset-top)",
+            paddingBottom: "env(safe-area-inset-bottom)",
+          }}
+        >
+          <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-primary to-primary-700 px-4 py-3 text-white">
             <div>
               <p className="font-semibold">CargoWatch Support</p>
               <p className="text-xs text-white/80">
@@ -147,7 +162,7 @@ export default function ChatBubbleWidget() {
               type="button"
               aria-label="Close chat"
               onClick={() => setOpen(false)}
-              className="rounded-lg p-1 hover:bg-white/10"
+              className="rounded-lg p-2 hover:bg-white/10"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -155,19 +170,23 @@ export default function ChatBubbleWidget() {
             </button>
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             {restoring ? (
               <div className="flex flex-1 items-center justify-center p-6 text-sm text-text-muted">
                 Restoring conversation…
               </div>
             ) : !chat ? (
-              <form onSubmit={startChat} className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
+              <form
+                onSubmit={startChat}
+                className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain p-4"
+              >
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
                   required
-                  className="input-field px-3 py-2.5"
+                  autoComplete="name"
+                  className="input-field px-3 py-3 text-base"
                 />
                 <input
                   type="email"
@@ -175,19 +194,22 @@ export default function ChatBubbleWidget() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   required
-                  className="input-field px-3 py-2.5"
+                  autoComplete="email"
+                  inputMode="email"
+                  className="input-field px-3 py-3 text-base"
                 />
                 <input
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="How can we help?"
-                  className="input-field px-3 py-2.5"
+                  className="input-field px-3 py-3 text-base"
                 />
                 <input
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
                   placeholder="Tracking ID (optional)"
-                  className="input-field px-3 py-2.5"
+                  autoCapitalize="characters"
+                  className="input-field px-3 py-3 text-base"
                 />
                 {error && (
                   <div className="rounded-lg border border-red-200 bg-error-50 px-3 py-2 text-sm text-error">
@@ -197,13 +219,13 @@ export default function ChatBubbleWidget() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary mt-auto w-full py-3 disabled:opacity-60"
+                  className="btn-primary mt-auto w-full py-3.5 disabled:opacity-60"
                 >
                   {loading ? "Starting…" : "Start Chat"}
                 </button>
               </form>
             ) : (
-              <div className="min-h-0 flex-1 p-3">
+              <div className="flex min-h-0 flex-1 flex-col p-3">
                 <ChatPanel
                   conversationId={chat.id}
                   initialMessages={chat.messages}
