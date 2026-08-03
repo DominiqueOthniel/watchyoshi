@@ -7,8 +7,10 @@ import { usePathname, useRouter } from "next/navigation";
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/#services", label: "Services" },
-  { href: "/#process", label: "Process" },
+  { href: "/services", label: "Services" },
+  { href: "/coverage", label: "Coverage" },
+  { href: "/estimate", label: "Estimate" },
+  { href: "/about", label: "About" },
   { href: "/track", label: "Track" },
   { href: "/support", label: "Support" },
 ];
@@ -24,11 +26,6 @@ export default function SiteHeader() {
     if (!trackingId.trim()) return;
     setMobileOpen(false);
     router.push(`/track?id=${encodeURIComponent(trackingId.trim())}`);
-  }
-
-  function isActive(href: string) {
-    if (href.startsWith("/#")) return pathname === "/";
-    return pathname === href;
   }
 
   return (
@@ -49,9 +46,9 @@ export default function SiteHeader() {
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-7 lg:flex">
+          <nav className="hidden items-center gap-5 xl:flex">
             {links.map((link) => {
-              const active = isActive(link.href);
+              const active = pathname === link.href;
               return (
                 <Link
                   key={link.href}
@@ -75,7 +72,7 @@ export default function SiteHeader() {
                 value={trackingId}
                 onChange={(e) => setTrackingId(e.target.value)}
                 placeholder="Tracking ID"
-                className="w-44 rounded-md border border-white/15 bg-white/10 py-2 pl-9 pr-3 text-sm text-white placeholder:text-white/45 outline-none focus:border-accent lg:w-52"
+                className="w-40 rounded-md border border-white/15 bg-white/10 py-2 pl-9 pr-3 text-sm text-white placeholder:text-white/45 outline-none focus:border-accent lg:w-48"
               />
               <svg
                 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50"
@@ -92,16 +89,16 @@ export default function SiteHeader() {
               </svg>
             </form>
             <Link
-              href="/track"
+              href="/estimate"
               className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110"
             >
-              Track now
+              Estimate
             </Link>
           </div>
 
           <button
             type="button"
-            className="rounded-md p-2 text-white/80 hover:bg-white/10 hover:text-white lg:hidden"
+            className="rounded-md p-2 text-white/80 hover:bg-white/10 hover:text-white xl:hidden"
             aria-label="Toggle menu"
             onClick={() => setMobileOpen((v) => !v)}
           >
@@ -116,7 +113,7 @@ export default function SiteHeader() {
         </div>
 
         {mobileOpen && (
-          <div className="border-t border-white/10 pb-4 lg:hidden">
+          <div className="border-t border-white/10 pb-4 xl:hidden">
             <nav className="flex flex-col gap-1 py-3">
               {links.map((link) => (
                 <Link

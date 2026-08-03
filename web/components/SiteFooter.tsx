@@ -6,27 +6,27 @@ const footerLinks = [
     title: "Navigate",
     links: [
       { href: "/", label: "Home" },
+      { href: "/services", label: "Services" },
+      { href: "/coverage", label: "Coverage" },
       { href: "/track", label: "Track shipment" },
-      { href: "/support", label: "Support" },
-      { href: "/admin/login", label: "Admin" },
     ],
   },
   {
-    title: "Services",
+    title: "Plan",
     links: [
-      { href: "/track", label: "Live GPS tracking" },
-      { href: "/create", label: "Create shipment" },
+      { href: "/estimate", label: "Get estimate" },
+      { href: "/services#vehicle", label: "Vehicle transport" },
+      { href: "/services#air", label: "Air cargo" },
       { href: "/support", label: "Live chat" },
-      { href: "/track", label: "Vehicle transport" },
     ],
   },
   {
     title: "Company",
     links: [
+      { href: "/about", label: "About" },
       { href: "/support", label: "Contact" },
-      { href: "/support", label: "FAQ" },
-      { href: "/", label: "Coverage" },
-      { href: "/", label: "Partners" },
+      { href: "/#faq", label: "FAQ" },
+      { href: "/admin/login", label: "Admin" },
     ],
   },
 ];
@@ -34,9 +34,9 @@ const footerLinks = [
 export default function SiteFooter() {
   return (
     <footer className="relative overflow-hidden bg-secondary text-white">
-      <div className="pointer-events-none absolute inset-0 opacity-30">
+          <div className="pointer-events-none absolute inset-0 opacity-30">
         <Image
-          src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1800&q=70"
+          src="/images/brand-warehouse.png"
           alt=""
           fill
           className="object-cover"
