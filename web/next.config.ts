@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Helps Netlify serve App Router assets reliably
+  poweredByHeader: false,
 };
 
 export default nextConfig;
