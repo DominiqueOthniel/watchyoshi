@@ -7,6 +7,7 @@ import LiveActivityTicker from "@/components/LiveActivityTicker";
 import StickyTrackCue from "@/components/StickyTrackCue";
 import Reveal from "@/components/Reveal";
 import EstimateCalculator from "@/components/EstimateCalculator";
+import AgencyLogos from "@/components/AgencyLogos";
 import { useI18n } from "@/lib/i18n/context";
 
 export default function HomePage() {
@@ -114,6 +115,7 @@ export default function HomePage() {
       </section>
 
       <LiveActivityTicker />
+      <AgencyLogos />
 
       <section className="border-b border-border bg-white">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 py-6 sm:grid-cols-3 sm:px-6 lg:px-8">
