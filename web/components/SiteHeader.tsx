@@ -7,7 +7,9 @@ import { usePathname, useRouter } from "next/navigation";
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/track", label: "Track Shipment" },
+  { href: "/#services", label: "Services" },
+  { href: "/#process", label: "Process" },
+  { href: "/track", label: "Track" },
   { href: "/support", label: "Support" },
 ];
 
@@ -24,33 +26,40 @@ export default function SiteHeader() {
     router.push(`/track?id=${encodeURIComponent(trackingId.trim())}`);
   }
 
+  function isActive(href: string) {
+    if (href.startsWith("/#")) return pathname === "/";
+    return pathname === href;
+  }
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-white shadow-soft">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-secondary/95 text-white backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-14 items-center justify-between gap-3 sm:h-16">
-          <Link href="/" className="flex min-w-0 items-center space-x-2">
+        <div className="flex h-16 items-center justify-between gap-3 sm:h-[4.25rem]">
+          <Link href="/" className="flex min-w-0 items-center gap-2.5">
             <Image
               src="/delivery-truck-logo.png"
               alt="CargoWatch Logo"
-              width={32}
-              height={32}
-              className="h-7 w-7 object-contain sm:h-8 sm:w-8"
+              width={36}
+              height={36}
+              className="h-8 w-8 object-contain sm:h-9 sm:w-9"
               priority
             />
-            <span className="truncate text-lg font-bold text-primary sm:text-xl">CargoWatch</span>
+            <span className="font-display truncate text-xl font-bold tracking-tight sm:text-2xl">
+              CargoWatch
+            </span>
           </Link>
 
-          <nav className="hidden items-center space-x-6 md:flex lg:space-x-8">
+          <nav className="hidden items-center gap-7 lg:flex">
             {links.map((link) => {
-              const active = pathname === link.href;
+              const active = isActive(link.href);
               return (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={
                     active
-                      ? "font-semibold text-primary"
-                      : "text-text-secondary transition-colors hover:text-primary"
+                      ? "text-sm font-semibold text-white"
+                      : "text-sm font-medium text-white/70 transition hover:text-white"
                   }
                 >
                   {link.label}
@@ -59,32 +68,40 @@ export default function SiteHeader() {
             })}
           </nav>
 
-          <form onSubmit={onTrack} className="relative hidden md:block">
-            <input
-              type="text"
-              value={trackingId}
-              onChange={(e) => setTrackingId(e.target.value)}
-              placeholder="Enter tracking ID..."
-              className="input-field w-44 py-2 pl-10 pr-3 text-sm lg:w-64"
-            />
-            <svg
-              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted lg:h-5 lg:w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          <div className="hidden items-center gap-3 md:flex">
+            <form onSubmit={onTrack} className="relative">
+              <input
+                type="text"
+                value={trackingId}
+                onChange={(e) => setTrackingId(e.target.value)}
+                placeholder="Tracking ID"
+                className="w-44 rounded-md border border-white/15 bg-white/10 py-2 pl-9 pr-3 text-sm text-white placeholder:text-white/45 outline-none focus:border-accent lg:w-52"
               />
-            </svg>
-          </form>
+              <svg
+                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </form>
+            <Link
+              href="/track"
+              className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110"
+            >
+              Track now
+            </Link>
+          </div>
 
           <button
             type="button"
-            className="rounded-md p-2 text-text-secondary hover:text-primary md:hidden"
+            className="rounded-md p-2 text-white/80 hover:bg-white/10 hover:text-white lg:hidden"
             aria-label="Toggle menu"
             onClick={() => setMobileOpen((v) => !v)}
           >
@@ -99,27 +116,30 @@ export default function SiteHeader() {
         </div>
 
         {mobileOpen && (
-          <div className="border-t border-border bg-white md:hidden">
-            <nav className="flex flex-col space-y-1 px-1 py-3">
+          <div className="border-t border-white/10 pb-4 lg:hidden">
+            <nav className="flex flex-col gap-1 py-3">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-text-secondary hover:bg-surface hover:text-primary"
+                  className="rounded-lg px-3 py-2.5 text-white/80 hover:bg-white/10 hover:text-white"
                 >
                   {link.label}
                 </Link>
               ))}
-              <form onSubmit={onTrack} className="mt-2 px-3 pb-2">
+              <form onSubmit={onTrack} className="mt-2 space-y-2 px-3">
                 <input
                   type="text"
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
                   placeholder="Enter tracking ID..."
-                  className="input-field px-3 py-2.5"
+                  className="w-full rounded-md border border-white/15 bg-white/10 px-3 py-2.5 text-white placeholder:text-white/45 outline-none"
                 />
-                <button type="submit" className="btn-primary mt-2 w-full py-2.5">
+                <button
+                  type="submit"
+                  className="w-full rounded-md bg-accent py-2.5 font-semibold text-white"
+                >
                   Track
                 </button>
               </form>
