@@ -10,15 +10,21 @@ import {
   resolveProgressStart,
 } from "@/lib/auto-progress";
 import type { Shipment } from "@/lib/types";
+import { useI18n } from "@/lib/i18n/context";
 
 const TrackMap = dynamic(() => import("@/components/TrackMap"), {
   ssr: false,
-  loading: () => (
-    <div className="flex h-[min(58vh,420px)] items-center justify-center rounded-xl bg-surface text-sm text-text-muted sm:h-80">
-      Loading map…
-    </div>
-  ),
+  loading: () => <TrackMapLoading />,
 });
+
+function TrackMapLoading() {
+  const { t } = useI18n();
+  return (
+    <div className="flex h-[min(58vh,420px)] items-center justify-center rounded-xl bg-surface text-sm text-text-muted sm:h-80">
+      {t("track.loadingMap")}
+    </div>
+  );
+}
 
 function haversineMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 3959;
@@ -31,6 +37,7 @@ function haversineMiles(lat1: number, lon1: number, lat2: number, lon2: number) 
 }
 
 export default function TrackClient() {
+  const { t } = useI18n();
   const searchParams = useSearchParams();
   const [trackingId, setTrackingId] = useState("");
   const [shipment, setShipment] = useState<Shipment | null>(null);
@@ -256,23 +263,23 @@ export default function TrackClient() {
           {!hasResult && (
             <>
               <h1 className="mb-3 text-3xl font-bold text-text-primary sm:mb-4 sm:text-4xl lg:text-5xl">
-                Track Your <span className="text-gradient-primary">Shipment</span>
+                {t("track.title")}
               </h1>
               <p className="mb-6 text-base text-text-secondary sm:mb-8 sm:text-lg">
-                Enter your tracking ID to see live status, timeline, and map location.
+                {t("track.sub")}
               </p>
             </>
           )}
           {hasResult && (
             <h1 className="mb-4 text-xl font-bold text-text-primary sm:text-2xl">
-              Live tracking
+              {t("track.live")}
             </h1>
           )}
           <form onSubmit={onSubmit} className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row">
             <input
               value={trackingId}
               onChange={(e) => setTrackingId(e.target.value)}
-              placeholder="Enter tracking ID..."
+              placeholder={t("track.placeholder")}
               className="input-field min-w-0 flex-1 px-4 py-3 text-base sm:text-lg"
               required
             />
@@ -281,7 +288,7 @@ export default function TrackClient() {
               disabled={loading}
               className="btn-primary shrink-0 px-8 py-3 text-base disabled:opacity-60 sm:text-lg"
             >
-              {loading ? "Searching…" : "Track"}
+              {loading ? t("track.searching") : t("track.btn")}
             </button>
           </form>
           {error && (
@@ -297,7 +304,7 @@ export default function TrackClient() {
           <div className="rounded-2xl bg-white p-4 shadow-large sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm text-text-muted">Tracking ID</p>
+                <p className="text-sm text-text-muted">{t("track.id")}</p>
                 <p className="break-all text-xl font-bold text-text-primary sm:text-2xl">
                   {shipment.trackingId}
                 </p>
@@ -327,7 +334,7 @@ export default function TrackClient() {
             <div className="mt-5 grid gap-4 sm:mt-6 sm:grid-cols-2 sm:gap-6">
               <div>
                 <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-muted">
-                  From
+                  {t("track.from")}
                 </p>
                 <p className="font-semibold text-text-primary">{shipment.sender.name}</p>
                 <p className="text-sm text-text-secondary">
@@ -338,7 +345,7 @@ export default function TrackClient() {
               </div>
               <div>
                 <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-muted">
-                  To
+                  {t("track.to")}
                 </p>
                 <p className="font-semibold text-text-primary">{shipment.recipient.name}</p>
                 <p className="text-sm text-text-secondary">
@@ -353,7 +360,7 @@ export default function TrackClient() {
             </div>
             {livePoint?.label && (
               <p className="mt-4 text-sm text-text-secondary">
-                Current location:{" "}
+                {t("track.current")}{" "}
                 <strong className="text-text-primary">{livePoint.label}</strong>
                 {shipment.status !== "pending" && shipment.status !== "delivered" && (
                   <span className="ml-2 text-xs text-primary">● live</span>
@@ -373,14 +380,14 @@ export default function TrackClient() {
             />
             <div className="flex flex-wrap items-center gap-3 px-2 py-2 text-[11px] text-text-muted sm:gap-4 sm:text-xs">
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Origin
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> {t("track.origin")}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> Destination
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> {t("track.destination")}
               </span>
               {shipment.status !== "delivered" && shipment.status !== "pending" && (
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-primary" /> Live package
+                  <span className="h-2.5 w-2.5 rounded-full bg-primary" /> {t("track.livePackage")}
                 </span>
               )}
             </div>
@@ -388,7 +395,7 @@ export default function TrackClient() {
 
           <div className="rounded-2xl bg-white p-4 shadow-large sm:p-8">
             <h2 className="mb-4 text-lg font-semibold text-text-primary sm:mb-5">
-              Shipment Timeline
+              {t("track.timeline")}
             </h2>
             <div className="relative space-y-0">
               {events.length === 0 && (

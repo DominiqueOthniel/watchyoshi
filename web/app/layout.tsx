@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ChatBubbleWidget from "@/components/ChatBubbleWidget";
+import { I18nProvider } from "@/lib/i18n/context";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,12 +13,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="bg-background antialiased">
-        <SiteHeader />
-        <main className="min-w-0 overflow-x-hidden">{children}</main>
-        <SiteFooter />
-        <ChatBubbleWidget />
+        <I18nProvider>
+          <SiteHeader />
+          <main className="min-w-0 overflow-x-hidden">{children}</main>
+          <SiteFooter />
+          <ChatBubbleWidget />
+        </I18nProvider>
       </body>
     </html>
   );

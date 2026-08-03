@@ -1,40 +1,45 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-
-const footerLinks = [
-  {
-    title: "Navigate",
-    links: [
-      { href: "/", label: "Home" },
-      { href: "/services", label: "Services" },
-      { href: "/coverage", label: "Coverage" },
-      { href: "/track", label: "Track shipment" },
-    ],
-  },
-  {
-    title: "Plan",
-    links: [
-      { href: "/estimate", label: "Get estimate" },
-      { href: "/services#vehicle", label: "Vehicle transport" },
-      { href: "/services#air", label: "Air cargo" },
-      { href: "/support", label: "Live chat" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { href: "/about", label: "About" },
-      { href: "/support", label: "Contact" },
-      { href: "/#faq", label: "FAQ" },
-      { href: "/admin/login", label: "Admin" },
-    ],
-  },
-];
+import { useI18n } from "@/lib/i18n/context";
 
 export default function SiteFooter() {
+  const { t } = useI18n();
+
+  const footerLinks = [
+    {
+      title: t("footer.navigate"),
+      links: [
+        { href: "/", label: t("nav.home") },
+        { href: "/services", label: t("nav.services") },
+        { href: "/coverage", label: t("nav.coverage") },
+        { href: "/track", label: t("footer.trackShipment") },
+      ],
+    },
+    {
+      title: t("footer.plan"),
+      links: [
+        { href: "/estimate", label: t("footer.getEstimate") },
+        { href: "/services#vehicle", label: t("footer.vehicle") },
+        { href: "/services#air", label: t("footer.air") },
+        { href: "/support", label: t("footer.liveChat") },
+      ],
+    },
+    {
+      title: t("footer.company"),
+      links: [
+        { href: "/about", label: t("footer.about") },
+        { href: "/support", label: t("footer.contact") },
+        { href: "/#faq", label: t("footer.faq") },
+        { href: "/admin/login", label: t("footer.admin") },
+      ],
+    },
+  ];
+
   return (
     <footer className="relative overflow-hidden bg-secondary text-white">
-          <div className="pointer-events-none absolute inset-0 opacity-30">
+      <div className="pointer-events-none absolute inset-0 opacity-30">
         <Image
           src="/images/brand-warehouse.png"
           alt=""
@@ -57,10 +62,7 @@ export default function SiteFooter() {
               />
               <span className="font-display text-2xl font-bold tracking-tight">CargoWatch</span>
             </Link>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/70">
-              Professional shipment tracking for freight, parcels, and vehicle moves. Live maps,
-              clear timelines, and support when you need it.
-            </p>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/70">{t("footer.blurb")}</p>
             <a
               href="mailto:support@cargowatch.com"
               className="mt-5 inline-flex text-sm font-semibold text-accent hover:underline"
@@ -92,12 +94,12 @@ export default function SiteFooter() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center">
           <p className="text-xs text-white/50">
-            © {new Date().getFullYear()} CargoWatch. Your cargo. Our watch. Every mile.
+            © {new Date().getFullYear()} CargoWatch. {t("footer.tagline")}
           </p>
           <div className="flex flex-wrap gap-4 text-xs text-white/50">
-            <span>Road · Air · Sea · Vehicles</span>
-            <span>Live tracking</span>
-            <span>Insured options</span>
+            <span>{t("footer.modes")}</span>
+            <span>{t("footer.liveTracking")}</span>
+            <span>{t("footer.insured")}</span>
           </div>
         </div>
       </div>

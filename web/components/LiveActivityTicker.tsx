@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/lib/i18n/context";
 
 const EVENTS = [
   { id: "CW8F2A", route: "Los Angeles → Dallas", status: "In transit" },
@@ -13,6 +14,7 @@ const EVENTS = [
 ];
 
 export default function LiveActivityTicker() {
+  const { t } = useI18n();
   const [index, setIndex] = useState(0);
   const [pulse, setPulse] = useState(true);
 
@@ -49,7 +51,7 @@ export default function LiveActivityTicker() {
           </p>
         </div>
         <Link href="/track" className="shrink-0 text-sm font-semibold text-accent hover:underline">
-          Watch live map →
+          {t("home.liveWatch")}
         </Link>
       </div>
     </div>
