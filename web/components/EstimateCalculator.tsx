@@ -191,7 +191,7 @@ export default function EstimateCalculator() {
 
         <div className="relative min-h-[420px] overflow-hidden bg-[#0a1628] lg:min-h-full">
           <Image
-            src="/images/brand-courier-avatar.png"
+            src="/images/brand-courier-avatar.webp"
             alt="Aurex Logistics courier"
             fill
             className="object-cover object-[center_18%]"

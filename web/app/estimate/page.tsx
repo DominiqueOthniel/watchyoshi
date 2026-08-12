@@ -15,7 +15,7 @@ export default function EstimatePage() {
         eyebrow="Estimates"
         title="Indicative pricing before you book."
         subtitle="Set mode, weight, and distance to review a ballpark total. Support confirms firm quotes."
-        image="/images/brand-highway-night.png"
+        image="/images/brand-highway-night.webp"
         imageAlt="Night highway freight truck"
         actions={
           <>

@@ -14,28 +14,28 @@ const services = [
     title: "Road freight",
     lead: "Regional and long-haul trucking with corridor-level visibility worldwide.",
     points: ["Live map progress", "ETA updates", "Domestic and cross-border lanes"],
-    img: "/images/brand-highway-night.png",
+    img: "/images/brand-highway-night.webp",
   },
   {
     slug: "air",
     title: "Air cargo",
     lead: "Priority international lanes when hours matter more than dollars.",
     points: ["Hub-to-hub milestones", "Document & parts friendly", "Express windows"],
-    img: "/images/brand-air-cargo.png",
+    img: "/images/brand-air-cargo.webp",
   },
   {
     slug: "sea",
     title: "Ocean freight",
     lead: "Global container moves with port events you can actually follow.",
     points: ["Departure & arrival marks", "Final-mile handoff", "Cost-efficient bulk"],
-    img: "/images/brand-port.png",
+    img: "/images/brand-port.webp",
   },
   {
     slug: "vehicle",
     title: "Vehicle transport",
     lead: "Car and light truck moves on domestic and international routes.",
     points: ["Open or enclosed options", "VIN on the record", "Door-to-door tracking"],
-    img: "/images/brand-vehicle-carrier.png",
+    img: "/images/brand-vehicle-carrier.webp",
   },
 ];
 
@@ -46,7 +46,7 @@ export default function ServicesPage() {
         eyebrow="Services"
         title="Every mode. One tracking experience worldwide."
         subtitle="Pick the lane that fits the load, domestic or international. Aurex Logistics keeps the journey readable from start to finish."
-        image="/images/brand-port.png"
+        image="/images/brand-port.webp"
         imageAlt="Port containers and cargo ship"
         actions={
           <>

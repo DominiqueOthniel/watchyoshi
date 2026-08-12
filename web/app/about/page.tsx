@@ -38,7 +38,7 @@ export default function AboutPage() {
         eyebrow="About"
         title="Logistics should feel calm, not chaotic."
         subtitle="Aurex Logistics exists so every shipment worldwide has a readable story: where it is, what happens next, who can help."
-        image="/images/brand-air-cargo.png"
+        image="/images/brand-air-cargo.webp"
         imageAlt="Air cargo operations at dusk"
         actions={
           <>
@@ -81,7 +81,7 @@ export default function AboutPage() {
           <Reveal delayMs={100}>
             <div className="relative min-h-[300px] overflow-hidden rounded-3xl sm:min-h-[380px]">
               <Image
-                src="/images/brand-warehouse.png"
+                src="/images/brand-warehouse.webp"
                 alt="Aurex Logistics warehouse operations"
                 fill
                 className="object-cover"
@@ -111,7 +111,7 @@ export default function AboutPage() {
       </section>
 
       <section className="relative overflow-hidden py-16 text-white">
-        <Image src="/images/brand-highway-night.png" alt="" fill className="object-cover" />
+        <Image src="/images/brand-highway-night.webp" alt="" fill className="object-cover" />
         <div className="absolute inset-0 bg-secondary/85" />
         <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
           <p className="font-display text-4xl font-extrabold">Aurex Logistics</p>

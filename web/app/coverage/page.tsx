@@ -13,25 +13,25 @@ const corridors = [
     region: "Americas",
     hubs: ["Los Angeles", "New York", "São Paulo", "Mexico City"],
     focus: "Road, air, and vehicle freight",
-    img: "/images/brand-highway-night.png",
+    img: "/images/brand-highway-night.webp",
   },
   {
     region: "Europe",
     hubs: ["Rotterdam", "Frankfurt", "Lyon", "Madrid"],
     focus: "Cross-border trucking and air",
-    img: "/images/brand-warehouse.png",
+    img: "/images/brand-warehouse.webp",
   },
   {
     region: "Asia-Pacific",
     hubs: ["Singapore", "Shanghai", "Tokyo", "Sydney"],
     focus: "Air hubs and regional road",
-    img: "/images/brand-air-cargo.png",
+    img: "/images/brand-air-cargo.webp",
   },
   {
     region: "Ocean & MEA",
     hubs: ["Dubai", "Lagos", "Cape Town", "Long Beach"],
     focus: "Ports and container milestones",
-    img: "/images/brand-port.png",
+    img: "/images/brand-port.webp",
   },
 ];
 
@@ -42,7 +42,7 @@ export default function CoveragePage() {
         eyebrow="Network"
         title="Worldwide corridors that stay visible."
         subtitle="Global hubs, cross-border lanes, and partner ports. Coverage you can follow on the map, wherever the load travels."
-        image="/images/brand-warehouse.png"
+        image="/images/brand-warehouse.webp"
         imageAlt="Distribution warehouse network"
         actions={
           <>
@@ -121,7 +121,7 @@ export default function CoveragePage() {
             </div>
             <div className="relative min-h-[260px] overflow-hidden">
               <Image
-                src="/images/brand-vehicle-carrier.png"
+                src="/images/brand-vehicle-carrier.webp"
                 alt="Vehicle carrier on freight corridor"
                 fill
                 className="object-cover"

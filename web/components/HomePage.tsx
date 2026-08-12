@@ -15,25 +15,25 @@ export default function HomePage() {
     {
       title: t("home.road"),
       text: t("home.roadText"),
-      img: "/images/brand-highway-night.png",
+      img: "/images/brand-highway-night.webp",
       href: "/services#road",
     },
     {
       title: t("home.air"),
       text: t("home.airText"),
-      img: "/images/brand-air-cargo.png",
+      img: "/images/brand-air-cargo.webp",
       href: "/services#air",
     },
     {
       title: t("home.sea"),
       text: t("home.seaText"),
-      img: "/images/brand-port.png",
+      img: "/images/brand-port.webp",
       href: "/services#sea",
     },
     {
       title: t("home.vehicle"),
       text: t("home.vehicleText"),
-      img: "/images/brand-vehicle-carrier.png",
+      img: "/images/brand-vehicle-carrier.webp",
       href: "/services#vehicle",
     },
   ];
@@ -52,10 +52,10 @@ export default function HomePage() {
   ];
 
   const gallery = [
-    { src: "/images/brand-port.png", alt: t("home.port"), label: t("home.port"), tall: true },
-    { src: "/images/brand-warehouse.png", alt: t("home.warehouse"), label: t("home.warehouse") },
-    { src: "/images/brand-highway-night.png", alt: t("home.highway"), label: t("home.highway") },
-    { src: "/images/brand-air-cargo.png", alt: t("home.airHubs"), label: t("home.airHubs") },
+    { src: "/images/brand-port.webp", alt: t("home.port"), label: t("home.port"), tall: true },
+    { src: "/images/brand-warehouse.webp", alt: t("home.warehouse"), label: t("home.warehouse") },
+    { src: "/images/brand-highway-night.webp", alt: t("home.highway"), label: t("home.highway") },
+    { src: "/images/brand-air-cargo.webp", alt: t("home.airHubs"), label: t("home.airHubs") },
   ];
 
   return (
@@ -63,7 +63,7 @@ export default function HomePage() {
       <section className="relative min-h-[100svh] overflow-hidden bg-secondary text-white">
         <div className="absolute inset-0">
           <Image
-            src="/images/brand-highway-night.png"
+            src="/images/brand-highway-night.webp"
             alt="Freight truck on night highway"
             fill
             priority
@@ -226,15 +226,21 @@ export default function HomePage() {
             <p className="max-w-md text-sm text-text-secondary sm:text-base">{t("home.opsSub")}</p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[220px]">
             {gallery.map((g, i) => (
-              <Reveal key={g.label} delayMs={i * 50} className={g.tall ? "sm:col-span-2 sm:row-span-2" : ""}>
-                <figure
-                  className={`relative overflow-hidden ${
-                    g.tall ? "min-h-[280px] sm:min-h-full sm:h-full" : "min-h-[200px]"
-                  }`}
-                >
-                  <Image src={g.src} alt={g.alt} fill className="object-cover" />
+              <Reveal
+                key={g.label}
+                delayMs={i * 50}
+                className={g.tall ? "sm:col-span-2 sm:row-span-2 h-full min-h-[280px]" : "h-full min-h-[200px]"}
+              >
+                <figure className="relative h-full min-h-[200px] overflow-hidden bg-surface">
+                  <Image
+                    src={g.src}
+                    alt={g.alt}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                  />
                   <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 py-4 text-sm font-semibold text-white">
                     {g.label}
                   </figcaption>
@@ -250,7 +256,7 @@ export default function HomePage() {
           <Reveal>
             <div className="relative min-h-[300px] overflow-hidden sm:min-h-[400px]">
               <Image
-                src="/images/brand-vehicle-carrier.png"
+                src="/images/brand-vehicle-carrier.webp"
                 alt="Vehicle carrier transporting cars"
                 fill
                 className="object-cover"
@@ -293,7 +299,7 @@ export default function HomePage() {
               <p className="mt-3 text-text-secondary">{t("home.faqSub")}</p>
               <div className="relative mt-8 hidden min-h-[240px] overflow-hidden lg:block">
                 <Image
-                  src="/images/brand-air-cargo.png"
+                  src="/images/brand-air-cargo.webp"
                   alt="Support and operations"
                   fill
                   className="object-cover"
@@ -309,7 +315,7 @@ export default function HomePage() {
 
       <section className="relative overflow-hidden py-20 text-white">
         <div className="absolute inset-0">
-          <Image src="/images/brand-port.png" alt="Cargo port" fill className="object-cover" />
+          <Image src="/images/brand-port.webp" alt="Cargo port" fill className="object-cover" />
           <div className="absolute inset-0 bg-secondary/82" />
         </div>
         <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
