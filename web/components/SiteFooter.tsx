@@ -41,15 +41,14 @@ export default function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div>
-            <Link href="/" className="mb-4 inline-flex items-center gap-2">
+            <Link href="/" className="mb-4 inline-flex items-center">
               <Image
-                src="/delivery-truck-logo.png"
+                src="/aurex-logistics-logo.png"
                 alt="Aurex Logistics"
-                width={36}
-                height={36}
-                className="h-9 w-9 object-contain"
+                width={180}
+                height={56}
+                className="h-12 w-auto object-contain brightness-0 invert"
               />
-              <span className="font-display text-2xl font-bold tracking-tight">Aurex Logistics</span>
             </Link>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65">{t("footer.blurb")}</p>
             <div className="mt-5 flex flex-col gap-2">

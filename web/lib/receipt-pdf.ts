@@ -180,25 +180,31 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   page.drawRectangle({ x: 0, y: PAGE_H - 108, width: PAGE_W, height: 108, color: C.primary });
   page.drawRectangle({ x: 0, y: PAGE_H - 112, width: PAGE_W, height: 4, color: C.primaryDark });
 
-  // Try logo
+  // Header bar stays brand blue; place logo on a white plate for contrast
+  page.drawRectangle({
+    x: MARGIN - 4,
+    y: PAGE_H - 90,
+    width: 118,
+    height: 52,
+    color: C.white,
+  });
   try {
-    const logoPath = path.join(process.cwd(), "public", "delivery-truck-logo.png");
+    const logoPath = path.join(process.cwd(), "public", "aurex-logistics-logo.png");
     const logoBytes = await readFile(logoPath);
     const logo = await pdfDoc.embedPng(logoBytes);
-    const logoH = 36;
-    const logoW = (logo.width / logo.height) * logoH;
+    const logoH = 44;
+    const logoW = Math.min((logo.width / logo.height) * logoH, 110);
     page.drawImage(logo, {
       x: MARGIN,
-      y: PAGE_H - 78,
+      y: PAGE_H - 86,
       width: logoW,
       height: logoH,
     });
-    drawText(page, "Aurex Logistics", MARGIN + logoW + 10, PAGE_H - 58, 22, fontBold, C.white);
   } catch {
-    drawText(page, "Aurex Logistics", MARGIN, PAGE_H - 58, 24, fontBold, C.white);
+    drawText(page, "Aurex Logistics", MARGIN, PAGE_H - 58, 20, fontBold, C.white);
   }
 
-  drawText(page, "Worldwide freight. Clear tracking.", MARGIN, PAGE_H - 78, 9, font, hex(191, 219, 254));
+  drawText(page, "Worldwide freight. Clear tracking.", MARGIN, PAGE_H - 98, 9, font, hex(191, 219, 254));
   drawText(page, "OFFICIAL SHIPMENT RECEIPT", PAGE_W - MARGIN - 190, PAGE_H - 52, 11, fontBold, C.white);
   drawText(page, docId, PAGE_W - MARGIN - 190, PAGE_H - 68, 8, font, hex(191, 219, 254));
 

@@ -74,9 +74,14 @@ export default function HomePage() {
         </div>
 
         <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-20 pt-32 sm:px-6 sm:pb-24 lg:px-8 lg:pb-28">
-          <p className="reveal-up font-display text-[2.35rem] font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Aurex Logistics
-          </p>
+          <Image
+            src="/aurex-logistics-logo.png"
+            alt="Aurex Logistics"
+            width={280}
+            height={90}
+            className="reveal-up h-16 w-auto object-contain brightness-0 invert sm:h-20 lg:h-24"
+            priority
+          />
           <h1 className="reveal-up-delay mt-6 max-w-2xl font-display text-[1.65rem] font-semibold leading-[1.2] text-white sm:text-3xl lg:text-4xl">
             {t("home.heroTitle")}
           </h1>

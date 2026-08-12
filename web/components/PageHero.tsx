@@ -27,11 +27,16 @@ export default function PageHero({
         <div className="absolute inset-0 bg-gradient-to-t from-secondary/85 via-transparent to-secondary/25" />
       </div>
       <div className="relative mx-auto flex min-h-[52vh] max-w-7xl flex-col justify-end px-4 pb-12 pt-24 sm:min-h-[58vh] sm:px-6 sm:pb-16 lg:px-8">
-        <p className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
-          Aurex Logistics
-        </p>
+        <Image
+          src="/aurex-logistics-logo.png"
+          alt="Aurex Logistics"
+          width={220}
+          height={70}
+          className="h-12 w-auto object-contain brightness-0 invert sm:h-14"
+          priority
+        />
         {eyebrow && (
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent">{eyebrow}</p>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-accent">{eyebrow}</p>
         )}
         <h1 className="mt-2 max-w-3xl font-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
           {title}

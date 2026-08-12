@@ -52,16 +52,15 @@ export default function AdminLoginClient() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mb-4 flex items-center justify-center space-x-2">
+          <div className="mb-4 flex items-center justify-center">
             <Image
-              src="/delivery-truck-logo.png"
-              alt="Aurex Logistics Logo"
-              width={48}
-              height={48}
-              className="h-12 w-12 object-contain"
+              src="/aurex-logistics-logo.png"
+              alt="Aurex Logistics"
+              width={200}
+              height={64}
+              className="h-14 w-auto object-contain"
               priority
             />
-            <span className="text-3xl font-bold text-primary">Aurex Logistics</span>
           </div>
           <h1 className="text-2xl font-bold text-text-primary">Admin Portal</h1>
           <p className="mt-2 text-text-secondary">Sign in to access the admin dashboard</p>

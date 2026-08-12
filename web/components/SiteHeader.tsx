@@ -38,18 +38,15 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-secondary/97 text-white backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-3 sm:h-[4.25rem]">
-          <Link href="/" className="flex min-w-0 items-center gap-2.5">
+          <Link href="/" className="flex min-w-0 items-center gap-2">
             <Image
-              src="/delivery-truck-logo.png"
-              alt="Aurex Logistics Logo"
-              width={36}
-              height={36}
-              className="h-8 w-8 object-contain sm:h-9 sm:w-9"
+              src="/aurex-logistics-logo.png"
+              alt="Aurex Logistics"
+              width={160}
+              height={48}
+              className="h-10 w-auto object-contain sm:h-11"
               priority
             />
-            <span className="font-display truncate text-lg font-bold tracking-tight sm:text-xl lg:text-2xl">
-              Aurex Logistics
-            </span>
           </Link>
 
           <nav className="hidden items-center gap-6 lg:flex">
