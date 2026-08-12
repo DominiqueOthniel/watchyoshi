@@ -41,7 +41,7 @@ export default function SiteHeader() {
         <div className="flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-4">
           <Link href="/" className="relative block h-9 w-[7.5rem] shrink-0 overflow-hidden sm:h-10 sm:w-[9rem]">
             <Image
-              src="/aurex-logo.png"
+              src="/aurex-logo-light.png"
               alt="Aurex Logistics"
               fill
               sizes="144px"

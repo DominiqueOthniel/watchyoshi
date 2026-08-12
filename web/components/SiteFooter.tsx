@@ -44,7 +44,7 @@ export default function SiteFooter() {
             <Link href="/" className="mb-4 inline-flex items-center">
               <span className="relative block h-12 w-44 overflow-hidden sm:h-14 sm:w-52">
                 <Image
-                  src="/aurex-logo.png"
+                  src="/aurex-logo-light.png"
                   alt="Aurex Logistics"
                   fill
                   sizes="208px"

@@ -189,7 +189,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
     color: C.white,
   });
   try {
-    const logoPath = path.join(process.cwd(), "public", "aurex-logo.png");
+    const logoPath = path.join(process.cwd(), "public", "aurex-logo-light.png");
     const logoBytes = await readFile(logoPath);
     const logo = await pdfDoc.embedPng(logoBytes);
     const logoH = 44;

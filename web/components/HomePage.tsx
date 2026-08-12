@@ -76,7 +76,7 @@ export default function HomePage() {
         <div className="relative mx-auto flex min-h-[78svh] max-w-7xl flex-col justify-end px-4 pb-14 pt-28 sm:min-h-[88svh] sm:px-6 sm:pb-24 lg:min-h-[100svh] lg:px-8 lg:pb-28">
           <div className="reveal-up relative h-14 w-44 sm:h-16 sm:w-52 lg:h-20 lg:w-64">
             <Image
-              src="/aurex-logo.png"
+              src="/aurex-logo-light.png"
               alt="Aurex Logistics"
               fill
               sizes="(max-width: 640px) 176px, 256px"

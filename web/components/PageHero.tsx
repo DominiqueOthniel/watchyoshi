@@ -29,7 +29,7 @@ export default function PageHero({
       <div className="relative mx-auto flex min-h-[42svh] max-w-7xl flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[52vh] sm:px-6 sm:pb-16 lg:min-h-[58vh] lg:px-8">
         <div className="relative h-12 w-40 sm:h-14 sm:w-48">
           <Image
-            src="/aurex-logo.png"
+            src="/aurex-logo-light.png"
             alt="Aurex Logistics"
             fill
             sizes="192px"
