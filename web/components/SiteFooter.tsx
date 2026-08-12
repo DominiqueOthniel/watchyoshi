@@ -39,28 +39,28 @@ export default function SiteFooter() {
   return (
     <footer className="bg-secondary text-white">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
-          <div>
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
+          <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="mb-4 inline-flex items-center">
               <Image
                 src="/aurex-logistics-logo.png"
                 alt="Aurex Logistics"
                 width={180}
                 height={56}
-                className="h-12 w-auto object-contain brightness-0 invert"
+                className="h-10 w-auto max-w-[200px] object-contain brightness-0 invert sm:h-12"
               />
             </Link>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65">{t("footer.blurb")}</p>
             <div className="mt-5 flex flex-col gap-2">
               <a
                 href="tel:+33644684920"
-                className="inline-flex text-sm font-semibold text-accent hover:underline"
+                className="inline-flex break-all text-sm font-semibold text-accent hover:underline"
               >
                 +33 6 44 68 49 20
               </a>
               <a
                 href="mailto:logisticsaurex@gmail.com"
-                className="inline-flex text-sm font-semibold text-white/75 hover:text-white hover:underline"
+                className="inline-flex break-all text-sm font-semibold text-white/75 hover:text-white hover:underline"
               >
                 logisticsaurex@gmail.com
               </a>

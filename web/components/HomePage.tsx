@@ -60,7 +60,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="relative min-h-[100svh] overflow-hidden bg-secondary text-white">
+      <section className="relative min-h-[78svh] overflow-hidden bg-secondary text-white sm:min-h-[88svh] lg:min-h-[100svh]">
         <div className="absolute inset-0">
           <Image
             src="/images/brand-highway-night.webp"
@@ -73,22 +73,22 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-t from-secondary via-transparent to-secondary/25" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-20 pt-32 sm:px-6 sm:pb-24 lg:px-8 lg:pb-28">
+        <div className="relative mx-auto flex min-h-[78svh] max-w-7xl flex-col justify-end px-4 pb-14 pt-28 sm:min-h-[88svh] sm:px-6 sm:pb-24 lg:min-h-[100svh] lg:px-8 lg:pb-28">
           <Image
             src="/aurex-logistics-logo.png"
             alt="Aurex Logistics"
             width={280}
             height={90}
-            className="reveal-up h-16 w-auto object-contain brightness-0 invert sm:h-20 lg:h-24"
+            className="reveal-up h-12 w-auto max-w-[70%] object-contain brightness-0 invert sm:h-20 lg:h-24"
             priority
           />
-          <h1 className="reveal-up-delay mt-6 max-w-2xl font-display text-[1.65rem] font-semibold leading-[1.2] text-white sm:text-3xl lg:text-4xl">
+          <h1 className="reveal-up-delay mt-5 max-w-2xl font-display text-[1.45rem] font-semibold leading-[1.25] text-white sm:mt-6 sm:text-3xl lg:text-4xl">
             {t("home.heroTitle")}
           </h1>
-          <p className="reveal-up-delay-2 mt-5 max-w-lg text-base leading-relaxed text-white/72 sm:text-lg">
+          <p className="reveal-up-delay-2 mt-4 max-w-lg text-[0.95rem] leading-relaxed text-white/72 sm:mt-5 sm:text-lg">
             {t("home.heroSub")}
           </p>
-          <div className="reveal-up-delay-2 mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="reveal-up-delay-2 mt-8 flex w-full max-w-md flex-col gap-3 sm:mt-10 sm:max-w-none sm:flex-row sm:items-center">
             <Link href="/track" className="btn-primary px-7 py-3.5 text-base">
               {t("home.ctaTrack")}
             </Link>
@@ -126,26 +126,27 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="max-w-2xl">
-              <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">
+              <h2 className="font-display text-2xl font-bold text-text-primary sm:text-4xl">
                 {t("home.servicesTitle")}
               </h2>
               <p className="mt-3 text-base text-text-secondary sm:text-lg">{t("home.servicesSub")}</p>
             </div>
           </Reveal>
 
-          <div className="mt-12 grid gap-10 sm:grid-cols-2">
+          <div className="mt-10 grid gap-8 sm:mt-12 sm:grid-cols-2 sm:gap-10">
             {services.map((s, i) => (
               <Reveal key={s.href} delayMs={i * 60}>
-                <Link href={s.href} className="group grid gap-4 sm:grid-cols-[1fr_1.15fr] sm:items-center">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-surface">
+                <Link href={s.href} className="group grid gap-4 lg:grid-cols-[1fr_1.15fr] lg:items-center">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-surface sm:aspect-[4/3]">
                     <Image
                       src={s.img}
                       alt={s.title}
                       fill
+                      sizes="(max-width: 640px) 100vw, 50vw"
                       className="object-cover transition duration-500 group-hover:scale-[1.03]"
                     />
                   </div>
-                  <div className="sm:py-2">
+                  <div className="lg:py-2">
                     <h3 className="font-display text-xl font-bold text-text-primary group-hover:text-primary">
                       {s.title}
                     </h3>
@@ -163,7 +164,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="mb-8 max-w-2xl">
-              <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">
+              <h2 className="font-display text-2xl font-bold text-text-primary sm:text-4xl">
                 {t("home.ratesTitle")}
               </h2>
               <p className="mt-3 text-text-secondary">{t("home.ratesSub")}</p>
@@ -192,7 +193,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
             <div className="max-w-2xl">
-              <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">
+              <h2 className="font-display text-2xl font-bold text-text-primary sm:text-4xl">
                 {t("home.processTitle")}
               </h2>
               <p className="mt-3 text-base text-text-secondary sm:text-lg">{t("home.processSub")}</p>
@@ -218,7 +219,7 @@ export default function HomePage() {
           <div className="mb-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <Reveal>
               <div>
-                <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">
+                <h2 className="font-display text-2xl font-bold text-text-primary sm:text-4xl">
                   {t("home.opsTitle")}
                 </h2>
               </div>
@@ -226,19 +227,15 @@ export default function HomePage() {
             <p className="max-w-md text-sm text-text-secondary sm:text-base">{t("home.opsSub")}</p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[220px]">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {gallery.map((g, i) => (
-              <Reveal
-                key={g.label}
-                delayMs={i * 50}
-                className={g.tall ? "sm:col-span-2 sm:row-span-2 h-full min-h-[280px]" : "h-full min-h-[200px]"}
-              >
-                <figure className="relative h-full min-h-[200px] overflow-hidden bg-surface">
+              <Reveal key={g.label} delayMs={i * 50} className={g.tall ? "sm:col-span-2" : undefined}>
+                <figure className="relative aspect-[16/10] overflow-hidden bg-surface sm:aspect-[4/3] lg:aspect-[5/4]">
                   <Image
                     src={g.src}
                     alt={g.alt}
                     fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     className="object-cover"
                   />
                   <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 py-4 text-sm font-semibold text-white">
@@ -254,18 +251,19 @@ export default function HomePage() {
       <section className="bg-panel py-16 sm:py-20 lg:py-24">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
           <Reveal>
-            <div className="relative min-h-[300px] overflow-hidden sm:min-h-[400px]">
+            <div className="relative aspect-[16/10] overflow-hidden sm:aspect-auto sm:min-h-[400px]">
               <Image
                 src="/images/brand-vehicle-carrier.webp"
                 alt="Vehicle carrier transporting cars"
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
               />
             </div>
           </Reveal>
           <Reveal delayMs={80}>
             <div>
-              <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">
+              <h2 className="font-display text-2xl font-bold text-text-primary sm:text-4xl">
                 {t("home.whyTitle")}
               </h2>
               <ul className="mt-7 space-y-4">
@@ -293,7 +291,7 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
           <Reveal>
             <div>
-              <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">
+              <h2 className="font-display text-2xl font-bold text-text-primary sm:text-4xl">
                 {t("home.faqTitle")}
               </h2>
               <p className="mt-3 text-text-secondary">{t("home.faqSub")}</p>
@@ -313,16 +311,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden py-20 text-white">
+      <section className="relative overflow-hidden py-14 text-white sm:py-20">
         <div className="absolute inset-0">
           <Image src="/images/brand-port.webp" alt="Cargo port" fill className="object-cover" />
           <div className="absolute inset-0 bg-secondary/82" />
         </div>
         <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <p className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Aurex Logistics</p>
-          <h2 className="mt-4 font-display text-2xl font-bold sm:text-3xl">{t("home.finalTitle")}</h2>
-          <p className="mx-auto mt-3 max-w-xl text-white/70">{t("home.finalSub")}</p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <p className="font-display text-2xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+            Aurex Logistics
+          </p>
+          <h2 className="mt-3 font-display text-xl font-bold sm:mt-4 sm:text-3xl">{t("home.finalTitle")}</h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-white/70 sm:text-base">{t("home.finalSub")}</p>
+          <div className="mx-auto mt-8 flex max-w-md flex-col justify-center gap-3 sm:max-w-none sm:flex-row">
             <Link href="/track" className="btn-primary">
               {t("home.ctaTrack")}
             </Link>

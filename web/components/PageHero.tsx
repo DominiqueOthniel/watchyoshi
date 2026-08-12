@@ -20,29 +20,37 @@ export default function PageHero({
   actions,
 }: Props) {
   return (
-    <section className="relative min-h-[52vh] overflow-hidden bg-secondary text-white sm:min-h-[58vh]">
+    <section className="relative min-h-[42svh] overflow-hidden bg-secondary text-white sm:min-h-[52vh] lg:min-h-[58vh]">
       <div className="absolute inset-0">
-        <Image src={image} alt={imageAlt} fill priority className="object-cover" />
+        <Image src={image} alt={imageAlt} fill priority className="object-cover" sizes="100vw" />
         <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/80 to-secondary/35" />
         <div className="absolute inset-0 bg-gradient-to-t from-secondary/85 via-transparent to-secondary/25" />
       </div>
-      <div className="relative mx-auto flex min-h-[52vh] max-w-7xl flex-col justify-end px-4 pb-12 pt-24 sm:min-h-[58vh] sm:px-6 sm:pb-16 lg:px-8">
+      <div className="relative mx-auto flex min-h-[42svh] max-w-7xl flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[52vh] sm:px-6 sm:pb-16 lg:min-h-[58vh] lg:px-8">
         <Image
           src="/aurex-logistics-logo.png"
           alt="Aurex Logistics"
           width={220}
           height={70}
-          className="h-12 w-auto object-contain brightness-0 invert sm:h-14"
+          className="h-10 w-auto max-w-[65%] object-contain brightness-0 invert sm:h-14"
           priority
         />
         {eyebrow && (
-          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-accent">{eyebrow}</p>
+          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent sm:mt-5">
+            {eyebrow}
+          </p>
         )}
-        <h1 className="mt-2 max-w-3xl font-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
+        <h1 className="mt-2 max-w-3xl font-display text-xl font-bold leading-tight sm:text-3xl lg:text-4xl">
           {title}
         </h1>
-        {subtitle && <p className="mt-3 max-w-2xl text-base text-white/75 sm:text-lg">{subtitle}</p>}
-        {actions && <div className="mt-7 flex flex-col gap-3 sm:flex-row">{actions}</div>}
+        {subtitle && (
+          <p className="mt-3 max-w-2xl text-sm text-white/75 sm:text-lg">{subtitle}</p>
+        )}
+        {actions && (
+          <div className="mt-6 flex w-full max-w-md flex-col gap-3 sm:mt-7 sm:max-w-none sm:flex-row">
+            {actions}
+          </div>
+        )}
       </div>
     </section>
   );

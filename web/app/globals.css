@@ -37,6 +37,11 @@ body {
   font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: "ss01" on, "cv11" on;
   letter-spacing: -0.01em;
+  overflow-x: hidden;
+}
+
+html {
+  overflow-x: hidden;
 }
 
 a {
@@ -60,6 +65,13 @@ a {
   color: #fff;
   box-shadow: 0 8px 24px rgb(11 95 255 / 0.28);
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .btn-primary {
+    width: auto;
+  }
 }
 
 .btn-primary:hover {
@@ -79,6 +91,13 @@ a {
   font-weight: 600;
   color: #0f172a;
   transition: background 0.2s ease, border-color 0.2s ease;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .btn-secondary {
+    width: auto;
+  }
 }
 
 .btn-secondary:hover {
@@ -98,6 +117,13 @@ a {
   color: #fff;
   backdrop-filter: blur(8px);
   transition: background 0.2s ease, border-color 0.2s ease;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .btn-on-dark {
+    width: auto;
+  }
 }
 
 .btn-on-dark:hover {
@@ -116,6 +142,13 @@ a {
   font-weight: 600;
   color: #0f172a;
   transition: background 0.2s ease, border-color 0.2s ease;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .btn-ghost {
+    width: auto;
+  }
 }
 
 .btn-ghost:hover {

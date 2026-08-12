@@ -28,6 +28,7 @@ export default function SiteHeader() {
     e.preventDefault();
     if (!trackingId.trim()) {
       router.push("/track");
+      setMobileOpen(false);
       return;
     }
     setMobileOpen(false);
@@ -37,19 +38,19 @@ export default function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-secondary/97 text-white backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-3 sm:h-[4.25rem]">
-          <Link href="/" className="flex min-w-0 items-center gap-2">
+        <div className="flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-4">
+          <Link href="/" className="min-w-0 shrink">
             <Image
               src="/aurex-logistics-logo.png"
               alt="Aurex Logistics"
-              width={160}
-              height={48}
-              className="h-10 w-auto object-contain sm:h-11"
+              width={140}
+              height={40}
+              className="h-8 w-auto max-w-[132px] object-contain sm:h-9 sm:max-w-[160px]"
               priority
             />
           </Link>
 
-          <nav className="hidden items-center gap-6 lg:flex">
+          <nav className="hidden items-center gap-5 xl:flex">
             {links.map((link) => {
               const active = pathname === link.href || pathname?.startsWith(`${link.href}/`);
               return (
@@ -68,46 +69,21 @@ export default function SiteHeader() {
             })}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
-            <LanguageSwitcher />
-            <form onSubmit={onTrack} className="relative">
-              <input
-                type="text"
-                value={trackingId}
-                onChange={(e) => setTrackingId(e.target.value)}
-                placeholder={t("nav.trackingPlaceholder")}
-                className="w-32 rounded-md border border-white/15 bg-white/10 py-2 pl-8 pr-2 text-sm text-white placeholder:text-white/40 outline-none focus:border-accent lg:w-40"
-              />
-              <svg
-                className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/45"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </form>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
             <Link
               href="/track"
-              className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110"
+              className="hidden rounded-md bg-accent px-3 py-2 text-xs font-semibold text-white transition hover:brightness-110 sm:inline-flex sm:px-4 sm:text-sm"
             >
               {t("nav.trackBtn")}
             </Link>
-          </div>
-
-          <div className="flex items-center gap-2 lg:hidden">
-            <div className="md:hidden">
-              <LanguageSwitcher />
-            </div>
             <button
               type="button"
-              className="rounded-md p-2 text-white/80 hover:bg-white/10 hover:text-white"
+              className="rounded-md p-2 text-white/80 hover:bg-white/10 hover:text-white xl:hidden"
               aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((v) => !v)}
             >
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,14 +98,17 @@ export default function SiteHeader() {
         </div>
 
         {mobileOpen && (
-          <div className="border-t border-white/10 pb-4 lg:hidden">
+          <div className="border-t border-white/10 pb-4 xl:hidden">
             <nav className="flex flex-col gap-1 py-3">
+              <div className="mb-2 px-3 sm:hidden">
+                <LanguageSwitcher />
+              </div>
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-lg px-3 py-2.5 text-white/80 hover:bg-white/10 hover:text-white"
+                  className="rounded-lg px-3 py-3 text-base text-white/85 hover:bg-white/10 hover:text-white"
                 >
                   {link.label}
                 </Link>
@@ -137,28 +116,28 @@ export default function SiteHeader() {
               <Link
                 href="/estimate"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-white/80 hover:bg-white/10 hover:text-white"
+                className="rounded-lg px-3 py-3 text-base text-white/85 hover:bg-white/10 hover:text-white"
               >
                 {t("nav.estimate")}
               </Link>
               <Link
                 href="/about"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-3 py-2.5 text-white/80 hover:bg-white/10 hover:text-white"
+                className="rounded-lg px-3 py-3 text-base text-white/85 hover:bg-white/10 hover:text-white"
               >
                 {t("nav.about")}
               </Link>
-              <form onSubmit={onTrack} className="mt-2 space-y-2 px-3">
+              <form onSubmit={onTrack} className="mt-3 space-y-2 px-3">
                 <input
                   type="text"
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
                   placeholder={t("nav.trackingPlaceholder")}
-                  className="w-full rounded-md border border-white/15 bg-white/10 px-3 py-2.5 text-base text-white placeholder:text-white/45 outline-none"
+                  className="w-full rounded-md border border-white/15 bg-white/10 px-3 py-3 text-base text-white placeholder:text-white/45 outline-none"
                 />
                 <button
                   type="submit"
-                  className="w-full rounded-md bg-accent py-2.5 font-semibold text-white"
+                  className="w-full rounded-md bg-accent py-3 text-sm font-semibold text-white"
                 >
                   {t("nav.trackBtn")}
                 </button>
