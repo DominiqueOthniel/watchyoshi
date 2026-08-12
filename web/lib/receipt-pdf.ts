@@ -106,7 +106,7 @@ function statusMeta(status: string) {
         color: C.red,
         soft: C.redSoft,
         title: "Action required",
-        text: "An exception occurred. Please contact Aurex Logistics support immediately.",
+        text: "An exception occurred. Please contact Aurex Logistics at +33 6 44 68 49 20.",
       };
     default:
       return {
@@ -496,7 +496,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
     PAGE_W - MARGIN * 2
   );
   drawText(page, `Generated ${fmtDate(generatedAt)}  ·  ${docId}`, MARGIN, 22, 7, font, C.muted);
-  drawText(page, "Aurex Logistics.com", PAGE_W - MARGIN - 80, 22, 7, fontBold, C.primary);
+  drawText(page, "aurexlogistics.com", PAGE_W - MARGIN - 80, 22, 7, fontBold, C.primary);
 
   const bytes = await pdfDoc.save();
   return Buffer.from(bytes);

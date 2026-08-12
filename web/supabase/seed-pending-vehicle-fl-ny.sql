@@ -34,7 +34,7 @@ INSERT INTO public.shipments (
     'CW' || TO_CHAR(NOW(), 'YYYYMMDD') || UPPER(SUBSTRING(MD5(RANDOM()::TEXT) FROM 1 FOR 8)),
     'pending',
     'Miami Vehicle Depot',
-    'miami@Aurex Logistics.com',
+    'miami@aurexlogistics.com',
     '+13055550123',
     jsonb_build_object(
       'street', '1000 NW 42nd Avenue',

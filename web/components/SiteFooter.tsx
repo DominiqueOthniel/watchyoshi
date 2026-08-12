@@ -52,12 +52,20 @@ export default function SiteFooter() {
               <span className="font-display text-2xl font-bold tracking-tight">Aurex Logistics</span>
             </Link>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65">{t("footer.blurb")}</p>
-            <a
-              href="mailto:support@Aurex Logistics.com"
-              className="mt-5 inline-flex text-sm font-semibold text-accent hover:underline"
-            >
-              support@Aurex Logistics.com
-            </a>
+            <div className="mt-5 flex flex-col gap-2">
+              <a
+                href="tel:+33644684920"
+                className="inline-flex text-sm font-semibold text-accent hover:underline"
+              >
+                +33 6 44 68 49 20
+              </a>
+              <a
+                href="mailto:support@aurexlogistics.com"
+                className="inline-flex text-sm font-semibold text-white/75 hover:text-white hover:underline"
+              >
+                support@aurexlogistics.com
+              </a>
+            </div>
           </div>
 
           {footerLinks.map((col) => (

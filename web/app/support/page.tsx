@@ -104,10 +104,13 @@ export default function SupportPage() {
             seamless.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a href="#contact" className="btn-primary">
+            <a href="tel:+33644684920" className="btn-primary">
+              +33 6 44 68 49 20
+            </a>
+            <a href="#contact" className="btn-secondary">
               Contact Support
             </a>
-            <a href="#faq" className="btn-secondary">
+            <a href="#faq" className="btn-ghost">
               Browse FAQ
             </a>
           </div>
@@ -131,7 +134,7 @@ export default function SupportPage() {
               },
               {
                 q: "How do I contact support?",
-                a: "Use the live chat below with your name, email, and optional tracking ID.",
+                a: "Call +33 6 44 68 49 20, or use the live chat below with your name, email, and optional tracking ID.",
               },
             ].map((item) => (
               <div key={item.q} className="card p-5">
@@ -147,7 +150,12 @@ export default function SupportPage() {
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <h2 className="mb-2 text-center text-3xl font-bold text-text-primary">Live Support Chat</h2>
           <p className="mb-8 text-center text-text-secondary">
-            Chat in realtime with the Aurex Logistics team. Your conversation stays saved on this device.
+            Call{" "}
+            <a href="tel:+33644684920" className="font-semibold text-primary hover:underline">
+              +33 6 44 68 49 20
+            </a>{" "}
+            or chat in realtime with the Aurex Logistics team. Your conversation stays saved on this
+            device.
           </p>
 
           {restoring ? (

@@ -155,7 +155,9 @@ export default function ChatBubbleWidget() {
             <div>
               <p className="font-semibold">Aurex Logistics Support</p>
               <p className="text-xs text-white/80">
-                {chat ? "Your conversation is saved" : "We typically reply instantly"}
+                <a href="tel:+33644684920" className="hover:underline">
+                  +33 6 44 68 49 20
+                </a>
               </p>
             </div>
             <button

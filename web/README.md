@@ -38,7 +38,7 @@ Ouvrir http://localhost:3000
 ### Créer un admin
 
 1. **Authentication → Users → Add user**  
-   - Email : `admin@Aurex Logistics.com`  
+   - Email : `admin@aurexlogistics.com`  
    - Mot de passe fort  
    - Auto Confirm : ON  
 2. Dans SQL Editor :
@@ -46,13 +46,13 @@ Ouvrir http://localhost:3000
 ```sql
 UPDATE public.users
 SET role = 'admin', username = 'admin'
-WHERE email = 'admin@Aurex Logistics.com';
+WHERE email = 'admin@aurexlogistics.com';
 
 -- Si la ligne n'existe pas encore :
 INSERT INTO public.users (id, email, username, role)
 SELECT id, email, 'admin', 'admin'
 FROM auth.users
-WHERE email = 'admin@Aurex Logistics.com'
+WHERE email = 'admin@aurexlogistics.com'
 ON CONFLICT (id) DO UPDATE SET role = 'admin';
 ```
 

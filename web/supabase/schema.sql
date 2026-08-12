@@ -211,15 +211,15 @@ ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_messages;
 -- insert into storage.buckets (id, name, public) values ('receipts', 'receipts', true)
 --   on conflict (id) do update set public = true;
 -- 1. Authentication > Users > Add user
---    email: admin@Aurex Logistics.com
+--    email: admin@aurexlogistics.com
 --    password: (choose a strong password)
 --    Auto Confirm: ON
 -- 2. Then run (replace UUID):
 --
 -- UPDATE public.users SET role = 'admin', username = 'admin'
--- WHERE email = 'admin@Aurex Logistics.com';
+-- WHERE email = 'admin@aurexlogistics.com';
 --
 -- If the trigger did not create the row yet:
 -- INSERT INTO public.users (id, email, username, role)
--- SELECT id, email, 'admin', 'admin' FROM auth.users WHERE email = 'admin@Aurex Logistics.com'
+-- SELECT id, email, 'admin', 'admin' FROM auth.users WHERE email = 'admin@aurexlogistics.com'
 -- ON CONFLICT (id) DO UPDATE SET role = 'admin';
