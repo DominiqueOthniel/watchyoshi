@@ -8,9 +8,11 @@ import {
   loadChatSession,
   saveChatSession,
 } from "@/lib/chat-session";
+import { useI18n } from "@/lib/i18n/context";
 import type { ChatConversation } from "@/lib/types";
 
 export default function ChatBubbleWidget() {
+  const { t } = useI18n();
   const pathname = usePathname();
   const hideOnAdmin = pathname?.startsWith("/admin");
   const [open, setOpen] = useState(false);
@@ -91,22 +93,22 @@ export default function ChatBubbleWidget() {
         body: JSON.stringify({
           clientName: name,
           clientEmail: email,
-          subject: subject || "Live support",
+          subject: subject || t("chat.defaultSubject"),
           trackingId: trackingId || null,
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not start chat");
+      if (!res.ok) throw new Error(data.error || t("chat.startError"));
       setChat(data.chat);
       saveChatSession({
         chatId: data.chat.id,
         clientName: name,
         clientEmail: email,
-        subject: subject || "Live support",
+        subject: subject || t("chat.defaultSubject"),
         trackingId: trackingId || null,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      setError(err instanceof Error ? err.message : t("chat.startError"));
     } finally {
       setLoading(false);
     }
@@ -123,7 +125,7 @@ export default function ChatBubbleWidget() {
         <div className="fixed bottom-4 right-4 z-[9999] sm:bottom-5 sm:right-5">
           <button
             type="button"
-            aria-label="Open live chat support"
+            aria-label={t("chat.title")}
             onClick={() => setOpen(true)}
             className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-700 text-white shadow-[0_4px_20px_rgba(37,99,235,0.4)] transition hover:scale-105 sm:h-16 sm:w-16"
           >
@@ -153,7 +155,7 @@ export default function ChatBubbleWidget() {
         >
           <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-primary to-primary-700 px-4 py-3 text-white">
             <div>
-              <p className="font-semibold">Aurex Logistics Support</p>
+              <p className="font-semibold">{t("chat.brandSupport")}</p>
               <p className="text-xs text-white/80">
                 <a href="tel:+33644684920" className="hover:underline">
                   +33 6 44 68 49 20
@@ -162,7 +164,7 @@ export default function ChatBubbleWidget() {
             </div>
             <button
               type="button"
-              aria-label="Close chat"
+              aria-label={t("chat.close")}
               onClick={() => setOpen(false)}
               className="rounded-lg p-2 hover:bg-white/10"
             >
@@ -175,7 +177,7 @@ export default function ChatBubbleWidget() {
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             {restoring ? (
               <div className="flex flex-1 items-center justify-center p-6 text-sm text-text-muted">
-                Restoring conversation…
+                {t("chat.restoring")}
               </div>
             ) : !chat ? (
               <form
@@ -185,7 +187,7 @@ export default function ChatBubbleWidget() {
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
+                  placeholder={t("chat.name")}
                   required
                   autoComplete="name"
                   className="input-field px-3 py-3 text-base"
@@ -194,7 +196,7 @@ export default function ChatBubbleWidget() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email"
+                  placeholder={t("chat.email")}
                   required
                   autoComplete="email"
                   inputMode="email"
@@ -203,13 +205,13 @@ export default function ChatBubbleWidget() {
                 <input
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="How can we help?"
+                  placeholder={t("chat.helpPlaceholder")}
                   className="input-field px-3 py-3 text-base"
                 />
                 <input
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
-                  placeholder="Tracking ID (optional)"
+                  placeholder={t("chat.tracking")}
                   autoCapitalize="characters"
                   className="input-field px-3 py-3 text-base"
                 />
@@ -223,7 +225,7 @@ export default function ChatBubbleWidget() {
                   disabled={loading}
                   className="btn-primary mt-auto w-full py-3.5 disabled:opacity-60"
                 >
-                  {loading ? "Starting…" : "Start Chat"}
+                  {loading ? t("chat.starting") : t("chat.start")}
                 </button>
               </form>
             ) : (

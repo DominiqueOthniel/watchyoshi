@@ -7,9 +7,11 @@ import {
   loadChatSession,
   saveChatSession,
 } from "@/lib/chat-session";
+import { useI18n } from "@/lib/i18n/context";
 import type { ChatConversation } from "@/lib/types";
 
 export default function SupportPage() {
+  const { t } = useI18n();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
@@ -43,7 +45,7 @@ export default function SupportPage() {
         }
         if (!cancelled) setChat(data.chat);
       } catch {
-        // ignore — form remains available
+        // ignore
       } finally {
         if (!cancelled) setRestoring(false);
       }
@@ -71,17 +73,17 @@ export default function SupportPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not start chat");
+      if (!res.ok) throw new Error(data.error || t("support.startError"));
       setChat(data.chat);
       saveChatSession({
         chatId: data.chat.id,
         clientName: name,
         clientEmail: email,
-        subject: subject || "Support",
+        subject: subject || t("support.defaultSubject"),
         trackingId: trackingId || null,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      setError(err instanceof Error ? err.message : t("support.startError"));
     } finally {
       setLoading(false);
     }
@@ -92,26 +94,31 @@ export default function SupportPage() {
     setChat(null);
   }
 
+  const faqs = [
+    { q: t("support.q1"), a: t("support.a1") },
+    { q: t("support.q2"), a: t("support.a2") },
+    { q: t("support.q3"), a: t("support.a3") },
+  ];
+
   return (
     <div>
       <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-16">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <h1 className="mb-6 text-4xl font-bold text-text-primary lg:text-5xl">
-            How can we <span className="text-gradient-primary">help you</span> today?
+            {t("support.heroTitle1")}{" "}
+            <span className="text-gradient-primary">{t("support.heroTitle2")}</span>{" "}
+            {t("support.heroTitle3")}
           </h1>
-          <p className="mx-auto mb-8 max-w-3xl text-xl text-text-secondary">
-            Find answers, get support, and discover resources to make your shipping experience
-            seamless.
-          </p>
+          <p className="mx-auto mb-8 max-w-3xl text-xl text-text-secondary">{t("support.heroSub")}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <a href="tel:+33644684920" className="btn-primary">
               +33 6 44 68 49 20
             </a>
             <a href="#contact" className="btn-secondary">
-              Contact Support
+              {t("support.contactBtn")}
             </a>
             <a href="#faq" className="btn-ghost">
-              Browse FAQ
+              {t("support.faqBtn")}
             </a>
           </div>
         </div>
@@ -120,23 +127,10 @@ export default function SupportPage() {
       <section id="faq" className="bg-panel py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <h2 className="mb-8 text-center text-3xl font-bold text-text-primary">
-            Frequently Asked Questions
+            {t("support.faqTitle")}
           </h2>
           <div className="space-y-4">
-            {[
-              {
-                q: "Where do I find my tracking ID?",
-                a: "Your tracking ID starts with CW and was sent in your confirmation email or shipment receipt.",
-              },
-              {
-                q: "How often is my location updated?",
-                a: "In-transit shipments refresh automatically. You can also reopen the tracking page anytime for the latest position.",
-              },
-              {
-                q: "How do I contact support?",
-                a: "Call +33 6 44 68 49 20, or use the live chat below with your name, email, and optional tracking ID.",
-              },
-            ].map((item) => (
+            {faqs.map((item) => (
               <div key={item.q} className="card p-5">
                 <h3 className="font-semibold text-text-primary">{item.q}</h3>
                 <p className="mt-2 text-sm text-text-secondary">{item.a}</p>
@@ -148,26 +142,25 @@ export default function SupportPage() {
 
       <section id="contact" className="bg-surface py-16">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <h2 className="mb-2 text-center text-3xl font-bold text-text-primary">Live Support Chat</h2>
+          <h2 className="mb-2 text-center text-3xl font-bold text-text-primary">
+            {t("support.chatTitle")}
+          </h2>
           <p className="mb-8 text-center text-text-secondary">
-            Call{" "}
+            {t("support.chatSub1")}{" "}
             <a href="tel:+33644684920" className="font-semibold text-primary hover:underline">
               +33 6 44 68 49 20
             </a>{" "}
-            or chat in realtime with the Aurex Logistics team. Your conversation stays saved on this
-            device.
+            {t("support.chatSub2")}
           </p>
 
           {restoring ? (
-            <div className="card p-8 text-center text-sm text-text-muted">
-              Restoring your conversation…
-            </div>
+            <div className="card p-8 text-center text-sm text-text-muted">{t("support.restoring")}</div>
           ) : !chat ? (
             <form onSubmit={startChat} className="card space-y-4 p-6 sm:p-8">
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
+                placeholder={t("support.name")}
                 required
                 className="input-field px-4 py-3"
               />
@@ -175,20 +168,20 @@ export default function SupportPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder={t("support.email")}
                 required
                 className="input-field px-4 py-3"
               />
               <input
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="Subject"
+                placeholder={t("support.subject")}
                 className="input-field px-4 py-3"
               />
               <input
                 value={trackingId}
                 onChange={(e) => setTrackingId(e.target.value)}
-                placeholder="Tracking ID (optional)"
+                placeholder={t("support.trackingOptional")}
                 className="input-field px-4 py-3"
               />
               {error && (
@@ -197,7 +190,7 @@ export default function SupportPage() {
                 </div>
               )}
               <button type="submit" disabled={loading} className="btn-primary w-full py-3 disabled:opacity-60">
-                {loading ? "Opening…" : "Start Chat"}
+                {loading ? t("support.opening") : t("support.startChat")}
               </button>
             </form>
           ) : (

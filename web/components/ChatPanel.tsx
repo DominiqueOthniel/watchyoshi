@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useI18n } from "@/lib/i18n/context";
 import type { ChatMessage } from "@/lib/types";
 
 interface ChatPanelProps {
@@ -19,6 +20,7 @@ export default function ChatPanel({
   senderName,
   onClose,
 }: ChatPanelProps) {
+  const { t } = useI18n();
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
@@ -94,10 +96,10 @@ export default function ChatPanel({
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="mb-2 flex shrink-0 items-center justify-between">
-        <h3 className="font-semibold text-text-primary">Conversation</h3>
+        <h3 className="font-semibold text-text-primary">{t("chat.conversation")}</h3>
         {onClose && (
           <button type="button" onClick={onClose} className="text-xs text-primary hover:underline">
-            {senderType === "client" ? "New conversation" : "Close chat"}
+            {senderType === "client" ? t("chat.newConversation") : t("chat.close")}
           </button>
         )}
       </div>
@@ -127,7 +129,7 @@ export default function ChatPanel({
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Type your message…"
+          placeholder={t("chat.placeholder")}
           enterKeyHint="send"
           autoComplete="off"
           className="input-field min-w-0 flex-1 px-3 py-3 text-base"
@@ -137,7 +139,7 @@ export default function ChatPanel({
           disabled={sending}
           className="btn-primary shrink-0 px-4 py-3 text-sm disabled:opacity-60"
         >
-          Send
+          {t("chat.send")}
         </button>
       </form>
     </div>
