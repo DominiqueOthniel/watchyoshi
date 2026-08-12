@@ -60,10 +60,10 @@ export default function SiteFooter() {
                 +33 6 44 68 49 20
               </a>
               <a
-                href="mailto:support@aurexlogistics.com"
+                href="mailto:logisticsaurex@gmail.com"
                 className="inline-flex text-sm font-semibold text-white/75 hover:text-white hover:underline"
               >
-                support@aurexlogistics.com
+                logisticsaurex@gmail.com
               </a>
             </div>
           </div>
