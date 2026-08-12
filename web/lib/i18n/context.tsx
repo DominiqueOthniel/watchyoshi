@@ -10,8 +10,10 @@ import {
   type ReactNode,
 } from "react";
 import {
+  DEFAULT_LOCALE,
   LOCALES,
   STORAGE_KEY,
+  detectLocaleFromRegion,
   resolveInitialLocale,
   type Locale,
 } from "./config";
@@ -28,7 +30,7 @@ type I18nContextValue = {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
+  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -55,15 +57,19 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     } catch {
       // ignore
     }
-    const detected = resolveInitialLocale();
+    const detected = detectLocaleFromRegion();
     setLocaleState(detected);
     document.documentElement.lang = detected;
   }, []);
 
   const t = useCallback(
     (key: string, vars?: Record<string, string | number>) => {
-      const table = dictionaries[locale] || dictionaries.en;
-      let text = table[key] || dictionaries.en[key] || key;
+      const table = dictionaries[locale] || dictionaries[DEFAULT_LOCALE];
+      let text =
+        table[key] ||
+        dictionaries[DEFAULT_LOCALE][key] ||
+        dictionaries.en[key] ||
+        key;
       if (vars) {
         for (const [k, v] of Object.entries(vars)) {
           text = text.replaceAll(`{${k}}`, String(v));

@@ -1,17 +1,20 @@
 export const LOCALES = ["en", "fr", "es"] as const;
 export type Locale = (typeof LOCALES)[number];
 
+/** Default product language when nothing is stored or detected */
+export const DEFAULT_LOCALE: Locale = "fr";
+
 export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   fr: "Français",
   es: "Español",
 };
 
-export const STORAGE_KEY = "cw_locale";
+export const STORAGE_KEY = "aurex_locale";
 
 /** Map browser / region hints to a supported locale */
 export function detectLocaleFromRegion(): Locale {
-  if (typeof navigator === "undefined") return "en";
+  if (typeof navigator === "undefined") return DEFAULT_LOCALE;
 
   const candidates = [
     ...(navigator.languages || []),
@@ -27,7 +30,6 @@ export function detectLocaleFromRegion(): Locale {
     if (lang === "es") return "es";
     if (lang === "en") return "en";
 
-    // Region fallbacks when language tag is ambiguous
     if (region && ["FR", "BE", "CH", "LU", "MC", "SN", "CI", "CM"].includes(region)) {
       return "fr";
     }
@@ -36,7 +38,6 @@ export function detectLocaleFromRegion(): Locale {
     }
   }
 
-  // Soft timezone hint (Europe/Paris etc.)
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
     if (/Paris|Brussels|Zurich|Luxembourg|Abidjan|Dakar/i.test(tz)) return "fr";
@@ -45,7 +46,7 @@ export function detectLocaleFromRegion(): Locale {
     // ignore
   }
 
-  return "en";
+  return DEFAULT_LOCALE;
 }
 
 export function readStoredLocale(): Locale | null {
@@ -60,5 +61,5 @@ export function readStoredLocale(): Locale | null {
 }
 
 export function resolveInitialLocale(): Locale {
-  return readStoredLocale() || detectLocaleFromRegion();
+  return readStoredLocale() || detectLocaleFromRegion() || DEFAULT_LOCALE;
 }
