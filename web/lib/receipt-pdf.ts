@@ -496,6 +496,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
     PAGE_W - MARGIN * 2
   );
   drawText(page, `Generated ${fmtDate(generatedAt)}  ·  ${docId}`, MARGIN, 22, 7, font, C.muted);
+  drawText(page, "+33 6 44 68 49 20", PAGE_W - MARGIN - 95, 34, 7, fontBold, C.primary);
   drawText(page, "aurexlogistics.com", PAGE_W - MARGIN - 80, 22, 7, fontBold, C.primary);
 
   const bytes = await pdfDoc.save();
