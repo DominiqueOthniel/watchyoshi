@@ -39,13 +39,13 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-secondary/97 text-white backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-4">
-          <Link href="/" className="min-w-0 shrink">
+          <Link href="/" className="relative block h-9 w-[7.5rem] shrink-0 overflow-hidden sm:h-10 sm:w-[9rem]">
             <Image
-              src="/aurex-logistics-logo.png"
+              src="/aurex-logo.png"
               alt="Aurex Logistics"
-              width={140}
-              height={40}
-              className="h-8 w-auto max-w-[132px] object-contain sm:h-9 sm:max-w-[160px]"
+              fill
+              sizes="144px"
+              className="object-contain object-left"
               priority
             />
           </Link>

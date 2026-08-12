@@ -53,14 +53,16 @@ export default function AdminLoginClient() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="mb-4 flex items-center justify-center">
-            <Image
-              src="/aurex-logistics-logo.png"
-              alt="Aurex Logistics"
-              width={200}
-              height={64}
-              className="h-14 w-auto object-contain"
-              priority
-            />
+            <span className="relative mx-auto block h-16 w-52">
+              <Image
+                src="/aurex-logo.png"
+                alt="Aurex Logistics"
+                fill
+                sizes="208px"
+                className="object-contain"
+                priority
+              />
+            </span>
           </div>
           <h1 className="text-2xl font-bold text-text-primary">Admin Portal</h1>
           <p className="mt-2 text-text-secondary">Sign in to access the admin dashboard</p>

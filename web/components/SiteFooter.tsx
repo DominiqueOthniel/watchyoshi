@@ -42,13 +42,15 @@ export default function SiteFooter() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="mb-4 inline-flex items-center">
-              <Image
-                src="/aurex-logistics-logo.png"
-                alt="Aurex Logistics"
-                width={180}
-                height={56}
-                className="h-10 w-auto max-w-[200px] object-contain brightness-0 invert sm:h-12"
-              />
+              <span className="relative block h-12 w-44 overflow-hidden sm:h-14 sm:w-52">
+                <Image
+                  src="/aurex-logo.png"
+                  alt="Aurex Logistics"
+                  fill
+                  sizes="208px"
+                  className="object-contain object-left"
+                />
+              </span>
             </Link>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65">{t("footer.blurb")}</p>
             <div className="mt-5 flex flex-col gap-2">
