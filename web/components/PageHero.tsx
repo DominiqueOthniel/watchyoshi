@@ -28,7 +28,7 @@ export default function PageHero({
       </div>
       <div className="relative mx-auto flex min-h-[52vh] max-w-7xl flex-col justify-end px-4 pb-12 pt-24 sm:min-h-[58vh] sm:px-6 sm:pb-16 lg:px-8">
         <p className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
-          CargoWatch
+          Aurex Logistics
         </p>
         {eyebrow && (
           <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent">{eyebrow}</p>

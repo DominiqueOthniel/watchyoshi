@@ -1,4 +1,4 @@
-# CargoWatch Next.js on Netlify (monorepo: app lives in web/)
+# Aurex Logistics Next.js on Netlify (monorepo: app lives in web/)
 [build]
   base = "web"
   command = "npm run build"

@@ -4,8 +4,8 @@ import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 
 export const metadata = {
-  title: "About | CargoWatch",
-  description: "CargoWatch builds clear, visible logistics worldwide for shippers who need clarity every mile.",
+  title: "About | Aurex Logistics",
+  description: "Aurex Logistics builds clear, visible logistics worldwide for shippers who need clarity every mile.",
 };
 
 const timeline = [
@@ -37,7 +37,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="About"
         title="Logistics should feel calm, not chaotic."
-        subtitle="CargoWatch exists so every shipment worldwide has a readable story: where it is, what happens next, who can help."
+        subtitle="Aurex Logistics exists so every shipment worldwide has a readable story: where it is, what happens next, who can help."
         image="/images/brand-air-cargo.png"
         imageAlt="Air cargo operations at dusk"
         actions={
@@ -82,7 +82,7 @@ export default function AboutPage() {
             <div className="relative min-h-[300px] overflow-hidden rounded-3xl sm:min-h-[380px]">
               <Image
                 src="/images/brand-warehouse.png"
-                alt="CargoWatch warehouse operations"
+                alt="Aurex Logistics warehouse operations"
                 fill
                 className="object-cover"
               />
@@ -114,7 +114,7 @@ export default function AboutPage() {
         <Image src="/images/brand-highway-night.png" alt="" fill className="object-cover" />
         <div className="absolute inset-0 bg-secondary/85" />
         <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <p className="font-display text-4xl font-extrabold">CargoWatch</p>
+          <p className="font-display text-4xl font-extrabold">Aurex Logistics</p>
           <h2 className="mt-3 font-display text-2xl font-bold">Want to see it in motion?</h2>
           <p className="mt-3 text-white/75">Open the tracker or get an estimate. Stay for the clarity.</p>
           <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">

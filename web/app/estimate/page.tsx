@@ -4,7 +4,7 @@ import Reveal from "@/components/Reveal";
 import EstimateCalculator from "@/components/EstimateCalculator";
 
 export const metadata = {
-  title: "Estimate | CargoWatch",
+  title: "Estimate | Aurex Logistics",
   description: "Get an indicative shipping estimate for road, air, sea, or vehicle transport.",
 };
 

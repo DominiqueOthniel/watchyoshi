@@ -41,14 +41,14 @@ export default function SiteHeader() {
           <Link href="/" className="flex min-w-0 items-center gap-2.5">
             <Image
               src="/delivery-truck-logo.png"
-              alt="CargoWatch Logo"
+              alt="Aurex Logistics Logo"
               width={36}
               height={36}
               className="h-8 w-8 object-contain sm:h-9 sm:w-9"
               priority
             />
-            <span className="font-display truncate text-xl font-bold tracking-tight sm:text-2xl">
-              CargoWatch
+            <span className="font-display truncate text-lg font-bold tracking-tight sm:text-xl lg:text-2xl">
+              Aurex Logistics
             </span>
           </Link>
 

@@ -4,8 +4,8 @@ import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 
 export const metadata = {
-  title: "Coverage | CargoWatch",
-  description: "CargoWatch corridors across Americas, Europe, Asia-Pacific, Middle East, Africa, and global ocean lanes.",
+  title: "Coverage | Aurex Logistics",
+  description: "Aurex Logistics corridors across Americas, Europe, Asia-Pacific, Middle East, Africa, and global ocean lanes.",
 };
 
 const corridors = [
@@ -61,7 +61,7 @@ export default function CoveragePage() {
           <Reveal>
             <div className="max-w-2xl">
               <h2 className="font-display text-3xl font-bold text-text-primary">
-                Where CargoWatch operates
+                Where Aurex Logistics operates
               </h2>
               <p className="mt-3 text-text-secondary">
                 Domestic and international lanes across major regions, with the same tracking

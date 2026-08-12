@@ -74,8 +74,8 @@ export default function HomePage() {
         </div>
 
         <div className="relative mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-4 pb-20 pt-32 sm:px-6 sm:pb-24 lg:px-8 lg:pb-28">
-          <p className="reveal-up font-display text-[2.75rem] font-extrabold leading-none tracking-tight text-white sm:text-6xl lg:text-7xl">
-            CargoWatch
+          <p className="reveal-up font-display text-[2.35rem] font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Aurex Logistics
           </p>
           <h1 className="reveal-up-delay mt-6 max-w-2xl font-display text-[1.65rem] font-semibold leading-[1.2] text-white sm:text-3xl lg:text-4xl">
             {t("home.heroTitle")}
@@ -308,7 +308,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-secondary/82" />
         </div>
         <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <p className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">CargoWatch</p>
+          <p className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Aurex Logistics</p>
           <h2 className="mt-4 font-display text-2xl font-bold sm:text-3xl">{t("home.finalTitle")}</h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">{t("home.finalSub")}</p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">

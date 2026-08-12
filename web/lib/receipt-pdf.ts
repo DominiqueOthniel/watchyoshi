@@ -106,7 +106,7 @@ function statusMeta(status: string) {
         color: C.red,
         soft: C.redSoft,
         title: "Action required",
-        text: "An exception occurred. Please contact CargoWatch support immediately.",
+        text: "An exception occurred. Please contact Aurex Logistics support immediately.",
       };
     default:
       return {
@@ -161,10 +161,10 @@ function addressOf(party?: Shipment["sender"]) {
 
 export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create();
-  pdfDoc.setTitle(`CargoWatch Receipt — ${shipment.trackingId}`);
-  pdfDoc.setAuthor("CargoWatch");
+  pdfDoc.setTitle(`Aurex Logistics Receipt ${shipment.trackingId}`);
+  pdfDoc.setAuthor("Aurex Logistics");
   pdfDoc.setSubject("Official shipment receipt");
-  pdfDoc.setCreator("CargoWatch Logistics Platform");
+  pdfDoc.setCreator("Aurex Logistics Platform");
 
   const page = pdfDoc.addPage([PAGE_W, PAGE_H]);
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -174,7 +174,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   const meta = statusMeta(status);
   const symbol = currencySymbol(shipment.cost?.currency || shipment.package?.currency);
   const generatedAt = new Date().toISOString();
-  const docId = `CW-RCPT-${shipment.trackingId}-${Date.now().toString().slice(-6)}`;
+  const docId = `AX-RCPT-${shipment.trackingId}-${Date.now().toString().slice(-6)}`;
 
   // ===== HEADER =====
   page.drawRectangle({ x: 0, y: PAGE_H - 108, width: PAGE_W, height: 108, color: C.primary });
@@ -193,12 +193,12 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
       width: logoW,
       height: logoH,
     });
-    drawText(page, "CargoWatch", MARGIN + logoW + 10, PAGE_H - 58, 22, fontBold, C.white);
+    drawText(page, "Aurex Logistics", MARGIN + logoW + 10, PAGE_H - 58, 22, fontBold, C.white);
   } catch {
-    drawText(page, "CargoWatch", MARGIN, PAGE_H - 58, 24, fontBold, C.white);
+    drawText(page, "Aurex Logistics", MARGIN, PAGE_H - 58, 24, fontBold, C.white);
   }
 
-  drawText(page, "Your cargo. Our watch. Every mile.", MARGIN, PAGE_H - 78, 9, font, hex(191, 219, 254));
+  drawText(page, "Worldwide freight. Clear tracking.", MARGIN, PAGE_H - 78, 9, font, hex(191, 219, 254));
   drawText(page, "OFFICIAL SHIPMENT RECEIPT", PAGE_W - MARGIN - 190, PAGE_H - 52, 11, fontBold, C.white);
   drawText(page, docId, PAGE_W - MARGIN - 190, PAGE_H - 68, 8, font, hex(191, 219, 254));
 
@@ -487,7 +487,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   page.drawRectangle({ x: 0, y: 58, width: PAGE_W, height: 1.2, color: C.border });
   drawText(
     page,
-    "This document is an official receipt issued by CargoWatch. Verify authenticity with the tracking number above.",
+    "This document is an official receipt issued by Aurex Logistics. Verify authenticity with the tracking number above.",
     MARGIN,
     38,
     7,
@@ -496,7 +496,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
     PAGE_W - MARGIN * 2
   );
   drawText(page, `Generated ${fmtDate(generatedAt)}  ·  ${docId}`, MARGIN, 22, 7, font, C.muted);
-  drawText(page, "cargowatch.com", PAGE_W - MARGIN - 80, 22, 7, fontBold, C.primary);
+  drawText(page, "Aurex Logistics.com", PAGE_W - MARGIN - 80, 22, 7, fontBold, C.primary);
 
   const bytes = await pdfDoc.save();
   return Buffer.from(bytes);

@@ -107,7 +107,7 @@ export async function POST(request: Request) {
         conversation_id: conv.id,
         text: `Bonjour ${body.clientName}, comment pouvons-nous vous aider ?`,
         sender_type: "admin",
-        sender_name: "CargoWatch Support",
+        sender_name: "Aurex Logistics Support",
         read: false,
       },
     ]);

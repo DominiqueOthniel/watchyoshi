@@ -1,4 +1,4 @@
-const STORAGE_KEY = "cargowatch_support_chat";
+const STORAGE_KEY = "Aurex Logistics_support_chat";
 
 export interface StoredChatSession {
   chatId: string;

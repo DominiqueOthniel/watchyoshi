@@ -55,13 +55,13 @@ export default function AdminLoginClient() {
           <div className="mb-4 flex items-center justify-center space-x-2">
             <Image
               src="/delivery-truck-logo.png"
-              alt="CargoWatch Logo"
+              alt="Aurex Logistics Logo"
               width={48}
               height={48}
               className="h-12 w-12 object-contain"
               priority
             />
-            <span className="text-3xl font-bold text-primary">CargoWatch</span>
+            <span className="text-3xl font-bold text-primary">Aurex Logistics</span>
           </div>
           <h1 className="text-2xl font-bold text-text-primary">Admin Portal</h1>
           <p className="mt-2 text-text-secondary">Sign in to access the admin dashboard</p>

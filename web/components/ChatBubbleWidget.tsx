@@ -153,7 +153,7 @@ export default function ChatBubbleWidget() {
         >
           <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-primary to-primary-700 px-4 py-3 text-white">
             <div>
-              <p className="font-semibold">CargoWatch Support</p>
+              <p className="font-semibold">Aurex Logistics Support</p>
               <p className="text-xs text-white/80">
                 {chat ? "Your conversation is saved" : "We typically reply instantly"}
               </p>

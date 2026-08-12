@@ -6,7 +6,7 @@ import { I18nProvider } from "@/lib/i18n/context";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CargoWatch | Live freight tracking & logistics",
+  title: "Aurex Logistics | Live freight tracking & logistics",
   description:
     "Track road, air, sea, and vehicle shipments worldwide in real time. Clear timelines, live maps, and support for domestic and international freight.",
 };

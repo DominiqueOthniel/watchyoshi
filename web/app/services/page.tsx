@@ -4,7 +4,7 @@ import PageHero from "@/components/PageHero";
 import Reveal from "@/components/Reveal";
 
 export const metadata = {
-  title: "Services | CargoWatch",
+  title: "Services | Aurex Logistics",
   description: "Worldwide road, air, sea, and vehicle transport with live tracking and clear timelines.",
 };
 
@@ -45,7 +45,7 @@ export default function ServicesPage() {
       <PageHero
         eyebrow="Services"
         title="Every mode. One tracking experience worldwide."
-        subtitle="Pick the lane that fits the load, domestic or international. CargoWatch keeps the journey readable from start to finish."
+        subtitle="Pick the lane that fits the load, domestic or international. Aurex Logistics keeps the journey readable from start to finish."
         image="/images/brand-port.png"
         imageAlt="Port containers and cargo ship"
         actions={

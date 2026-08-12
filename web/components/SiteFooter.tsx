@@ -44,19 +44,19 @@ export default function SiteFooter() {
             <Link href="/" className="mb-4 inline-flex items-center gap-2">
               <Image
                 src="/delivery-truck-logo.png"
-                alt="CargoWatch"
+                alt="Aurex Logistics"
                 width={36}
                 height={36}
                 className="h-9 w-9 object-contain"
               />
-              <span className="font-display text-2xl font-bold tracking-tight">CargoWatch</span>
+              <span className="font-display text-2xl font-bold tracking-tight">Aurex Logistics</span>
             </Link>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65">{t("footer.blurb")}</p>
             <a
-              href="mailto:support@cargowatch.com"
+              href="mailto:support@Aurex Logistics.com"
               className="mt-5 inline-flex text-sm font-semibold text-accent hover:underline"
             >
-              support@cargowatch.com
+              support@Aurex Logistics.com
             </a>
           </div>
 
@@ -83,7 +83,7 @@ export default function SiteFooter() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center">
           <p className="text-xs text-white/45">
-            © {new Date().getFullYear()} CargoWatch. {t("footer.tagline")}
+            © {new Date().getFullYear()} Aurex Logistics. {t("footer.tagline")}
           </p>
           <div className="flex flex-wrap gap-4 text-xs text-white/45">
             <span>{t("footer.modes")}</span>

@@ -147,7 +147,7 @@ export default function SupportPage() {
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <h2 className="mb-2 text-center text-3xl font-bold text-text-primary">Live Support Chat</h2>
           <p className="mb-8 text-center text-text-secondary">
-            Chat in realtime with the CargoWatch team. Your conversation stays saved on this device.
+            Chat in realtime with the Aurex Logistics team. Your conversation stays saved on this device.
           </p>
 
           {restoring ? (
