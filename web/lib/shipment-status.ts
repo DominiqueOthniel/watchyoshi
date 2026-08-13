@@ -82,14 +82,15 @@ const LEGACY_EN_COPY = new Set([
 ]);
 
 export function localizedEventCopy(ev: {
-  status: string;
+  status?: string;
   title?: string;
   description?: string;
 }) {
-  const meta = STATUS_META[ev.status as ShipmentStatus];
+  const status = ev.status || "";
+  const meta = STATUS_META[status as ShipmentStatus];
   if (!meta) {
     return {
-      title: ev.title || ev.status,
+      title: ev.title || status,
       description: ev.description || "",
     };
   }

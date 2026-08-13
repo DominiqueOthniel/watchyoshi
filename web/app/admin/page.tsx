@@ -68,22 +68,29 @@ export default function AdminDashboard() {
     }
   }
 
+  const liveKey = useMemo(
+    () =>
+      shipments
+        .filter((s) =>
+          ["picked_up", "in_transit", "out_for_delivery"].includes(s.status)
+        )
+        .map((s) => `${s.trackingId}:${s.autoProgress?.paused ? "1" : "0"}`)
+        .join("|"),
+    [shipments]
+  );
+
   useEffect(() => {
     load();
   }, []);
 
   // Tick live progress on the server so statuses advance without opening /track
   useEffect(() => {
-    if (tab !== "shipments") return;
+    if (tab !== "shipments" || !liveKey) return;
 
-    const activeIds = shipments
-      .filter(
-        (s) =>
-          s.autoProgress?.enabled &&
-          !s.autoProgress?.paused &&
-          ["picked_up", "in_transit", "out_for_delivery"].includes(s.status)
-      )
-      .map((s) => s.trackingId);
+    const activeIds = liveKey
+      .split("|")
+      .map((part) => part.split(":")[0])
+      .filter(Boolean);
 
     if (activeIds.length === 0) return;
 
@@ -100,15 +107,7 @@ export default function AdminDashboard() {
       cancelled = true;
       clearInterval(timer);
     };
-  }, [
-    tab,
-    shipments
-      .filter((s) =>
-        ["picked_up", "in_transit", "out_for_delivery"].includes(s.status)
-      )
-      .map((s) => `${s.trackingId}:${s.autoProgress?.paused ? "1" : "0"}`)
-      .join("|"),
-  ]);
+  }, [tab, liveKey]);
 
   const stats = useMemo(() => {
     const total = shipments.length;
