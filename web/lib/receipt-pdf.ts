@@ -146,14 +146,9 @@ function truncateToWidth(text: string, font: PDFFont, size: number, maxWidth: nu
 
 function addressOf(party?: Shipment["sender"]) {
   if (!party?.address) return "N/A";
+  const cityLine = [party.address.zip, party.address.city].filter(Boolean).join(" ");
   return (
-    [
-      party.address.street,
-      party.address.city,
-      party.address.state,
-      party.address.zip,
-      party.address.country,
-    ]
+    [party.address.street, cityLine, party.address.state, party.address.country]
       .filter(Boolean)
       .join(", ") || "N/A"
   );

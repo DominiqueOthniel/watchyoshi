@@ -338,7 +338,11 @@ export default function TrackClient() {
                 </p>
                 <p className="font-semibold text-text-primary">{shipment.sender.name}</p>
                 <p className="text-sm text-text-secondary">
-                  {[shipment.sender.address?.city, shipment.sender.address?.state || shipment.sender.address?.country]
+                  {[
+                    shipment.sender.address?.street,
+                    [shipment.sender.address?.zip, shipment.sender.address?.city].filter(Boolean).join(" "),
+                    shipment.sender.address?.country,
+                  ]
                     .filter(Boolean)
                     .join(", ")}
                 </p>
@@ -350,8 +354,11 @@ export default function TrackClient() {
                 <p className="font-semibold text-text-primary">{shipment.recipient.name}</p>
                 <p className="text-sm text-text-secondary">
                   {[
-                    shipment.recipient.address?.city,
-                    shipment.recipient.address?.state || shipment.recipient.address?.country,
+                    shipment.recipient.address?.street,
+                    [shipment.recipient.address?.zip, shipment.recipient.address?.city]
+                      .filter(Boolean)
+                      .join(" "),
+                    shipment.recipient.address?.country,
                   ]
                     .filter(Boolean)
                     .join(", ")}

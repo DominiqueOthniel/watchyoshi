@@ -2,16 +2,63 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FR_CITIES, FRANCE, geocodeAddress, isFrance, isFrenchPostalCode } from "@/lib/address";
 
-async function geocode(city: string, country: string) {
-  const q = encodeURIComponent(`${city}, ${country}`);
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${q}`,
-    { headers: { Accept: "application/json" } }
+function AddressBlock({ prefix, title }: { prefix: "sender" | "recipient"; title: string }) {
+  return (
+    <section className="card p-6">
+      <h2 className="mb-4 text-lg font-semibold text-text-primary">{title}</h2>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <input
+          name={`${prefix}Name`}
+          placeholder="Nom complet"
+          className="input-field px-3 py-2.5"
+          required
+        />
+        <input
+          name={`${prefix}Email`}
+          type="email"
+          placeholder="E-mail"
+          className="input-field px-3 py-2.5"
+          required
+        />
+        <input
+          name={`${prefix}Phone`}
+          type="tel"
+          placeholder="+33 6 00 00 00 00"
+          className="input-field px-3 py-2.5 sm:col-span-2"
+        />
+        <input
+          name={`${prefix}Street`}
+          placeholder="N° et rue"
+          className="input-field px-3 py-2.5 sm:col-span-2"
+          required
+        />
+        <input
+          name={`${prefix}Zip`}
+          placeholder="Code postal"
+          inputMode="numeric"
+          maxLength={10}
+          className="input-field px-3 py-2.5"
+          required
+        />
+        <input
+          name={`${prefix}City`}
+          placeholder="Ville"
+          list="fr-cities"
+          className="input-field px-3 py-2.5"
+          required
+        />
+        <input
+          name={`${prefix}Country`}
+          defaultValue={FRANCE}
+          placeholder="Pays"
+          className="input-field px-3 py-2.5 sm:col-span-2"
+          required
+        />
+      </div>
+    </section>
   );
-  const data = await res.json();
-  if (!data?.[0]) return null;
-  return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
 }
 
 export default function CreateShipmentForm() {
@@ -27,46 +74,58 @@ export default function CreateShipmentForm() {
     setSuccessId(null);
 
     const fd = new FormData(e.currentTarget);
-    const senderCity = String(fd.get("senderCity") || "");
-    const senderCountry = String(fd.get("senderCountry") || "");
-    const recipientCity = String(fd.get("recipientCity") || "");
-    const recipientCountry = String(fd.get("recipientCountry") || "");
+    const sender = {
+      street: String(fd.get("senderStreet") || ""),
+      zip: String(fd.get("senderZip") || "").trim(),
+      city: String(fd.get("senderCity") || "").trim(),
+      country: String(fd.get("senderCountry") || FRANCE).trim() || FRANCE,
+    };
+    const recipient = {
+      street: String(fd.get("recipientStreet") || ""),
+      zip: String(fd.get("recipientZip") || "").trim(),
+      city: String(fd.get("recipientCity") || "").trim(),
+      country: String(fd.get("recipientCountry") || FRANCE).trim() || FRANCE,
+    };
 
     try {
+      if (isFrance(sender.country) && !isFrenchPostalCode(sender.zip)) {
+        throw new Error("Code postal expéditeur invalide (5 chiffres, ex. 75001).");
+      }
+      if (isFrance(recipient.country) && !isFrenchPostalCode(recipient.zip)) {
+        throw new Error("Code postal destinataire invalide (5 chiffres, ex. 69001).");
+      }
+
       const [senderCoords, recipientCoords] = await Promise.all([
-        geocode(senderCity, senderCountry),
-        geocode(recipientCity, recipientCountry),
+        geocodeAddress(sender),
+        geocodeAddress(recipient),
       ]);
+
+      if (!senderCoords) {
+        throw new Error("Adresse expéditeur introuvable. Vérifiez rue, code postal et ville.");
+      }
+      if (!recipientCoords) {
+        throw new Error("Adresse destinataire introuvable. Vérifiez rue, code postal et ville.");
+      }
 
       const payload = {
         sender: {
           name: String(fd.get("senderName") || ""),
           email: String(fd.get("senderEmail") || ""),
           phone: String(fd.get("senderPhone") || ""),
-          address: {
-            street: String(fd.get("senderStreet") || ""),
-            city: senderCity,
-            country: senderCountry,
-            ...(senderCoords || {}),
-          },
+          address: { ...sender, ...senderCoords },
         },
         recipient: {
           name: String(fd.get("recipientName") || ""),
           email: String(fd.get("recipientEmail") || ""),
           phone: String(fd.get("recipientPhone") || ""),
-          address: {
-            street: String(fd.get("recipientStreet") || ""),
-            city: recipientCity,
-            country: recipientCountry,
-            ...(recipientCoords || {}),
-          },
+          address: { ...recipient, ...recipientCoords },
         },
         package: {
           type: String(fd.get("packageType") || "parcel"),
           weight: Number(fd.get("packageWeight") || 1),
           description: String(fd.get("packageDescription") || ""),
           value: Number(fd.get("packageValue") || 0),
-          currency: String(fd.get("currency") || "USD"),
+          currency: String(fd.get("currency") || "EUR"),
         },
         service: {
           type: String(fd.get("serviceType") || "standard"),
@@ -82,11 +141,11 @@ export default function CreateShipmentForm() {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Creation failed");
+      if (!res.ok) throw new Error(data.error || "Création impossible");
       setSuccessId(data.shipment.trackingId);
       setTimeout(() => router.push(`/track?id=${data.shipment.trackingId}`), 1200);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      setError(err instanceof Error ? err.message : "Erreur");
     } finally {
       setLoading(false);
     }
@@ -97,83 +156,88 @@ export default function CreateShipmentForm() {
       <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-12">
         <div className="mx-auto max-w-3xl px-4 text-center">
           <h1 className="text-3xl font-bold text-text-primary lg:text-4xl">
-            Create <span className="text-gradient-primary">Shipment</span>
+            Créer un <span className="text-gradient-primary">envoi</span>
           </h1>
           <p className="mt-3 text-text-secondary">
-            Fill in sender, recipient, and package details. Coordinates are geocoded automatically.
+            Adresses France en priorité : rue, code postal et ville. Le géocodage place le colis
+            sur la carte.
           </p>
         </div>
       </section>
 
+      <datalist id="fr-cities">
+        {FR_CITIES.map((city) => (
+          <option key={city} value={city} />
+        ))}
+      </datalist>
+
       <form onSubmit={onSubmit} className="mx-auto max-w-3xl space-y-6 px-4 py-10 sm:px-6">
-        <section className="card p-6">
-          <h2 className="mb-4 text-lg font-semibold text-text-primary">Sender</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input name="senderName" placeholder="Name" className="input-field px-3 py-2.5" required />
-            <input name="senderEmail" type="email" placeholder="Email" className="input-field px-3 py-2.5" required />
-            <input name="senderPhone" placeholder="Phone" className="input-field px-3 py-2.5" />
-            <input name="senderStreet" placeholder="Street" className="input-field px-3 py-2.5" />
-            <input name="senderCity" placeholder="City" className="input-field px-3 py-2.5" required />
-            <input name="senderCountry" placeholder="Country" className="input-field px-3 py-2.5" required />
-          </div>
-        </section>
+        <AddressBlock prefix="sender" title="Expéditeur" />
+        <AddressBlock prefix="recipient" title="Destinataire" />
 
         <section className="card p-6">
-          <h2 className="mb-4 text-lg font-semibold text-text-primary">Recipient</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input name="recipientName" placeholder="Name" className="input-field px-3 py-2.5" required />
-            <input name="recipientEmail" type="email" placeholder="Email" className="input-field px-3 py-2.5" required />
-            <input name="recipientPhone" placeholder="Phone" className="input-field px-3 py-2.5" />
-            <input name="recipientStreet" placeholder="Street" className="input-field px-3 py-2.5" />
-            <input name="recipientCity" placeholder="City" className="input-field px-3 py-2.5" required />
-            <input name="recipientCountry" placeholder="Country" className="input-field px-3 py-2.5" required />
-          </div>
-        </section>
-
-        <section className="card p-6">
-          <h2 className="mb-4 text-lg font-semibold text-text-primary">Package & service</h2>
+          <h2 className="mb-4 text-lg font-semibold text-text-primary">Colis et service</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <select name="packageType" className="input-field px-3 py-2.5" defaultValue="parcel">
-              <option value="parcel">Parcel</option>
+              <option value="parcel">Colis</option>
               <option value="document">Document</option>
-              <option value="freight">Freight</option>
-              <option value="vehicle">Vehicle</option>
+              <option value="freight">Fret</option>
+              <option value="vehicle">Véhicule</option>
             </select>
-            <input name="packageWeight" type="number" min="0" step="0.1" placeholder="Weight (kg)" className="input-field px-3 py-2.5" />
-            <input name="packageValue" type="number" step="0.01" placeholder="Value" className="input-field px-3 py-2.5" />
-            <select name="currency" className="input-field px-3 py-2.5" defaultValue="USD">
-              <option value="USD">USD</option>
+            <input
+              name="packageWeight"
+              type="number"
+              min="0"
+              step="0.1"
+              placeholder="Poids (kg)"
+              className="input-field px-3 py-2.5"
+            />
+            <input
+              name="packageValue"
+              type="number"
+              step="0.01"
+              placeholder="Valeur"
+              className="input-field px-3 py-2.5"
+            />
+            <select name="currency" className="input-field px-3 py-2.5" defaultValue="EUR">
               <option value="EUR">EUR</option>
+              <option value="USD">USD</option>
               <option value="XAF">XAF</option>
             </select>
-            <input name="packageDescription" placeholder="Description" className="input-field px-3 py-2.5 sm:col-span-2" />
+            <input
+              name="packageDescription"
+              placeholder="Description"
+              className="input-field px-3 py-2.5 sm:col-span-2"
+            />
             <select name="serviceType" className="input-field px-3 py-2.5" defaultValue="standard">
               <option value="standard">Standard</option>
               <option value="express">Express</option>
-              <option value="economy">Economy</option>
+              <option value="economy">Économique</option>
             </select>
             <input name="estimatedDelivery" type="datetime-local" className="input-field px-3 py-2.5" />
-            <p className="sm:col-span-2 text-xs text-text-muted">
-              New shipments always start as <strong>Pending</strong>. Status advances from the admin
-              dashboard or auto-progress.
+            <p className="text-xs text-text-muted sm:col-span-2">
+              Tout nouvel envoi démarre en <strong>Pending</strong>. Le statut avance depuis l’admin
+              ou la progression auto.
             </p>
             <label className="flex items-center gap-2 text-sm text-text-secondary">
-              <input name="insurance" type="checkbox" /> Insurance
+              <input name="insurance" type="checkbox" /> Assurance
             </label>
           </div>
         </section>
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-error-50 px-4 py-3 text-sm text-error">{error}</div>
+          <div className="rounded-lg border border-red-200 bg-error-50 px-4 py-3 text-sm text-error">
+            {error}
+          </div>
         )}
         {successId && (
           <div className="rounded-lg border border-green-200 bg-success-50 px-4 py-3 text-sm text-success">
-            Created: <strong>{successId}</strong> — redirecting…
+            Créé : <strong>{successId}</strong> — redirection…
           </div>
         )}
 
         <button type="submit" disabled={loading} className="btn-primary px-8 py-3 text-lg disabled:opacity-60">
-          {loading ? "Creating…" : "Create Shipment"}
+          {loading ? "Création…" : "Créer l’envoi"}
         </button>
       </form>
     </div>

@@ -18,7 +18,7 @@ export default function CoverageClient() {
     },
     {
       region: t("coverage.europe"),
-      hubs: ["Rotterdam", "Frankfurt", "Lyon", "Madrid"],
+      hubs: ["Paris", "Lyon", "Marseille", "Le Havre"],
       focus: t("coverage.europeFocus"),
       img: "/images/brand-warehouse.webp",
     },

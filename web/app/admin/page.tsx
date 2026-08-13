@@ -284,7 +284,9 @@ export default function AdminDashboard() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-text-secondary">
-                          {s.sender.address?.city || "?"} → {s.recipient.address?.city || "?"}
+                          {[s.sender.address?.zip, s.sender.address?.city].filter(Boolean).join(" ") || "?"}
+                          {" → "}
+                          {[s.recipient.address?.zip, s.recipient.address?.city].filter(Boolean).join(" ") || "?"}
                         </td>
                         <td className="px-4 py-3">
                           {s.autoProgress?.paused

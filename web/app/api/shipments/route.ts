@@ -58,7 +58,9 @@ export async function POST(request: Request) {
       currentLocation: {
         lat: body.sender?.address?.lat,
         lng: body.sender?.address?.lng,
-        city: body.sender?.address?.city || "Origin",
+        city: body.sender?.address?.city || "Origine",
+        zip: body.sender?.address?.zip,
+        country: body.sender?.address?.country || "France",
       },
       autoProgress: {
         enabled: true,
