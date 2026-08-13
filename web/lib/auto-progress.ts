@@ -1,15 +1,19 @@
 import type { Shipment } from "./types";
 import { STATUS_META, statusFromProgress } from "./shipment-status";
 
-/** Wall-clock seconds at origin before the marker starts moving */
-const HANDLING_DELAY_SEC = 12;
+/** Pickup / depot handling before the marker leaves origin */
+const HANDLING_DELAY_SEC = 45 * 60;
 
-/**
- * Demo-visible journey length: long hauls finish in a few minutes of real time
- * so the map clearly animates while the user watches.
- */
+/** Average road freight speed, including stops and urban segments */
+const AVG_SPEED_MPH = 43.5;
+
+/** Shortest realistic journey once the vehicle is moving */
+const MIN_TRAVEL_SEC = 2 * 60 * 60;
+
 function journeyDurationSec(distanceMiles: number) {
-  return Math.min(600, Math.max(90, (distanceMiles / 400) * 60));
+  const miles = Math.max(1, Number(distanceMiles) || 1);
+  const travelSec = (miles / AVG_SPEED_MPH) * 3600;
+  return Math.max(MIN_TRAVEL_SEC, travelSec);
 }
 
 function haversineMiles(lat1: number, lon1: number, lat2: number, lon2: number) {
