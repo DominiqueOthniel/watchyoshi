@@ -101,15 +101,16 @@ export default function EstimateCalculator() {
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-white/85">{t("est.weight")}</span>
             <input
-              type="range"
-              min={1}
-              max={mode === "vehicle" ? 2500 : 500}
+              type="number"
+              min={0.1}
+              step={0.1}
               value={weight}
               onChange={(e) => {
-                setWeight(Number(e.target.value));
+                const next = Number(e.target.value);
+                setWeight(Number.isFinite(next) && next >= 0 ? next : 0);
                 setRevealed(false);
               }}
-              className="w-full accent-accent"
+              className="w-full rounded-md border border-white/15 bg-white/10 px-3 py-2.5 text-base text-white outline-none focus:border-accent"
             />
             <span className="mt-1 block text-sm font-semibold tabular-nums text-accent">{weight} kg</span>
           </label>

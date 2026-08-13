@@ -139,7 +139,7 @@ export default function CreateShipmentForm() {
               <option value="freight">Freight</option>
               <option value="vehicle">Vehicle</option>
             </select>
-            <input name="packageWeight" type="number" step="0.1" placeholder="Weight (kg)" className="input-field px-3 py-2.5" />
+            <input name="packageWeight" type="number" min="0" step="0.1" placeholder="Weight (kg)" className="input-field px-3 py-2.5" />
             <input name="packageValue" type="number" step="0.01" placeholder="Value" className="input-field px-3 py-2.5" />
             <select name="currency" className="input-field px-3 py-2.5" defaultValue="USD">
               <option value="USD">USD</option>
