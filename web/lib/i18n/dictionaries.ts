@@ -12,6 +12,10 @@ export const en: Dict = {
   "nav.trackingPlaceholder": "Tracking ID",
   "nav.trackBtn": "Track",
   "nav.language": "Language",
+  "nav.admin": "Admin",
+  "admin.back": "Back to admin",
+  "admin.openTrack": "Open tracking",
+  "admin.create": "Create shipment",
 
   "home.heroTitle": "Worldwide shipment visibility from pickup to delivery.",
   "home.heroSub": "Live maps, structured timelines, and support for road, air, sea, and vehicle transport across global lanes.",
@@ -299,6 +303,10 @@ export const fr: Dict = {
   "nav.trackingPlaceholder": "N° de suivi",
   "nav.trackBtn": "Suivre",
   "nav.language": "Langue",
+  "nav.admin": "Admin",
+  "admin.back": "Retour admin",
+  "admin.openTrack": "Voir le suivi",
+  "admin.create": "Créer un envoi",
 
   "home.heroTitle": "Visibilité d’envoi mondiale, du ramassage à la livraison.",
   "home.heroSub": "Cartes live, timelines structurées et support pour le fret routier, aérien, maritime et véhicules sur des lanes mondiales.",
@@ -586,6 +594,10 @@ export const es: Dict = {
   "nav.trackingPlaceholder": "ID de rastreo",
   "nav.trackBtn": "Rastrear",
   "nav.language": "Idioma",
+  "nav.admin": "Admin",
+  "admin.back": "Volver al admin",
+  "admin.openTrack": "Ver rastreo",
+  "admin.create": "Crear envío",
 
   "home.heroTitle": "Visibilidad mundial del envío, desde la recogida hasta la entrega.",
   "home.heroSub": "Mapas en vivo, timelines estructuradas y soporte para flete terrestre, aéreo, marítimo y vehículos en lanes globales.",

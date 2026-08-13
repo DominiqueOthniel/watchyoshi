@@ -164,6 +164,9 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
+            <Link href="/track" className="btn-secondary">
+              Tracking
+            </Link>
             <Link href="/create" className="btn-primary">
               Create Shipment
             </Link>
@@ -242,13 +245,20 @@ export default function AdminDashboard() {
                     return (
                       <tr key={s.id} className="border-b border-border/60 align-top">
                         <td className="px-4 py-3">
-                          <p className="font-semibold text-text-primary">{s.trackingId}</p>
                           <Link
-                            href={`/track?id=${s.trackingId}`}
-                            className="text-xs text-primary hover:underline"
+                            href={`/track?id=${encodeURIComponent(s.trackingId)}&from=admin`}
+                            className="font-semibold text-primary hover:underline"
                           >
-                            Open tracking
+                            {s.trackingId}
                           </Link>
+                          <p className="mt-1">
+                            <Link
+                              href={`/track?id=${encodeURIComponent(s.trackingId)}&from=admin`}
+                              className="text-xs font-semibold text-accent hover:underline"
+                            >
+                              Voir le suivi
+                            </Link>
+                          </p>
                         </td>
                         <td className="px-4 py-3">
                           <span
@@ -297,6 +307,12 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
+                            <Link
+                              href={`/track?id=${encodeURIComponent(s.trackingId)}&from=admin`}
+                              className="btn-primary px-3 py-1 text-xs"
+                            >
+                              Suivi
+                            </Link>
                             {next && (
                               <button
                                 type="button"
@@ -367,16 +383,24 @@ export default function AdminDashboard() {
             <div className="rounded-2xl bg-panel p-3 shadow-large">
               <ul className="max-h-[40vh] space-y-2 overflow-y-auto lg:max-h-none">
                 {chats.map((c) => (
-                  <li key={c.id}>
+                  <li key={c.id} className="rounded-xl hover:bg-surface">
                     <button
                       onClick={() => setActiveChatId(c.id)}
-                      className={`w-full rounded-xl px-3 py-2 text-left text-sm ${
-                        activeChatId === c.id ? "bg-primary-50 text-primary" : "hover:bg-surface"
+                      className={`w-full px-3 pt-2 text-left text-sm ${
+                        activeChatId === c.id ? "text-primary" : ""
                       }`}
                     >
                       <p className="font-medium text-text-primary">{c.clientName}</p>
                       <p className="truncate text-xs text-text-muted">{c.subject || c.status}</p>
                     </button>
+                    {c.trackingId && (
+                      <Link
+                        href={`/track?id=${encodeURIComponent(c.trackingId)}&from=admin`}
+                        className="mb-2 ml-3 inline-block pb-2 text-xs font-semibold text-primary hover:underline"
+                      >
+                        {c.trackingId}
+                      </Link>
+                    )}
                   </li>
                 ))}
                 {chats.length === 0 && (
@@ -422,7 +446,14 @@ export default function AdminDashboard() {
               <tbody>
                 {receipts.map((r) => (
                   <tr key={r.trackingId} className="border-b border-border/60">
-                    <td className="px-4 py-3 font-semibold">{r.trackingId}</td>
+                    <td className="px-4 py-3 font-semibold">
+                      <Link
+                        href={`/track?id=${encodeURIComponent(r.trackingId)}&from=admin`}
+                        className="text-primary hover:underline"
+                      >
+                        {r.trackingId}
+                      </Link>
+                    </td>
                     <td className="px-4 py-3 text-text-secondary">
                       {r.sender || "?"} → {r.recipient || "?"}
                     </td>

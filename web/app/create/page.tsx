@@ -1,8 +1,10 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FR_CITIES, FRANCE, geocodeAddress, isFrance, isFrenchPostalCode } from "@/lib/address";
+import { useAdminSession } from "@/lib/use-admin-session";
 
 function AddressBlock({ prefix, title }: { prefix: "sender" | "recipient"; title: string }) {
   return (
@@ -63,6 +65,7 @@ function AddressBlock({ prefix, title }: { prefix: "sender" | "recipient"; title
 
 export default function CreateShipmentForm() {
   const router = useRouter();
+  const isAdmin = useAdminSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successId, setSuccessId] = useState<string | null>(null);
@@ -143,7 +146,7 @@ export default function CreateShipmentForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Création impossible");
       setSuccessId(data.shipment.trackingId);
-      setTimeout(() => router.push(`/track?id=${data.shipment.trackingId}`), 1200);
+      setTimeout(() => router.push(`/track?id=${data.shipment.trackingId}&from=admin`), 1200);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur");
     } finally {
@@ -153,6 +156,21 @@ export default function CreateShipmentForm() {
 
   return (
     <div>
+      {isAdmin && (
+        <div className="border-b border-border bg-secondary text-white">
+          <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-2 px-4 py-2.5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Admin</p>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/admin" className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-secondary">
+                Retour admin
+              </Link>
+              <Link href="/track" className="rounded-md border border-white/25 px-3 py-1.5 text-xs font-semibold text-white">
+                Tracking
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
       <section className="bg-gradient-to-br from-primary-50 to-secondary-50 py-12">
         <div className="mx-auto max-w-3xl px-4 text-center">
           <h1 className="text-3xl font-bold text-text-primary lg:text-4xl">

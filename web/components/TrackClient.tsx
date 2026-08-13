@@ -1,9 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ShipmentProgress from "@/components/ShipmentProgress";
+import { useAdminSession } from "@/lib/use-admin-session";
 import {
   computeProgressFraction,
   interpolatePosition,
@@ -38,7 +40,9 @@ function haversineMiles(lat1: number, lon1: number, lat2: number, lon2: number) 
 
 export default function TrackClient() {
   const { t } = useI18n();
+  const isAdmin = useAdminSession();
   const searchParams = useSearchParams();
+  const fromAdmin = searchParams.get("from") === "admin" || isAdmin;
   const [trackingId, setTrackingId] = useState("");
   const [shipment, setShipment] = useState<Shipment | null>(null);
   const [routeGeometry, setRouteGeometry] = useState<[number, number][] | null>(null);
@@ -254,6 +258,21 @@ export default function TrackClient() {
 
   return (
     <div className="pb-24 sm:pb-10">
+      {fromAdmin && (
+        <div className="border-b border-border bg-secondary text-white">
+          <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-2.5 sm:px-6">
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Admin</p>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/admin" className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-secondary">
+                {t("admin.back")}
+              </Link>
+              <Link href="/create" className="rounded-md border border-white/25 px-3 py-1.5 text-xs font-semibold text-white">
+                {t("admin.create")}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
       <section
         className={`bg-gradient-to-br from-primary-50 to-secondary-50 ${
           hasResult ? "py-6 sm:py-10" : "py-12 sm:py-16"
