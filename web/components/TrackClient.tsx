@@ -11,7 +11,8 @@ import {
   interpolatePosition,
   resolveProgressStart,
 } from "@/lib/auto-progress";
-import type { Shipment } from "@/lib/types";
+import type { Shipment, ShipmentStatus } from "@/lib/types";
+import { localizedEventCopy, STATUS_META } from "@/lib/shipment-status";
 import { useI18n } from "@/lib/i18n/context";
 
 const TrackMap = dynamic(() => import("@/components/TrackMap"), {
@@ -61,7 +62,7 @@ export default function TrackClient() {
     try {
       const res = await fetch(`/api/shipments/${encodeURIComponent(id.trim())}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Shipment not found");
+      if (!res.ok) throw new Error(data.error || "Envoi introuvable");
       setShipment(data.shipment);
       if (Array.isArray(data.routeGeometry) && data.routeGeometry.length >= 2) {
         setRouteGeometry(data.routeGeometry);
@@ -74,7 +75,7 @@ export default function TrackClient() {
     } catch (err) {
       if (!silent) {
         setShipment(null);
-        setError(err instanceof Error ? err.message : "Error");
+        setError(err instanceof Error ? err.message : "Erreur");
       }
     } finally {
       if (!silent) setLoading(false);
@@ -165,7 +166,7 @@ export default function TrackClient() {
         setLivePoint({
           lat: originLat,
           lng: originLng,
-          label: shipment.sender?.address?.city || "Awaiting pickup",
+          label: shipment.sender?.address?.city || "En attente de ramassage",
         });
         setRouteProgress(0.05);
         return;
@@ -175,7 +176,7 @@ export default function TrackClient() {
         setLivePoint({
           lat: destLat,
           lng: destLng,
-          label: shipment.recipient?.address?.city || "Delivered",
+          label: shipment.recipient?.address?.city || "Livré",
         });
         setRouteProgress(1);
         return;
@@ -186,7 +187,7 @@ export default function TrackClient() {
         setLivePoint({
           lat: originLat,
           lng: originLng,
-          label: shipment.currentLocation?.city || "Origin",
+          label: shipment.currentLocation?.city || "Origine",
         });
         return;
       }
@@ -214,10 +215,10 @@ export default function TrackClient() {
         lng: pos.lng,
         label:
           progress < 0.05
-            ? shipment.sender?.address?.city || "Origin"
+            ? shipment.sender?.address?.city || "Origine"
             : progress >= 1
               ? shipment.recipient?.address?.city || "Destination"
-              : "In transit",
+              : "En transit",
       });
     };
 
@@ -238,7 +239,7 @@ export default function TrackClient() {
     return {
       lat: Number(shipment.sender.address.lat),
       lng: Number(shipment.sender.address.lng),
-      label: shipment.sender.address.city || "Origin",
+      label: shipment.sender.address.city || "Origine",
     };
   }, [shipment]);
 
@@ -342,7 +343,7 @@ export default function TrackClient() {
                 {shipment.status === "in_transit" || shipment.status === "out_for_delivery" ? (
                   <span className="mr-1.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
                 ) : null}
-                {shipment.status.replaceAll("_", " ")}
+                {STATUS_META[shipment.status as ShipmentStatus]?.label || shipment.status}
               </span>
             </div>
 
@@ -388,9 +389,21 @@ export default function TrackClient() {
               <p className="mt-4 text-sm text-text-secondary">
                 {t("track.current")}{" "}
                 <strong className="text-text-primary">{livePoint.label}</strong>
-                {shipment.status !== "pending" && shipment.status !== "delivered" && (
-                  <span className="ml-2 text-xs text-primary">● live</span>
-                )}
+                {shipment.autoProgress?.paused ? (
+                  <span className="ml-2 text-xs font-semibold text-amber-700">● en pause</span>
+                ) : shipment.status !== "pending" && shipment.status !== "delivered" ? (
+                  <span className="ml-2 text-xs text-primary">● en direct</span>
+                ) : null}
+              </p>
+            )}
+            {shipment.autoProgress?.paused && shipment.status !== "delivered" && (
+              <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                Progression mise en pause par l’équipe. Le trajet reprendra dès la reprise.
+              </p>
+            )}
+            {shipment.status === "pending" && (
+              <p className="mt-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs text-text-secondary">
+                Envoi enregistré. Le suivi live démarre dès que l’expédition est lancée.
               </p>
             )}
           </div>
@@ -425,9 +438,11 @@ export default function TrackClient() {
             </h2>
             <div className="relative space-y-0">
               {events.length === 0 && (
-                <p className="text-sm text-text-muted">No events yet.</p>
+                <p className="text-sm text-text-muted">Aucun événement pour le moment.</p>
               )}
-              {events.map((ev, i) => (
+              {events.map((ev, i) => {
+                const copy = localizedEventCopy(ev);
+                return (
                 <div
                   key={`${ev.timestamp}-${i}`}
                   className="timeline-item relative flex gap-3 pb-5 last:pb-0 sm:gap-4 sm:pb-6"
@@ -443,18 +458,21 @@ export default function TrackClient() {
                   />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium text-text-primary">
-                      {ev.title || ev.status}
+                      {copy.title}
                     </div>
-                    {ev.description && (
-                      <div className="break-words text-sm text-text-secondary">{ev.description}</div>
+                    {copy.description && (
+                      <div className="break-words text-sm text-text-secondary">
+                        {copy.description}
+                      </div>
                     )}
                     <div className="text-xs text-text-muted">
-                      {ev.timestamp ? new Date(ev.timestamp).toLocaleString() : ""}
+                      {ev.timestamp ? new Date(ev.timestamp).toLocaleString("fr-FR") : ""}
                       {ev.location ? ` · ${ev.location}` : ""}
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>

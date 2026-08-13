@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Shipment, ChatConversation, ShipmentStatus } from "@/lib/types";
 import ChatPanel from "@/components/ChatPanel";
-import { nextStatusInFlow, STATUS_FLOW, STATUS_META } from "@/lib/shipment-status";
+import { STATUS_FLOW, STATUS_META } from "@/lib/shipment-status";
 
 type ReceiptRow = {
   trackingId: string;
@@ -43,8 +43,8 @@ export default function AdminDashboard() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [statusBusy, setStatusBusy] = useState<string | null>(null);
 
-  async function load() {
-    setLoading(true);
+  async function load(silent = false) {
+    if (!silent) setLoading(true);
     try {
       const [sRes, cRes, rRes] = await Promise.all([
         fetch("/api/shipments"),
@@ -54,22 +54,61 @@ export default function AdminDashboard() {
       const sData = await sRes.json();
       const cData = await cRes.json();
       const rData = await rRes.json();
-      if (!sRes.ok) throw new Error(sData.error || "Failed to load shipments");
-      if (!cRes.ok) throw new Error(cData.error || "Failed to load chats");
-      if (!rRes.ok) throw new Error(rData.error || "Failed to load receipts");
+      if (!sRes.ok) throw new Error(sData.error || "Impossible de charger les envois");
+      if (!cRes.ok) throw new Error(cData.error || "Impossible de charger les discussions");
+      if (!rRes.ok) throw new Error(rData.error || "Impossible de charger les reçus");
       setShipments(sData.shipments || []);
       setChats(cData.chats || []);
       setReceipts(rData.receipts || []);
+      if (!silent) setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
+      if (!silent) setError(err instanceof Error ? err.message : "Erreur");
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }
 
   useEffect(() => {
     load();
   }, []);
+
+  // Tick live progress on the server so statuses advance without opening /track
+  useEffect(() => {
+    if (tab !== "shipments") return;
+
+    const activeIds = shipments
+      .filter(
+        (s) =>
+          s.autoProgress?.enabled &&
+          !s.autoProgress?.paused &&
+          ["picked_up", "in_transit", "out_for_delivery"].includes(s.status)
+      )
+      .map((s) => s.trackingId);
+
+    if (activeIds.length === 0) return;
+
+    let cancelled = false;
+    const tick = async () => {
+      await Promise.all(
+        activeIds.map((id) => fetch(`/api/shipments/${encodeURIComponent(id)}`).catch(() => null))
+      );
+      if (!cancelled) await load(true);
+    };
+
+    const timer = setInterval(tick, 4000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [
+    tab,
+    shipments
+      .filter((s) =>
+        ["picked_up", "in_transit", "out_for_delivery"].includes(s.status)
+      )
+      .map((s) => `${s.trackingId}:${s.autoProgress?.paused ? "1" : "0"}`)
+      .join("|"),
+  ]);
 
   const stats = useMemo(() => {
     const total = shipments.length;
@@ -105,28 +144,49 @@ export default function AdminDashboard() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Status update failed");
-      await load();
+      if (!res.ok) throw new Error(data.error || "Mise à jour du statut impossible");
+      await load(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Status error");
+      setError(err instanceof Error ? err.message : "Erreur de statut");
     } finally {
       setStatusBusy(null);
     }
   }
 
-  async function advanceStatus(shipment: Shipment) {
-    const next = nextStatusInFlow(shipment.status);
-    if (!next) return;
-    await setStatus(shipment.trackingId, next);
+  async function startJourney(shipment: Shipment) {
+    await setStatus(shipment.trackingId, "picked_up");
   }
 
   async function togglePause(shipment: Shipment) {
-    const res = await fetch(`/api/shipments/${shipment.trackingId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pause: !shipment.autoProgress?.paused }),
-    });
-    if (res.ok) load();
+    setStatusBusy(shipment.trackingId);
+    setError(null);
+    try {
+      const res = await fetch(`/api/shipments/${shipment.trackingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pause: !shipment.autoProgress?.paused }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Impossible de modifier la pause");
+      await load(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur de pause");
+    } finally {
+      setStatusBusy(null);
+    }
+  }
+
+  function autoLabel(s: Shipment) {
+    if (s.status === "pending") return "En attente de départ";
+    if (s.status === "delivered") return "Terminé";
+    if (s.status === "exception") return "Incident";
+    if (s.autoProgress?.paused) return "En pause";
+    if (s.autoProgress?.enabled) return "En cours";
+    return "Inactif";
+  }
+
+  function isLiveJourney(s: Shipment) {
+    return ["picked_up", "in_transit", "out_for_delivery"].includes(s.status);
   }
 
   async function generateReceipt(trackingId: string) {
@@ -137,13 +197,13 @@ export default function AdminDashboard() {
         method: "POST",
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Receipt generation failed");
+      if (!res.ok) throw new Error(data.error || "Génération du reçu impossible");
       await load();
       if (data.receipt && !String(data.receipt).startsWith("data:")) {
         window.open(data.receipt, "_blank");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Receipt error");
+      setError(err instanceof Error ? err.message : "Erreur de reçu");
     } finally {
       setBusyId(null);
     }
@@ -157,21 +217,21 @@ export default function AdminDashboard() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-5 sm:px-6 lg:px-8">
           <div className="min-w-0">
             <h1 className="truncate text-2xl font-bold text-text-primary sm:text-3xl">
-              Admin Dashboard
+              Tableau de bord
             </h1>
             <p className="text-sm text-text-secondary">
-              Professional shipment lifecycle, receipts, and live support
+              Cycle de vie des envois, reçus PDF et support en direct
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
             <Link href="/track" className="btn-secondary">
-              Tracking
+              Suivi
             </Link>
             <Link href="/create" className="btn-primary">
-              Create Shipment
+              Créer un envoi
             </Link>
             <button onClick={logout} className="btn-secondary">
-              Sign out
+              Déconnexion
             </button>
           </div>
         </div>
@@ -181,9 +241,9 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {[
             ["Total", stats.total, "text-primary"],
-            ["In Transit", stats.inTransit, "text-accent"],
-            ["Delivered", stats.delivered, "text-success"],
-            ["Pending", stats.pending, "text-text-secondary"],
+            ["En transit", stats.inTransit, "text-accent"],
+            ["Livrés", stats.delivered, "text-success"],
+            ["En attente", stats.pending, "text-text-secondary"],
           ].map(([label, value, color]) => (
             <div key={label as string} className="rounded-2xl bg-panel p-4 shadow-soft sm:p-5">
               <p className="text-[10px] font-medium uppercase tracking-wide text-text-muted sm:text-xs">
@@ -197,9 +257,9 @@ export default function AdminDashboard() {
         <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
           {(
             [
-              ["shipments", "Shipments"],
+              ["shipments", "Envois"],
               ["chat", `Chat (${chats.filter((c) => c.status !== "closed").length})`],
-              ["receipts", `Receipts (${receipts.length})`],
+              ["receipts", `Reçus (${receipts.length})`],
             ] as const
           ).map(([key, label]) => (
             <button
@@ -217,31 +277,32 @@ export default function AdminDashboard() {
             {error}
           </div>
         )}
-        {loading && <p className="mt-4 text-sm text-text-muted">Loading…</p>}
+        {loading && <p className="mt-4 text-sm text-text-muted">Chargement…</p>}
 
         {tab === "shipments" && !loading && (
           <div className="mt-6 space-y-4">
             <p className="text-sm text-text-secondary">
-              Lifecycle: Pending → Picked up → In transit → Out for delivery → Delivered. Use{" "}
-              <strong>Advance</strong> for the next step. Status also advances automatically with
-              map progress.
+              Création → <strong>En attente</strong>. Cliquez <strong>Démarrer</strong> : le colis
+              avance tout seul jusqu’à <strong>Livré</strong>. Utilisez{" "}
+              <strong>Mettre en pause</strong> pour geler le trajet, puis{" "}
+              <strong>Reprendre</strong> pour continuer.
             </p>
             <div className="overflow-x-auto rounded-2xl bg-panel shadow-large">
               <table className="min-w-[900px] w-full text-left text-sm">
                 <thead className="border-b border-border bg-surface text-xs uppercase text-text-muted">
                   <tr>
-                    <th className="px-4 py-3">Tracking</th>
-                    <th className="px-4 py-3">Lifecycle</th>
-                    <th className="px-4 py-3">Route</th>
+                    <th className="px-4 py-3">Suivi</th>
+                    <th className="px-4 py-3">Cycle</th>
+                    <th className="px-4 py-3">Trajet</th>
                     <th className="px-4 py-3">Auto</th>
                     <th className="px-4 py-3">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {shipments.map((s) => {
-                    const next = nextStatusInFlow(s.status);
                     const busy = statusBusy === s.trackingId;
                     const currentIdx = STATUS_FLOW.indexOf(s.status as ShipmentStatus);
+                    const live = isLiveJourney(s);
                     return (
                       <tr key={s.id} className="border-b border-border/60 align-top">
                         <td className="px-4 py-3">
@@ -271,22 +332,15 @@ export default function AdminDashboard() {
                               const active = s.status === st;
                               const done = currentIdx >= 0 && idx < currentIdx;
                               return (
-                                <button
+                                <span
                                   key={st}
-                                  type="button"
                                   title={STATUS_META[st].label}
-                                  disabled={busy || s.status === "exception"}
-                                  onClick={() =>
-                                    setStatus(s.trackingId, st, {
-                                      force: currentIdx >= 0 && idx < currentIdx,
-                                    })
-                                  }
-                                  className={`h-2 w-8 rounded-full transition ${
+                                  className={`h-2 w-8 rounded-full ${
                                     active
                                       ? "bg-primary"
                                       : done
                                         ? "bg-primary/40"
-                                        : "bg-border hover:bg-primary/20"
+                                        : "bg-border"
                                   }`}
                                 />
                               );
@@ -299,28 +353,48 @@ export default function AdminDashboard() {
                           {[s.recipient.address?.zip, s.recipient.address?.city].filter(Boolean).join(" ") || "?"}
                         </td>
                         <td className="px-4 py-3">
-                          {s.autoProgress?.paused
-                            ? "Paused"
-                            : s.autoProgress?.enabled
-                              ? "On"
-                              : "Off"}
+                          <span
+                            className={
+                              s.autoProgress?.paused
+                                ? "font-medium text-amber-700"
+                                : live
+                                  ? "font-medium text-success"
+                                  : "text-text-secondary"
+                            }
+                          >
+                            {autoLabel(s)}
+                          </span>
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
                             <Link
                               href={`/track?id=${encodeURIComponent(s.trackingId)}&from=admin`}
-                              className="btn-primary px-3 py-1 text-xs"
+                              className="btn-secondary px-3 py-1 text-xs"
                             >
                               Suivi
                             </Link>
-                            {next && (
+                            {s.status === "pending" && (
                               <button
                                 type="button"
                                 disabled={busy}
-                                onClick={() => advanceStatus(s)}
+                                onClick={() => startJourney(s)}
                                 className="btn-primary px-3 py-1 text-xs disabled:opacity-60"
                               >
-                                {busy ? "…" : `Advance → ${STATUS_META[next].label}`}
+                                {busy ? "…" : "Démarrer"}
+                              </button>
+                            )}
+                            {live && (
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => togglePause(s)}
+                                className="btn-secondary px-3 py-1 text-xs disabled:opacity-60"
+                              >
+                                {busy
+                                  ? "…"
+                                  : s.autoProgress?.paused
+                                    ? "Reprendre"
+                                    : "Mettre en pause"}
                               </button>
                             )}
                             {s.status !== "exception" && s.status !== "delivered" && (
@@ -330,7 +404,7 @@ export default function AdminDashboard() {
                                 onClick={() => setStatus(s.trackingId, "exception")}
                                 className="btn-secondary px-3 py-1 text-xs text-error disabled:opacity-60"
                               >
-                                Exception
+                                Incident
                               </button>
                             )}
                             {s.status === "exception" && (
@@ -342,23 +416,16 @@ export default function AdminDashboard() {
                                 }
                                 className="btn-primary px-3 py-1 text-xs disabled:opacity-60"
                               >
-                                Resume transit
+                                {busy ? "…" : "Reprendre le transit"}
                               </button>
                             )}
-                            <button
-                              type="button"
-                              onClick={() => togglePause(s)}
-                              className="btn-secondary px-3 py-1 text-xs"
-                            >
-                              {s.autoProgress?.paused ? "Resume auto" : "Pause auto"}
-                            </button>
                             <button
                               type="button"
                               onClick={() => generateReceipt(s.trackingId)}
                               disabled={busyId === s.trackingId}
                               className="btn-secondary px-3 py-1 text-xs disabled:opacity-60"
                             >
-                              {busyId === s.trackingId ? "PDF…" : s.receipt ? "Regen PDF" : "PDF"}
+                              {busyId === s.trackingId ? "PDF…" : s.receipt ? "Régénérer PDF" : "PDF"}
                             </button>
                           </div>
                         </td>
@@ -368,7 +435,7 @@ export default function AdminDashboard() {
                   {shipments.length === 0 && (
                     <tr>
                       <td colSpan={5} className="px-4 py-10 text-center text-text-muted">
-                        No shipments yet
+                        Aucun envoi pour le moment
                       </td>
                     </tr>
                   )}
@@ -404,7 +471,7 @@ export default function AdminDashboard() {
                   </li>
                 ))}
                 {chats.length === 0 && (
-                  <li className="px-2 py-6 text-center text-sm text-text-muted">No chats</li>
+                  <li className="px-2 py-6 text-center text-sm text-text-muted">Aucune discussion</li>
                 )}
               </ul>
             </div>
@@ -414,7 +481,7 @@ export default function AdminDashboard() {
                   conversationId={activeChat.id}
                   initialMessages={activeChat.messages}
                   senderType="admin"
-                  senderName="Admin"
+                  senderName="Agent"
                   onClose={async () => {
                     await fetch(`/api/chat/${activeChat.id}`, {
                       method: "PATCH",
@@ -426,7 +493,7 @@ export default function AdminDashboard() {
                   }}
                 />
               ) : (
-                <p className="text-sm text-text-muted">Select a conversation</p>
+                <p className="text-sm text-text-muted">Sélectionnez une conversation</p>
               )}
             </div>
           </div>
@@ -437,10 +504,10 @@ export default function AdminDashboard() {
             <table className="min-w-[640px] w-full text-left text-sm">
               <thead className="border-b border-border bg-surface text-xs uppercase text-text-muted">
                 <tr>
-                  <th className="px-4 py-3">Tracking</th>
+                  <th className="px-4 py-3">Suivi</th>
                   <th className="px-4 py-3">Parties</th>
-                  <th className="px-4 py-3">Generated</th>
-                  <th className="px-4 py-3">File</th>
+                  <th className="px-4 py-3">Généré le</th>
+                  <th className="px-4 py-3">Fichier</th>
                 </tr>
               </thead>
               <tbody>
@@ -458,7 +525,9 @@ export default function AdminDashboard() {
                       {r.sender || "?"} → {r.recipient || "?"}
                     </td>
                     <td className="px-4 py-3 text-text-muted">
-                      {r.receiptUploadedAt ? new Date(r.receiptUploadedAt).toLocaleString() : "—"}
+                      {r.receiptUploadedAt
+                        ? new Date(r.receiptUploadedAt).toLocaleString("fr-FR")
+                        : "—"}
                     </td>
                     <td className="px-4 py-3">
                       {r.receipt && !r.receipt.startsWith("data:") ? (
@@ -468,7 +537,7 @@ export default function AdminDashboard() {
                           rel="noreferrer"
                           className="text-primary hover:underline"
                         >
-                          Open PDF
+                          Ouvrir le PDF
                         </a>
                       ) : r.receipt ? (
                         <a
@@ -476,7 +545,7 @@ export default function AdminDashboard() {
                           download={`${r.trackingId}.pdf`}
                           className="text-primary hover:underline"
                         >
-                          Download PDF
+                          Télécharger le PDF
                         </a>
                       ) : (
                         "—"
@@ -487,7 +556,7 @@ export default function AdminDashboard() {
                 {receipts.length === 0 && (
                   <tr>
                     <td colSpan={4} className="px-4 py-10 text-center text-text-muted">
-                      No receipts yet — generate one from the Shipments tab
+                      Aucun reçu pour le moment. Générez-en un depuis l’onglet Envois
                     </td>
                   </tr>
                 )}

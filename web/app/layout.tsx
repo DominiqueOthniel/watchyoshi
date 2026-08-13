@@ -6,9 +6,9 @@ import { I18nProvider } from "@/lib/i18n/context";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Aurex Logistics | Live freight tracking & logistics",
+  title: "Aurex Logistics | Suivi de fret et logistique",
   description:
-    "Track road, air, sea, and vehicle shipments worldwide in real time. Clear timelines, live maps, and support for domestic and international freight.",
+    "Suivez vos envois routiers, aériens, maritimes et véhicules en temps réel. Timelines claires, cartes live et support pour le fret national et international.",
 };
 
 export const viewport: Viewport = {

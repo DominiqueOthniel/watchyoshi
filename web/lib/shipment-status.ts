@@ -13,39 +13,39 @@ export const STATUS_META: Record<
   { label: string; title: string; description: string; progressFloor: number }
 > = {
   pending: {
-    label: "Pending",
-    title: "Shipment registered",
-    description: "Label created. Awaiting courier pickup.",
+    label: "En attente",
+    title: "Envoi enregistré",
+    description: "Étiquette créée. En attente de ramassage.",
     progressFloor: 0,
   },
   picked_up: {
-    label: "Picked up",
-    title: "Package picked up",
-    description: "Courier collected the package from the sender.",
+    label: "Ramassé",
+    title: "Colis ramassé",
+    description: "Le coursier a récupéré le colis auprès de l'expéditeur.",
     progressFloor: 0.02,
   },
   in_transit: {
-    label: "In transit",
-    title: "In transit",
-    description: "Package is moving through the logistics network toward the destination.",
+    label: "En transit",
+    title: "En transit",
+    description: "Le colis circule dans le réseau logistique vers la destination.",
     progressFloor: 0.08,
   },
   out_for_delivery: {
-    label: "Out for delivery",
-    title: "Out for delivery",
-    description: "Package is with the local courier and will arrive soon.",
+    label: "En livraison",
+    title: "En cours de livraison",
+    description: "Le colis est chez le coursier local et arrivera bientôt.",
     progressFloor: 0.88,
   },
   delivered: {
-    label: "Delivered",
-    title: "Delivered",
-    description: "Package successfully delivered to the recipient.",
+    label: "Livré",
+    title: "Livré",
+    description: "Colis remis au destinataire.",
     progressFloor: 1,
   },
   exception: {
-    label: "Exception",
-    title: "Delivery exception",
-    description: "An issue requires attention. Support has been notified.",
+    label: "Incident",
+    title: "Incident de livraison",
+    description: "Un problème nécessite une attention. Le support a été prévenu.",
     progressFloor: 0.5,
   },
 };
@@ -59,6 +59,48 @@ export function isForwardTransition(from: string, to: string): boolean {
   if (to === "exception") return true;
   if (from === "exception") return to !== "delivered" || true;
   return statusRank(to) >= statusRank(from);
+}
+
+const LEGACY_EN_COPY = new Set([
+  "Shipment created",
+  "Your shipment has been registered and is awaiting pickup.",
+  "Package picked up",
+  "The courier has collected the package from the sender.",
+  "The shipment has been collected and entered the logistics network.",
+  "In transit",
+  "The shipment is moving through the logistics network toward the destination.",
+  "Out for delivery",
+  "The package is with the local courier and will arrive soon.",
+  "Delivered",
+  "Package handed to the recipient.",
+  "Exception",
+  "Delivery exception",
+  "An exception occurred. Please contact Aurex Logistics at +33 6 44 68 49 20.",
+  "Action required",
+  "Awaiting pickup",
+  "This shipment is registered and waiting to be picked up.",
+]);
+
+export function localizedEventCopy(ev: {
+  status: string;
+  title?: string;
+  description?: string;
+}) {
+  const meta = STATUS_META[ev.status as ShipmentStatus];
+  if (!meta) {
+    return {
+      title: ev.title || ev.status,
+      description: ev.description || "",
+    };
+  }
+  const desc = ev.description || "";
+  const title = ev.title || "";
+  const useMetaDesc =
+    !desc || desc === meta.description || LEGACY_EN_COPY.has(desc) || LEGACY_EN_COPY.has(title);
+  return {
+    title: LEGACY_EN_COPY.has(title) || !title ? meta.title : title,
+    description: useMetaDesc ? meta.description : desc,
+  };
 }
 
 export function nextStatusInFlow(current: string): ShipmentStatus | null {
@@ -92,8 +134,8 @@ export function buildStatusEvent(
   note?: string
 ): ShipmentEvent {
   const meta = STATUS_META[status as ShipmentStatus] || {
-    title: `Status: ${status}`,
-    description: `Status updated to ${status}`,
+    title: `Statut : ${status}`,
+    description: `Statut mis à jour : ${status}`,
   };
   const city =
     status === "delivered"
@@ -164,7 +206,7 @@ export function applyStatusChange(
       updates.currentLocation = {
         lat: Number(shipment.sender.address.lat),
         lng: Number(shipment.sender.address.lng),
-        city: shipment.sender.address.city || "Origin",
+        city: shipment.sender.address.city || "Origine",
       };
     }
     return updates;
@@ -173,7 +215,7 @@ export function applyStatusChange(
   if (status === "exception") {
     auto.paused = true;
     auto.pausedAt = now;
-    auto.pauseReason = options.note || "Exception raised";
+    auto.pauseReason = options.note || "Incident signalé";
     auto.lastUpdate = now;
     updates.autoProgress = auto;
     return updates;
@@ -211,7 +253,7 @@ export function applyStatusChange(
       updates.currentLocation = {
         lat: Number(shipment.sender.address.lat),
         lng: Number(shipment.sender.address.lng),
-        city: shipment.sender.address.city || "Origin",
+        city: shipment.sender.address.city || "Origine",
       };
     }
   } else if (advancing && status === "out_for_delivery") {
@@ -226,8 +268,8 @@ export function applyStatusChange(
         lat: oLat + (dLat - oLat) * floor,
         lng: oLng + (dLng - oLng) * floor,
         city: shipment.recipient?.address?.city
-          ? `Near ${shipment.recipient.address.city}`
-          : "Near destination",
+          ? `Près de ${shipment.recipient.address.city}`
+          : "Près de la destination",
       };
     }
   }

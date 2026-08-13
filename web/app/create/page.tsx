@@ -165,7 +165,7 @@ export default function CreateShipmentForm() {
                 Retour admin
               </Link>
               <Link href="/track" className="rounded-md border border-white/25 px-3 py-1.5 text-xs font-semibold text-white">
-                Tracking
+                Suivi
               </Link>
             </div>
           </div>
@@ -234,8 +234,9 @@ export default function CreateShipmentForm() {
             </select>
             <input name="estimatedDelivery" type="datetime-local" className="input-field px-3 py-2.5" />
             <p className="text-xs text-text-muted sm:col-span-2">
-              Tout nouvel envoi démarre en <strong>Pending</strong>. Le statut avance depuis l’admin
-              ou la progression auto.
+              Tout nouvel envoi démarre en <strong>En attente</strong>. Dans l’admin, cliquez{" "}
+              <strong>Démarrer</strong> : la progression avance seule jusqu’à la livraison, sauf
+              pause manuelle.
             </p>
             <label className="flex items-center gap-2 text-sm text-text-secondary">
               <input name="insurance" type="checkbox" /> Assurance

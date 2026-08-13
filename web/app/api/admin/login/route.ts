@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   try {
     if (!credentialsConfigured()) {
       return NextResponse.json(
-        { error: "Admin credentials are not configured." },
+        { error: "Identifiants admin non configurés." },
         { status: 500 }
       );
     }
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const password = String(body.password || "");
 
     if (!credentialsMatch(email, password)) {
-      return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
+      return NextResponse.json({ error: "E-mail ou mot de passe incorrect." }, { status: 401 });
     }
 
     const token = await createSessionToken(email);
@@ -28,6 +28,6 @@ export async function POST(request: Request) {
     res.cookies.set(adminCookie.name, token, adminCookie.options);
     return res;
   } catch {
-    return NextResponse.json({ error: "Login failed" }, { status: 500 });
+    return NextResponse.json({ error: "Connexion impossible" }, { status: 500 });
   }
 }

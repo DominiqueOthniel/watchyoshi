@@ -1,8 +1,8 @@
 import AboutClient from "./AboutClient";
 
 export const metadata = {
-  title: "About | Aurex Logistics",
-  description: "Aurex Logistics builds clear, visible logistics worldwide for shippers who need clarity every mile.",
+  title: "À propos | Aurex Logistics",
+  description: "Aurex Logistics rend la logistique mondiale lisible, du ramassage à la livraison.",
 };
 
 export default function AboutPage() {

@@ -1,8 +1,8 @@
 import CoverageClient from "./CoverageClient";
 
 export const metadata = {
-  title: "Coverage | Aurex Logistics",
-  description: "Aurex Logistics corridors across Americas, Europe, Asia-Pacific, Middle East, Africa, and global ocean lanes.",
+  title: "Couverture | Aurex Logistics",
+  description: "Corridors Aurex Logistics en Amériques, Europe, Asie-Pacifique, Moyen-Orient, Afrique et voies maritimes.",
 };
 
 export default function CoveragePage() {

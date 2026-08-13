@@ -64,7 +64,7 @@ export default function HomePage() {
         <div className="absolute inset-0">
           <Image
             src="/images/brand-highway-night.webp"
-            alt="Freight truck on night highway"
+            alt="Camion de fret de nuit"
             fill
             priority
             className="object-cover object-center scale-105"
@@ -256,7 +256,7 @@ export default function HomePage() {
             <div className="relative aspect-[16/10] overflow-hidden sm:aspect-auto sm:min-h-[400px]">
               <Image
                 src="/images/brand-vehicle-carrier.webp"
-                alt="Vehicle carrier transporting cars"
+                alt="Porte-voitures en transit"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
@@ -300,7 +300,7 @@ export default function HomePage() {
               <div className="relative mt-8 hidden min-h-[240px] overflow-hidden lg:block">
                 <Image
                   src="/images/brand-air-cargo.webp"
-                  alt="Support and operations"
+                  alt="Support et operations"
                   fill
                   className="object-cover"
                 />
@@ -315,7 +315,7 @@ export default function HomePage() {
 
       <section className="relative overflow-hidden py-14 text-white sm:py-20">
         <div className="absolute inset-0">
-          <Image src="/images/brand-port.webp" alt="Cargo port" fill className="object-cover" />
+          <Image src="/images/brand-port.webp" alt="Port de fret" fill className="object-cover" />
           <div className="absolute inset-0 bg-secondary/82" />
         </div>
         <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">

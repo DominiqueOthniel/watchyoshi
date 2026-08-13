@@ -188,12 +188,12 @@ export async function calculateAutomaticProgression(shipment: Shipment) {
     ...pos,
     city:
       progress < 0.05
-        ? shipment.sender?.address?.city || "Origin"
+        ? shipment.sender?.address?.city || "Origine"
         : progress >= 0.88
           ? shipment.recipient?.address?.city
-            ? `Near ${shipment.recipient.address.city}`
-            : "Near destination"
-          : "In Transit",
+            ? `Près de ${shipment.recipient.address.city}`
+            : "Près de la destination"
+          : "En transit",
     progress,
     suggestedStatus,
     routeGeometry,

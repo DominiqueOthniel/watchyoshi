@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n/context";
 
 const EVENTS = [
-  { id: "CW8F2A", route: "Los Angeles → Dallas", status: "In transit" },
-  { id: "CW3K91", route: "Miami → New York", status: "Picked up" },
-  { id: "CW7B44", route: "Chicago → Denver", status: "Out for delivery" },
-  { id: "CW1Q28", route: "Seattle → Phoenix", status: "In transit" },
-  { id: "CW9M55", route: "Houston → Atlanta", status: "Delivered" },
-  { id: "CW2T70", route: "Boston → Charlotte", status: "In transit" },
+  { id: "CW8F2A", route: "Lyon → Paris", status: "En transit" },
+  { id: "CW3K91", route: "Marseille → Lille", status: "Ramassé" },
+  { id: "CW7B44", route: "Toulouse → Nantes", status: "En livraison" },
+  { id: "CW1Q28", route: "Bordeaux → Strasbourg", status: "En transit" },
+  { id: "CW9M55", route: "Nice → Rennes", status: "Livré" },
+  { id: "CW2T70", route: "Montpellier → Rouen", status: "En transit" },
 ];
 
 export default function LiveActivityTicker() {

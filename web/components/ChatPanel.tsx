@@ -79,7 +79,7 @@ export default function ChatPanel({
         body: JSON.stringify({ text: text.trim(), senderType, senderName }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Send failed");
+      if (!res.ok) throw new Error(data.error || "Envoi impossible");
       setText("");
       if (data.message) {
         setMessages((prev) =>
@@ -87,7 +87,7 @@ export default function ChatPanel({
         );
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Error");
+      alert(err instanceof Error ? err.message : "Erreur");
     } finally {
       setSending(false);
     }
@@ -116,7 +116,9 @@ export default function ChatPanel({
                 : "border border-border bg-panel text-text-primary"
             }`}
           >
-            <p className="text-[10px] opacity-70">{m.senderName || m.senderType}</p>
+            <p className="text-[10px] opacity-70">
+              {m.senderName || (m.senderType === "admin" ? "Agent" : "Client")}
+            </p>
             <p className="break-words">{m.text}</p>
           </div>
         ))}

@@ -2,7 +2,7 @@ import ServicesClient from "./ServicesClient";
 
 export const metadata = {
   title: "Services | Aurex Logistics",
-  description: "Worldwide road, air, sea, and vehicle transport with live tracking and clear timelines.",
+  description: "Fret routier, aérien, maritime et véhicules, avec suivi live et timelines claires.",
 };
 
 export default function ServicesPage() {

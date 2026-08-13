@@ -22,14 +22,14 @@ export default function ShipmentProgress({ status, routeProgress }: Props) {
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
-            Delivery progress
+            Progression de livraison
           </p>
           <p className="mt-1 text-sm text-text-secondary">
             {status === "pending"
-              ? "Awaiting pickup — tracking will animate once the package moves."
+              ? "En attente de ramassage. Le suivi s’anime dès que le colis part."
               : status === "delivered"
-                ? "Package delivered successfully."
-                : "Live route progress updating…"}
+                ? "Colis livré avec succès."
+                : "Progression du trajet en direct…"}
           </p>
         </div>
         <p className="text-2xl font-bold tabular-nums text-primary">{percent}%</p>

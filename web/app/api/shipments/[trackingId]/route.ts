@@ -26,7 +26,7 @@ export async function GET(_request: Request, { params }: Params) {
 
     if (error) throw error;
     if (!data) {
-      return NextResponse.json({ error: "Shipment not found" }, { status: 404 });
+      return NextResponse.json({ error: "Envoi introuvable" }, { status: 404 });
     }
 
     let shipment = transformShipmentFromDB(data);
@@ -119,7 +119,7 @@ export async function GET(_request: Request, { params }: Params) {
     return NextResponse.json({ shipment, routeProgress, routeGeometry });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to fetch shipment" },
+      { error: err instanceof Error ? err.message : "Impossible de charger l’envoi" },
       { status: 500 }
     );
   }
@@ -139,7 +139,7 @@ export async function PATCH(request: Request, { params }: Params) {
 
     if (fetchError) throw fetchError;
     if (!existing) {
-      return NextResponse.json({ error: "Shipment not found" }, { status: 404 });
+      return NextResponse.json({ error: "Envoi introuvable" }, { status: 404 });
     }
 
     const shipment = transformShipmentFromDB(existing);
@@ -158,7 +158,7 @@ export async function PATCH(request: Request, { params }: Params) {
       ) {
         return NextResponse.json(
           {
-            error: `Cannot move from ${shipment.status} back to ${next}. Use force=true to override.`,
+            error: `Impossible de repasser de ${shipment.status} à ${next}. Utilisez force=true pour forcer.`,
           },
           { status: 400 }
         );
@@ -178,7 +178,7 @@ export async function PATCH(request: Request, { params }: Params) {
       if (body.pause && !auto.paused) {
         auto.paused = true;
         auto.pausedAt = new Date().toISOString();
-        auto.pauseReason = body.pauseReason || "Paused by admin";
+        auto.pauseReason = body.pauseReason || "Mis en pause par l’admin";
       } else if (!body.pause && auto.paused) {
         if (auto.pausedAt) {
           auto.pausedDuration += Date.now() - new Date(auto.pausedAt).getTime();
@@ -203,7 +203,7 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ shipment: transformShipmentFromDB(data) });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to update shipment" },
+      { error: err instanceof Error ? err.message : "Impossible de mettre à jour l’envoi" },
       { status: 500 }
     );
   }
@@ -221,7 +221,7 @@ export async function DELETE(_request: Request, { params }: Params) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to delete shipment" },
+      { error: err instanceof Error ? err.message : "Impossible de supprimer l’envoi" },
       { status: 500 }
     );
   }

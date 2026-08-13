@@ -20,7 +20,7 @@ export async function POST(_request: Request, { params }: Params) {
 
     if (error) throw error;
     if (!data) {
-      return NextResponse.json({ error: "Shipment not found" }, { status: 404 });
+      return NextResponse.json({ error: "Envoi introuvable" }, { status: 404 });
     }
 
     const shipment = transformShipmentFromDB(data);
@@ -59,7 +59,7 @@ export async function POST(_request: Request, { params }: Params) {
       return NextResponse.json({
         success: true,
         receipt: dataUrl,
-        warning: `Storage upload failed (${uploadError.message}). Saved inline. Create a public 'receipts' bucket in Supabase Storage for better performance.`,
+        warning: `Échec de l’upload (${uploadError.message}). Reçu enregistré en ligne. Créez un bucket public « receipts » dans Supabase Storage.`,
         shipment: transformShipmentFromDB(updated),
       });
     }
@@ -90,7 +90,7 @@ export async function POST(_request: Request, { params }: Params) {
     });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to generate receipt" },
+      { error: err instanceof Error ? err.message : "Impossible de générer le reçu" },
       { status: 500 }
     );
   }

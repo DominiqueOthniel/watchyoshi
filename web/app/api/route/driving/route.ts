@@ -9,12 +9,12 @@ export async function GET(request: Request) {
   const dLng = Number(searchParams.get("dLng"));
 
   if (![oLat, oLng, dLat, dLng].every((n) => Number.isFinite(n))) {
-    return NextResponse.json({ error: "Invalid coordinates" }, { status: 400 });
+    return NextResponse.json({ error: "Coordonnées invalides" }, { status: 400 });
   }
 
   const route = await fetchOsrmRoute(oLat, oLng, dLat, dLng);
   if (!route || route.geometry.length < 2) {
-    return NextResponse.json({ error: "Route not found" }, { status: 404 });
+    return NextResponse.json({ error: "Itinéraire introuvable" }, { status: 404 });
   }
 
   return NextResponse.json({

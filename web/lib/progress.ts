@@ -1,11 +1,11 @@
 import type { Shipment, ShipmentStatus } from "./types";
 
 export const PROGRESS_STEPS: { key: ShipmentStatus; label: string }[] = [
-  { key: "pending", label: "Pending" },
-  { key: "picked_up", label: "Picked up" },
-  { key: "in_transit", label: "In transit" },
-  { key: "out_for_delivery", label: "Out for delivery" },
-  { key: "delivered", label: "Delivered" },
+  { key: "pending", label: "En attente" },
+  { key: "picked_up", label: "Ramassé" },
+  { key: "in_transit", label: "En transit" },
+  { key: "out_for_delivery", label: "En livraison" },
+  { key: "delivered", label: "Livré" },
 ];
 
 const STATUS_BASE: Record<string, number> = {

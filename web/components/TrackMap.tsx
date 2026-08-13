@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef } from "react";
 
 const originIcon = L.divIcon({
   className: "cw-pin-icon",
-  html: `<div class="cw-map-pin cw-map-pin-origin" title="Origin"><span></span></div>`,
+  html: `<div class="cw-map-pin cw-map-pin-origin" title="Origine"><span></span></div>`,
   iconSize: [22, 28],
   iconAnchor: [11, 28],
 });
@@ -122,7 +122,7 @@ function MovingMarker({ current }: { current: Point }) {
         if (m) displayRef.current = [m.getLatLng().lat, m.getLatLng().lng];
       }}
     >
-      <Popup>{current.label || "Package location"}</Popup>
+      <Popup>{current.label || "Position du colis"}</Popup>
     </Marker>
   );
 }
@@ -180,7 +180,7 @@ export default function TrackMap({
       {!routeReady && (
         <div className="pointer-events-none absolute inset-x-0 top-2 z-[500] flex justify-center px-3">
           <span className="rounded-full bg-panel/95 px-3 py-1 text-[11px] font-medium text-text-secondary shadow-soft sm:text-xs">
-            Loading road route…
+            Chargement de l’itinéraire…
           </span>
         </div>
       )}
@@ -211,7 +211,7 @@ export default function TrackMap({
         )}
         {origin && (
           <Marker position={[origin.lat, origin.lng]} icon={originIcon}>
-            <Popup>{origin.label || "Origin"}</Popup>
+            <Popup>{origin.label || "Origine"}</Popup>
           </Marker>
         )}
         {destination && (

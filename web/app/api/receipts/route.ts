@@ -28,7 +28,7 @@ export async function GET() {
     return NextResponse.json({ receipts });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to list receipts" },
+      { error: err instanceof Error ? err.message : "Impossible de lister les reçus" },
       { status: 500 }
     );
   }

@@ -2,6 +2,7 @@ import { PDFDocument, StandardFonts, rgb, RGB, PDFFont, PDFPage } from "pdf-lib"
 import { readFile } from "fs/promises";
 import path from "path";
 import type { Shipment } from "./types";
+import { localizedEventCopy } from "./shipment-status";
 
 const PAGE_W = 612;
 const PAGE_H = 792;
@@ -45,14 +46,14 @@ function currencySymbol(code?: string) {
 
 function money(n: number | undefined, symbol: string) {
   const v = Number(n ?? 0);
-  return `${symbol}${v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `${symbol}${v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function fmtDate(value?: string | null) {
   if (!value) return "N/A";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return "N/A";
-  return d.toLocaleString("en-US", {
+  return d.toLocaleString("fr-FR", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -61,7 +62,24 @@ function fmtDate(value?: string | null) {
   });
 }
 
-function safe(v?: string | number | null, fallback = "N/A") {
+function frPackageType(type?: string) {
+  const key = String(type || "").toLowerCase();
+  if (key === "parcel") return "Colis";
+  if (key === "document") return "Document";
+  if (key === "freight") return "Fret";
+  if (key === "vehicle") return "Vehicule";
+  return type || "";
+}
+
+function frService(value?: string) {
+  const key = String(value || "").toLowerCase();
+  if (key === "standard") return "Standard";
+  if (key === "express") return "Express";
+  if (key === "economy") return "Economique";
+  return value || "";
+}
+
+function safe(v?: string | number | null, fallback = "N/D") {
   if (v == null || String(v).trim() === "") return fallback;
   return String(v);
 }
@@ -70,53 +88,66 @@ function statusMeta(status: string) {
   switch (status) {
     case "delivered":
       return {
-        label: "DELIVERED",
+        label: "LIVRE",
         color: C.green,
         soft: C.greenSoft,
-        title: "Successfully delivered",
-        text: "This shipment has been delivered to the recipient.",
+        title: "Livraison reussie",
+        text: "Cet envoi a ete remis au destinataire.",
       };
     case "out_for_delivery":
       return {
-        label: "OUT FOR DELIVERY",
+        label: "EN LIVRAISON",
         color: C.amber,
         soft: C.amberSoft,
-        title: "Out for delivery",
-        text: "The package is with the courier and will arrive soon.",
+        title: "En cours de livraison",
+        text: "Le colis est chez le coursier et arrivera bientot.",
       };
     case "in_transit":
       return {
-        label: "IN TRANSIT",
+        label: "EN TRANSIT",
         color: C.primary,
         soft: C.blueSoft,
-        title: "Package in transit",
-        text: "Your shipment is on the way. Tracking updates continue automatically.",
+        title: "Colis en transit",
+        text: "Votre envoi est en route. Le suivi se met a jour automatiquement.",
       };
     case "picked_up":
       return {
-        label: "PICKED UP",
+        label: "RAMASSE",
         color: C.indigo,
         soft: C.indigoSoft,
-        title: "Package picked up",
-        text: "The shipment has been collected and entered the logistics network.",
+        title: "Colis ramasse",
+        text: "L'envoi a ete ramasse et entre dans le reseau logistique.",
       };
     case "exception":
       return {
-        label: "EXCEPTION",
+        label: "INCIDENT",
         color: C.red,
         soft: C.redSoft,
-        title: "Action required",
-        text: "An exception occurred. Please contact Aurex Logistics at +33 6 44 68 49 20.",
+        title: "Action requise",
+        text: "Un incident est survenu. Contactez Aurex Logistics au +33 6 44 68 49 20.",
       };
     default:
       return {
-        label: "PENDING",
+        label: "EN ATTENTE",
         color: C.red,
         soft: C.redSoft,
-        title: "Awaiting pickup",
-        text: "This shipment is registered and waiting to be picked up.",
+        title: "En attente de ramassage",
+        text: "Cet envoi est enregistre et attend d'etre ramasse.",
       };
   }
+}
+
+function pdfSafe(text: string) {
+  return text
+    .replaceAll("’", "'")
+    .replaceAll("‘", "'")
+    .replaceAll("“", '"')
+    .replaceAll("”", '"')
+    .replaceAll("—", "-")
+    .replaceAll("–", "-")
+    .replaceAll("œ", "oe")
+    .replaceAll("Œ", "OE")
+    .replaceAll("…", "...");
 }
 
 function drawText(
@@ -129,36 +160,37 @@ function drawText(
   color: RGB,
   maxWidth?: number
 ) {
+  const raw = pdfSafe(text);
   const content = maxWidth
-    ? truncateToWidth(text, font, size, maxWidth)
-    : text;
+    ? truncateToWidth(raw, font, size, maxWidth)
+    : raw;
   page.drawText(content, { x, y, size, font, color });
 }
 
 function truncateToWidth(text: string, font: PDFFont, size: number, maxWidth: number) {
   if (font.widthOfTextAtSize(text, size) <= maxWidth) return text;
   let t = text;
-  while (t.length > 0 && font.widthOfTextAtSize(`${t}…`, size) > maxWidth) {
+  while (t.length > 0 && font.widthOfTextAtSize(`${t}...`, size) > maxWidth) {
     t = t.slice(0, -1);
   }
-  return `${t}…`;
+  return `${t}...`;
 }
 
 function addressOf(party?: Shipment["sender"]) {
-  if (!party?.address) return "N/A";
+  if (!party?.address) return "N/D";
   const cityLine = [party.address.zip, party.address.city].filter(Boolean).join(" ");
   return (
     [party.address.street, cityLine, party.address.state, party.address.country]
       .filter(Boolean)
-      .join(", ") || "N/A"
+      .join(", ") || "N/D"
   );
 }
 
 export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create();
-  pdfDoc.setTitle(`Aurex Logistics Receipt ${shipment.trackingId}`);
+  pdfDoc.setTitle(`Recu Aurex Logistics ${shipment.trackingId}`);
   pdfDoc.setAuthor("Aurex Logistics");
-  pdfDoc.setSubject("Official shipment receipt");
+  pdfDoc.setSubject("Recu officiel d'envoi");
   pdfDoc.setCreator("Aurex Logistics Platform");
 
   const page = pdfDoc.addPage([PAGE_W, PAGE_H]);
@@ -199,8 +231,8 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
     drawText(page, "Aurex Logistics", MARGIN, PAGE_H - 58, 20, fontBold, C.white);
   }
 
-  drawText(page, "Worldwide freight. Clear tracking.", MARGIN, PAGE_H - 98, 9, font, hex(191, 219, 254));
-  drawText(page, "OFFICIAL SHIPMENT RECEIPT", PAGE_W - MARGIN - 190, PAGE_H - 52, 11, fontBold, C.white);
+  drawText(page, "Fret mondial. Suivi clair.", MARGIN, PAGE_H - 98, 9, font, hex(191, 219, 254));
+  drawText(page, "RECU OFFICIEL D'ENVOI", PAGE_W - MARGIN - 190, PAGE_H - 52, 11, fontBold, C.white);
   drawText(page, docId, PAGE_W - MARGIN - 190, PAGE_H - 68, 8, font, hex(191, 219, 254));
 
   let y = PAGE_H - 140;
@@ -215,13 +247,13 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
     borderColor: C.primary,
     borderWidth: 1.5,
   });
-  drawText(page, "TRACKING NUMBER", MARGIN + 16, y + 8, 9, font, C.primary);
+  drawText(page, "NUMERO DE SUIVI", MARGIN + 16, y + 8, 9, font, C.primary);
   drawText(page, shipment.trackingId, MARGIN + 16, y - 14, 22, fontBold, C.ink);
 
   y -= 70;
 
   // ===== STATUS + DATES =====
-  drawText(page, "Shipment Information", MARGIN, y, 13, fontBold, C.primary);
+  drawText(page, "Informations d'envoi", MARGIN, y, 13, fontBold, C.primary);
   y -= 22;
 
   const badgeLabel = meta.label;
@@ -237,16 +269,16 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
 
   y -= 28;
   const col = (PAGE_W - MARGIN * 2) / 2;
-  drawText(page, "Created", MARGIN, y, 8, font, C.muted);
-  drawText(page, "Last updated", MARGIN + col, y, 8, font, C.muted);
+  drawText(page, "Cree le", MARGIN, y, 8, font, C.muted);
+  drawText(page, "Derniere mise a jour", MARGIN + col, y, 8, font, C.muted);
   y -= 14;
   drawText(page, fmtDate(shipment.createdAt), MARGIN, y, 10, fontBold, C.ink);
   drawText(page, fmtDate(shipment.updatedAt), MARGIN + col, y, 10, fontBold, C.ink);
   y -= 18;
-  drawText(page, "Estimated delivery", MARGIN, y, 8, font, C.muted);
+  drawText(page, "Livraison estimee", MARGIN, y, 8, font, C.muted);
   drawText(
     page,
-    status === "delivered" ? "Delivered at" : "Current location",
+    status === "delivered" ? "Livre le" : "Position actuelle",
     MARGIN + col,
     y,
     8,
@@ -259,7 +291,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
     page,
     status === "delivered"
       ? fmtDate(shipment.deliveredAt)
-      : safe(shipment.currentLocation?.city, "In network"),
+      : safe(shipment.currentLocation?.city, "En reseau"),
     MARGIN + col,
     y,
     10,
@@ -313,17 +345,17 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
       color: C.border,
     });
     drawText(page, name, x + 12, cardY + cardH - 44, 11, fontBold, C.ink, cardW - 24);
-    drawText(page, "Email", x + 12, cardY + cardH - 60, 7, font, C.muted);
+    drawText(page, "E-mail", x + 12, cardY + cardH - 60, 7, font, C.muted);
     drawText(page, email, x + 12, cardY + cardH - 72, 9, font, C.ink, cardW - 24);
-    drawText(page, "Phone", x + 12, cardY + cardH - 86, 7, font, C.muted);
+    drawText(page, "Telephone", x + 12, cardY + cardH - 86, 7, font, C.muted);
     drawText(page, phone, x + 12, cardY + cardH - 98, 9, font, C.ink, cardW - 24);
-    drawText(page, "Address", x + 12, cardY + cardH - 112, 7, font, C.muted);
+    drawText(page, "Adresse", x + 12, cardY + cardH - 112, 7, font, C.muted);
     drawText(page, address, x + 12, cardY + 8, 8, font, C.ink, cardW - 24);
   }
 
   partyCard(
     MARGIN,
-    "SENDER",
+    "EXPEDITEUR",
     safe(shipment.sender?.name),
     safe(shipment.sender?.email),
     safe(shipment.sender?.phone),
@@ -331,7 +363,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   );
   partyCard(
     MARGIN + cardW + 14,
-    "RECIPIENT",
+    "DESTINATAIRE",
     safe(shipment.recipient?.name),
     safe(shipment.recipient?.email),
     safe(shipment.recipient?.phone),
@@ -341,7 +373,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   y = cardY - 24;
 
   // ===== PACKAGE =====
-  drawText(page, "Package Details", MARGIN, y, 13, fontBold, C.primary);
+  drawText(page, "Details du colis", MARGIN, y, 13, fontBold, C.primary);
   y -= 12;
   const pkgH = 78;
   page.drawRectangle({
@@ -355,8 +387,8 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   });
   const pkgTop = y - 16;
   drawText(page, "Type", MARGIN + 14, pkgTop, 7, font, C.muted);
-  drawText(page, safe(shipment.package?.type), MARGIN + 14, pkgTop - 12, 10, fontBold, C.ink);
-  drawText(page, "Weight", MARGIN + 150, pkgTop, 7, font, C.muted);
+  drawText(page, safe(frPackageType(shipment.package?.type)), MARGIN + 14, pkgTop - 12, 10, fontBold, C.ink);
+  drawText(page, "Poids", MARGIN + 150, pkgTop, 7, font, C.muted);
   drawText(
     page,
     `${safe(shipment.package?.weight)} kg`,
@@ -366,10 +398,10 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
     fontBold,
     C.ink
   );
-  drawText(page, "Service", MARGIN + 280, pkgTop, 7, font, C.muted);
+  drawText(page, "Prestation", MARGIN + 280, pkgTop, 7, font, C.muted);
   drawText(
     page,
-    `${safe(shipment.service?.type)} / ${safe(shipment.service?.priority)}`,
+    `${safe(frService(shipment.service?.type))} / ${safe(frService(shipment.service?.priority))}`,
     MARGIN + 280,
     pkgTop - 12,
     10,
@@ -380,7 +412,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   drawText(page, "Description", MARGIN + 14, pkgTop - 34, 7, font, C.muted);
   drawText(
     page,
-    safe(shipment.package?.description, "No description provided"),
+    safe(shipment.package?.description, "Aucune description"),
     MARGIN + 14,
     pkgTop - 48,
     9,
@@ -390,7 +422,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   );
   drawText(
     page,
-    `Declared value: ${money(shipment.package?.value, currencySymbol(shipment.package?.currency || shipment.cost?.currency))}`,
+    `Valeur declaree : ${money(shipment.package?.value, currencySymbol(shipment.package?.currency || shipment.cost?.currency))}`,
     MARGIN + 14,
     pkgTop - 64,
     9,
@@ -401,7 +433,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   y = y - pkgH - 22;
 
   // ===== COSTS =====
-  drawText(page, "Cost Summary", MARGIN, y, 13, fontBold, C.primary);
+  drawText(page, "Resume des couts", MARGIN, y, 13, fontBold, C.primary);
   y -= 12;
   const costH = 86;
   page.drawRectangle({
@@ -415,9 +447,9 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   });
 
   const rows: [string, string][] = [
-    ["Base service", money(shipment.cost?.base, symbol)],
-    ["Shipping", money(shipment.cost?.shipping, symbol)],
-    ["Insurance", money(shipment.cost?.insurance, symbol)],
+    ["Service de base", money(shipment.cost?.base, symbol)],
+    ["Transport", money(shipment.cost?.shipping, symbol)],
+    ["Assurance", money(shipment.cost?.insurance, symbol)],
   ];
   let ry = y - 18;
   for (const [label, value] of rows) {
@@ -448,14 +480,15 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   // ===== TIMELINE (latest events) =====
   const events = (shipment.events || []).slice(-4).reverse();
   if (events.length > 0 && y > 120) {
-    drawText(page, "Recent Activity", MARGIN, y, 13, fontBold, C.primary);
+    drawText(page, "Activite recente", MARGIN, y, 13, fontBold, C.primary);
     y -= 16;
     for (const ev of events) {
       if (y < 90) break;
+      const copy = localizedEventCopy(ev);
       page.drawCircle({ x: MARGIN + 6, y: y + 3, size: 3, color: C.primary });
       drawText(
         page,
-        safe(ev.title || ev.status),
+        safe(copy.title || ev.status),
         MARGIN + 18,
         y,
         9,
@@ -465,10 +498,10 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
       );
       drawText(page, fmtDate(ev.timestamp), MARGIN + 310, y, 8, font, C.muted);
       y -= 12;
-      if (ev.description || ev.location) {
+      if (copy.description || ev.location) {
         drawText(
           page,
-          [ev.description, ev.location].filter(Boolean).join(" · "),
+          [copy.description, ev.location].filter(Boolean).join(" · "),
           MARGIN + 18,
           y,
           8,
@@ -488,7 +521,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   page.drawRectangle({ x: 0, y: 58, width: PAGE_W, height: 1.2, color: C.border });
   drawText(
     page,
-    "This document is an official receipt issued by Aurex Logistics. Verify authenticity with the tracking number above.",
+    "Document officiel emis par Aurex Logistics. Verifiez l'authenticite avec le numero de suivi ci-dessus.",
     MARGIN,
     38,
     7,
@@ -496,7 +529,7 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
     C.muted,
     PAGE_W - MARGIN * 2
   );
-  drawText(page, `Generated ${fmtDate(generatedAt)}  ·  ${docId}`, MARGIN, 22, 7, font, C.muted);
+  drawText(page, `Genere le ${fmtDate(generatedAt)}  ·  ${docId}`, MARGIN, 22, 7, font, C.muted);
   drawText(page, "+33 6 44 68 49 20", PAGE_W - MARGIN - 95, 34, 7, fontBold, C.primary);
   drawText(page, "logisticsaurex@gmail.com", PAGE_W - MARGIN - 118, 22, 7, fontBold, C.primary);
 

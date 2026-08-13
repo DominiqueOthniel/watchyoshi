@@ -16,7 +16,7 @@ export async function GET() {
     });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to list shipments" },
+      { error: err instanceof Error ? err.message : "Impossible de lister les envois" },
       { status: 500 }
     );
   }
@@ -41,8 +41,8 @@ export async function POST(request: Request) {
       events: [
         {
           status: "pending",
-          title: "Shipment created",
-          description: "Your shipment has been registered and is awaiting pickup.",
+          title: "Envoi créé",
+          description: "Votre envoi a été enregistré et attend d’être ramassé.",
           location: body.sender?.address?.city,
           timestamp: now,
         },
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ shipment: transformShipmentFromDB(data) }, { status: 201 });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to create shipment" },
+      { error: err instanceof Error ? err.message : "Impossible de créer l’envoi" },
       { status: 500 }
     );
   }

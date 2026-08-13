@@ -23,11 +23,11 @@ export default function AdminLoginClient() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Login failed");
+      if (!res.ok) throw new Error(data.error || "Connexion impossible");
       router.push("/admin");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Connexion impossible");
     } finally {
       setLoading(false);
     }
@@ -49,8 +49,8 @@ export default function AdminLoginClient() {
               />
             </span>
           </div>
-          <h1 className="text-2xl font-bold text-text-primary">Admin Portal</h1>
-          <p className="mt-2 text-text-secondary">Sign in to access the admin dashboard</p>
+          <h1 className="text-2xl font-bold text-text-primary">Espace administration</h1>
+          <p className="mt-2 text-text-secondary">Connectez-vous pour accéder au tableau de bord</p>
         </div>
 
         <div className="rounded-2xl bg-panel p-8 shadow-large">
@@ -63,7 +63,7 @@ export default function AdminLoginClient() {
 
             <div>
               <label htmlFor="email" className="mb-2 block text-sm font-medium text-text-primary">
-                Email
+                E-mail
               </label>
               <input
                 id="email"
@@ -72,14 +72,14 @@ export default function AdminLoginClient() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="username"
-                placeholder="Enter your email"
+                placeholder="Votre e-mail"
                 className="input-field w-full px-4 py-3"
               />
             </div>
 
             <div>
               <label htmlFor="password" className="mb-2 block text-sm font-medium text-text-primary">
-                Password
+                Mot de passe
               </label>
               <input
                 id="password"
@@ -88,20 +88,20 @@ export default function AdminLoginClient() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
-                placeholder="Enter your password"
+                placeholder="Votre mot de passe"
                 className="input-field w-full px-4 py-3"
               />
             </div>
 
             <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-lg font-semibold disabled:opacity-60">
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Connexion…" : "Se connecter"}
             </button>
           </form>
         </div>
 
         <div className="mt-6 text-center">
           <Link href="/" className="text-sm text-primary hover:underline">
-            ← Back to Home
+            ← Retour à l’accueil
           </Link>
         </div>
       </div>
