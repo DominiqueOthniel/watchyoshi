@@ -238,8 +238,8 @@ export default function CreateShipmentForm() {
               <strong>Démarrer</strong> : la progression avance seule jusqu’à la livraison, sauf
               pause manuelle.
             </p>
-            <label className="flex items-center gap-2 text-sm text-text-secondary">
-              <input name="insurance" type="checkbox" /> Assurance
+            <label className="flex items-center gap-2 text-sm text-text-secondary sm:col-span-2">
+              <input name="insurance" type="checkbox" /> Assurance (50 % de la valeur déclarée)
             </label>
           </div>
         </section>

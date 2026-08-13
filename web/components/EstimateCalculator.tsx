@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
+import { insuranceFromPackageValue } from "@/lib/pricing";
 import { useI18n } from "@/lib/i18n/context";
 
 const MODE_IDS = ["road", "air", "sea", "vehicle"] as const;
@@ -27,6 +28,7 @@ export default function EstimateCalculator() {
   const [speed, setSpeed] = useState<(typeof SPEED_IDS)[number]>("standard");
   const [weight, setWeight] = useState(25);
   const [distance, setDistance] = useState(800);
+  const [packageValue, setPackageValue] = useState(400);
   const [insured, setInsured] = useState(true);
   const [revealed, setRevealed] = useState(false);
 
@@ -49,14 +51,14 @@ export default function EstimateCalculator() {
     const distanceFee = distance * 0.42;
     const weightFee = weight * m.perKg;
     const sub = (m.base + distanceFee + weightFee) * mult;
-    const insurance = insured ? Math.max(45, sub * 0.08) : 0;
+    const insurance = insuranceFromPackageValue(packageValue, insured);
     const total = Math.round(sub + insurance);
     return {
       total,
       insurance: Math.round(insurance),
       days: speed === "same" ? 1 : speed === "express" ? 2 : 4,
     };
-  }, [mode, speed, weight, distance, insured]);
+  }, [mode, speed, weight, distance, packageValue, insured]);
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -130,6 +132,25 @@ export default function EstimateCalculator() {
               className="w-full accent-accent"
             />
             <span className="mt-1 block text-sm font-semibold tabular-nums text-accent">{distance} mi</span>
+          </label>
+
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-white/85">{t("est.value")}</span>
+            <input
+              type="number"
+              min={0}
+              step={1}
+              value={packageValue}
+              onChange={(e) => {
+                const next = Number(e.target.value);
+                setPackageValue(Number.isFinite(next) && next >= 0 ? next : 0);
+                setRevealed(false);
+              }}
+              className="w-full rounded-md border border-white/15 bg-white/10 px-3 py-2.5 text-base text-white outline-none focus:border-accent"
+            />
+            <span className="mt-1 block text-sm font-semibold tabular-nums text-accent">
+              {packageValue} €
+            </span>
           </label>
 
           <label className="block">

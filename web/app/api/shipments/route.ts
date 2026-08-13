@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateTrackingId, transformShipmentFromDB, transformShipmentToDB } from "@/lib/shipments";
+import { shipmentCostFromPackage } from "@/lib/pricing";
 import type { Shipment } from "@/lib/types";
 
 export async function GET() {
@@ -47,13 +48,11 @@ export async function POST(request: Request) {
           timestamp: now,
         },
       ],
-      cost: body.cost || {
-        base: 0,
-        shipping: 0,
-        insurance: 0,
-        total: 0,
-        currency: body.package?.currency || "USD",
-      },
+      cost: body.cost || shipmentCostFromPackage({
+        packageValue: body.package?.value,
+        currency: body.package?.currency || "EUR",
+        insured: Boolean(body.service?.insurance),
+      }),
       estimatedDelivery: body.estimatedDelivery || null,
       currentLocation: {
         lat: body.sender?.address?.lat,
