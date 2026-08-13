@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import type { Shipment, ChatConversation, ShipmentStatus } from "@/lib/types";
 import ChatPanel from "@/components/ChatPanel";
 import { nextStatusInFlow, STATUS_FLOW, STATUS_META } from "@/lib/shipment-status";
@@ -83,8 +82,7 @@ export default function AdminDashboard() {
   }, [shipments]);
 
   async function logout() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await fetch("/api/admin/logout", { method: "POST" });
     router.push("/admin/login");
     router.refresh();
   }

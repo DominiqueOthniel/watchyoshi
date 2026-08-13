@@ -28,6 +28,9 @@ Ouvrir http://localhost:3000
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon (publique) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clé service role (serveur uniquement) |
 | `CRON_SECRET` | Bearer token pour `/api/cron/auto-progress` |
+| `ADMIN_EMAIL` | Email de connexion admin (sans Supabase Auth) |
+| `ADMIN_PASSWORD` | Mot de passe admin |
+| `ADMIN_SESSION_SECRET` | Secret de session cookie (optionnel si `ADMIN_PASSWORD` est défini) |
 
 ## Schéma Supabase
 
@@ -37,24 +40,7 @@ Ouvrir http://localhost:3000
 
 ### Créer un admin
 
-1. **Authentication → Users → Add user**  
-   - Email : `admin@aurexlogistics.com`  
-   - Mot de passe fort  
-   - Auto Confirm : ON  
-2. Dans SQL Editor :
-
-```sql
-UPDATE public.users
-SET role = 'admin', username = 'admin'
-WHERE email = 'admin@aurexlogistics.com';
-
--- Si la ligne n'existe pas encore :
-INSERT INTO public.users (id, email, username, role)
-SELECT id, email, 'admin', 'admin'
-FROM auth.users
-WHERE email = 'admin@aurexlogistics.com'
-ON CONFLICT (id) DO UPDATE SET role = 'admin';
-```
+Le login admin n'utilise plus Supabase Auth. Définir `ADMIN_EMAIL`, `ADMIN_PASSWORD` et `ADMIN_SESSION_SECRET` dans `.env.local` et dans Netlify (Site configuration → Environment variables), puis redéployer.
 
 ## Pages
 

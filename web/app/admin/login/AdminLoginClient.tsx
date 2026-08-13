@@ -3,17 +3,13 @@
 import { FormEvent, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function AdminLoginClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(
-    searchParams.get("error") === "not_admin" ? "This account is not an admin." : null
-  );
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: FormEvent) {
@@ -21,24 +17,13 @@ export default function AdminLoginClient() {
     setLoading(true);
     setError(null);
     try {
-      const supabase = createClient();
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
-      if (authError) throw authError;
-
-      const { data: profile } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", data.user.id)
-        .maybeSingle();
-
-      if (profile?.role !== "admin") {
-        await supabase.auth.signOut();
-        throw new Error("Admin access only.");
-      }
-
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Login failed");
       router.push("/admin");
       router.refresh();
     } catch (err) {
