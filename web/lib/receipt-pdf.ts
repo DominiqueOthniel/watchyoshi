@@ -34,8 +34,8 @@ const C = {
 function currencySymbol(code?: string) {
   const map: Record<string, string> = {
     USD: "$",
-    EUR: "€",
-    GBP: "£",
+    EUR: "EUR ",
+    GBP: "GBP ",
     XAF: "FCFA ",
     XOF: "CFA ",
     CAD: "CA$",
@@ -46,20 +46,34 @@ function currencySymbol(code?: string) {
 
 function money(n: number | undefined, symbol: string) {
   const v = Number(n ?? 0);
-  return `${symbol}${v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatted = Math.abs(v).toFixed(2).replace(".", ",");
+  return `${v < 0 ? "-" : ""}${symbol}${formatted}`;
 }
+
+const FR_MONTHS = [
+  "janv.",
+  "fevr.",
+  "mars",
+  "avr.",
+  "mai",
+  "juin",
+  "juil.",
+  "aout",
+  "sept.",
+  "oct.",
+  "nov.",
+  "dec.",
+];
 
 function fmtDate(value?: string | null) {
   if (!value) return "N/A";
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return "N/A";
-  return d.toLocaleString("fr-FR", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = FR_MONTHS[d.getMonth()] || "";
+  const hour = String(d.getHours()).padStart(2, "0");
+  const minute = String(d.getMinutes()).padStart(2, "0");
+  return `${day} ${month} ${d.getFullYear()}, ${hour}:${minute}`;
 }
 
 function frPackageType(type?: string) {
@@ -137,17 +151,69 @@ function statusMeta(status: string) {
   }
 }
 
+const WINANSI_REPLACEMENTS: Record<string, string> = {
+  "€": "EUR ",
+  "£": "GBP ",
+  "¥": "Y",
+  "’": "'",
+  "‘": "'",
+  "‚": ",",
+  "“": '"',
+  "”": '"',
+  "„": '"',
+  "—": "-",
+  "–": "-",
+  "−": "-",
+  "…": "...",
+  "œ": "oe",
+  "Œ": "OE",
+  "æ": "ae",
+  "Æ": "AE",
+  "ß": "ss",
+  "•": "-",
+  "·": "-",
+  "×": "x",
+  "÷": "/",
+  "™": "TM",
+  "®": "(R)",
+  "©": "(C)",
+  "\u00a0": " ",
+  "\u202f": " ",
+  "\u2007": " ",
+  "\u2009": " ",
+  "\u200a": " ",
+  "\u200b": "",
+  "\u2060": "",
+  "\ufeff": "",
+};
+
 function pdfSafe(text: string) {
-  return text
-    .replaceAll("’", "'")
-    .replaceAll("‘", "'")
-    .replaceAll("“", '"')
-    .replaceAll("”", '"')
-    .replaceAll("—", "-")
-    .replaceAll("–", "-")
-    .replaceAll("œ", "oe")
-    .replaceAll("Œ", "OE")
-    .replaceAll("…", "...");
+  let out = "";
+  for (const ch of String(text ?? "")) {
+    if (WINANSI_REPLACEMENTS[ch] !== undefined) {
+      out += WINANSI_REPLACEMENTS[ch];
+      continue;
+    }
+    const code = ch.codePointAt(0) || 0;
+    if (code === 0x09 || code === 0x0a || code === 0x0d) {
+      out += " ";
+      continue;
+    }
+    if ((code >= 0x20 && code <= 0x7e) || (code >= 0xa0 && code <= 0xff && code !== 0xad)) {
+      out += ch;
+      continue;
+    }
+    const stripped = ch.normalize("NFD").replace(/\p{M}/gu, "");
+    if (stripped && stripped !== ch) {
+      for (const part of stripped) {
+        const sc = part.codePointAt(0) || 0;
+        if ((sc >= 0x20 && sc <= 0x7e) || (sc >= 0xa0 && sc <= 0xff)) out += part;
+      }
+      continue;
+    }
+    out += "?";
+  }
+  return out;
 }
 
 function drawText(
@@ -161,19 +227,31 @@ function drawText(
   maxWidth?: number
 ) {
   const raw = pdfSafe(text);
-  const content = maxWidth
-    ? truncateToWidth(raw, font, size, maxWidth)
-    : raw;
-  page.drawText(content, { x, y, size, font, color });
+  if (!raw) return;
+  try {
+    const content = maxWidth ? truncateToWidth(raw, font, size, maxWidth) : raw;
+    page.drawText(content, { x, y, size, font, color });
+  } catch {
+    const fallback = raw.replace(/[^\x20-\x7E]/g, "?");
+    if (!fallback) return;
+    const content = maxWidth ? truncateToWidth(fallback, font, size, maxWidth) : fallback;
+    page.drawText(content, { x, y, size, font, color });
+  }
 }
 
 function truncateToWidth(text: string, font: PDFFont, size: number, maxWidth: number) {
-  if (font.widthOfTextAtSize(text, size) <= maxWidth) return text;
-  let t = text;
-  while (t.length > 0 && font.widthOfTextAtSize(`${t}...`, size) > maxWidth) {
-    t = t.slice(0, -1);
+  try {
+    if (font.widthOfTextAtSize(text, size) <= maxWidth) return text;
+    let t = text;
+    while (t.length > 0 && font.widthOfTextAtSize(`${t}...`, size) > maxWidth) {
+      t = t.slice(0, -1);
+    }
+    return `${t}...`;
+  } catch {
+    const ascii = text.replace(/[^\x20-\x7E]/g, "?");
+    if (ascii.length * size * 0.5 <= maxWidth) return ascii;
+    return `${ascii.slice(0, Math.max(1, Math.floor(maxWidth / (size * 0.5))))}...`;
   }
-  return `${t}...`;
 }
 
 function addressOf(party?: Shipment["sender"]) {

@@ -198,8 +198,18 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Génération du reçu impossible");
       await load();
-      if (data.receipt && !String(data.receipt).startsWith("data:")) {
-        window.open(data.receipt, "_blank");
+      if (data.receipt) {
+        const receipt = String(data.receipt);
+        if (receipt.startsWith("data:")) {
+          const link = document.createElement("a");
+          link.href = receipt;
+          link.download = `recu-${trackingId}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        } else {
+          window.open(receipt, "_blank", "noopener,noreferrer");
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur de reçu");

@@ -3,6 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { transformShipmentFromDB, transformShipmentToDB } from "@/lib/shipments";
 import { generateReceiptPdfBuffer } from "@/lib/receipt-pdf";
 
+export const runtime = "nodejs";
+
 interface Params {
   params: Promise<{ trackingId: string }>;
 }
@@ -89,6 +91,7 @@ export async function POST(_request: Request, { params }: Params) {
       shipment: transformShipmentFromDB(updated),
     });
   } catch (err) {
+    console.error("Receipt generation failed:", err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Impossible de générer le reçu" },
       { status: 500 }
