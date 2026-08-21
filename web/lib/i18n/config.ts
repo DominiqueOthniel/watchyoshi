@@ -1,6 +1,9 @@
 export const LOCALES = ["en", "fr", "es"] as const;
 export type Locale = (typeof LOCALES)[number];
 
+export const PDF_LOCALES = ["en", "fr", "es", "de"] as const;
+export type PdfLocale = (typeof PDF_LOCALES)[number];
+
 /** Default product language when nothing is stored or detected */
 export const DEFAULT_LOCALE: Locale = "fr";
 
@@ -8,6 +11,13 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   fr: "Français",
   es: "Español",
+};
+
+export const PDF_LOCALE_LABELS: Record<PdfLocale, string> = {
+  en: "English",
+  fr: "Français",
+  es: "Español",
+  de: "Deutsch",
 };
 
 export const STORAGE_KEY = "aurex_locale";

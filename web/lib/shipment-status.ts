@@ -61,7 +61,7 @@ export function isForwardTransition(from: string, to: string): boolean {
   return statusRank(to) >= statusRank(from);
 }
 
-const LEGACY_EN_COPY = new Set([
+export const LEGACY_EN_COPY = new Set([
   "Shipment created",
   "Your shipment has been registered and is awaiting pickup.",
   "Package picked up",

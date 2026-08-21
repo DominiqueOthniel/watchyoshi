@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import type { Shipment, ChatConversation, ShipmentStatus } from "@/lib/types";
 import ChatPanel from "@/components/ChatPanel";
 import { STATUS_FLOW, STATUS_META } from "@/lib/shipment-status";
+import { PDF_LOCALE_LABELS, PDF_LOCALES, type PdfLocale } from "@/lib/i18n/config";
+import { useI18n } from "@/lib/i18n/context";
 
 type ReceiptRow = {
   trackingId: string;
@@ -33,6 +35,7 @@ function statusBadgeClass(status: string) {
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { locale } = useI18n();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [chats, setChats] = useState<ChatConversation[]>([]);
   const [receipts, setReceipts] = useState<ReceiptRow[]>([]);
@@ -42,6 +45,7 @@ export default function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [statusBusy, setStatusBusy] = useState<string | null>(null);
+  const [pdfLocale, setPdfLocale] = useState<PdfLocale>("fr");
 
   async function load(silent = false) {
     if (!silent) setLoading(true);
@@ -82,6 +86,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    if ((PDF_LOCALES as readonly string[]).includes(locale)) {
+      setPdfLocale(locale as PdfLocale);
+    }
+  }, [locale]);
 
   // Tick live progress on the server so statuses advance without opening /track
   useEffect(() => {
@@ -194,6 +204,8 @@ export default function AdminDashboard() {
     try {
       const res = await fetch(`/api/shipments/${trackingId}/receipt/generate`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: pdfLocale }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Génération du reçu impossible");
@@ -203,7 +215,7 @@ export default function AdminDashboard() {
         if (receipt.startsWith("data:")) {
           const link = document.createElement("a");
           link.href = receipt;
-          link.download = `recu-${trackingId}.pdf`;
+          link.download = `recu-${trackingId}-${pdfLocale}.pdf`;
           document.body.appendChild(link);
           link.click();
           link.remove();
@@ -290,12 +302,29 @@ export default function AdminDashboard() {
 
         {tab === "shipments" && !loading && (
           <div className="mt-6 space-y-4">
-            <p className="text-sm text-text-secondary">
-              Création → <strong>En attente</strong>. Cliquez <strong>Démarrer</strong> : le colis
-              avance tout seul jusqu’à <strong>Livré</strong>. Utilisez{" "}
-              <strong>Mettre en pause</strong> pour geler le trajet, puis{" "}
-              <strong>Reprendre</strong> pour continuer.
-            </p>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <p className="max-w-3xl text-sm text-text-secondary">
+                Création → <strong>En attente</strong>. Cliquez <strong>Démarrer</strong> : le colis
+                avance tout seul jusqu’à <strong>Livré</strong>. Utilisez{" "}
+                <strong>Mettre en pause</strong> pour geler le trajet, puis{" "}
+                <strong>Reprendre</strong> pour continuer.
+              </p>
+              <label className="flex shrink-0 items-center gap-2 text-sm text-text-secondary">
+                <span>Langue du PDF</span>
+                <select
+                  value={pdfLocale}
+                  onChange={(e) => setPdfLocale(e.target.value as PdfLocale)}
+                  className="rounded-md border border-border bg-panel px-2 py-1.5 text-xs font-medium text-text-primary outline-none focus:border-primary"
+                  aria-label="Langue du PDF"
+                >
+                  {PDF_LOCALES.map((code) => (
+                    <option key={code} value={code}>
+                      {PDF_LOCALE_LABELS[code]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
             <div className="overflow-x-auto rounded-2xl bg-panel shadow-large">
               <table className="min-w-[900px] w-full text-left text-sm">
                 <thead className="border-b border-border bg-surface text-xs uppercase text-text-muted">

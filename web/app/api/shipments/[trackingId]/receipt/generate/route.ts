@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { transformShipmentFromDB, transformShipmentToDB } from "@/lib/shipments";
-import { generateReceiptPdfBuffer } from "@/lib/receipt-pdf";
+import { generateReceiptPdfBuffer, normalizePdfLocale } from "@/lib/receipt-pdf";
 
 export const runtime = "nodejs";
 
@@ -9,9 +9,17 @@ interface Params {
   params: Promise<{ trackingId: string }>;
 }
 
-export async function POST(_request: Request, { params }: Params) {
+export async function POST(request: Request, { params }: Params) {
   try {
     const { trackingId } = await params;
+    let language: string | undefined;
+    try {
+      const body = await request.json();
+      language = body?.language;
+    } catch {
+      language = undefined;
+    }
+    const locale = normalizePdfLocale(language);
     const supabase = createAdminClient();
 
     const { data, error } = await supabase
@@ -26,8 +34,8 @@ export async function POST(_request: Request, { params }: Params) {
     }
 
     const shipment = transformShipmentFromDB(data);
-    const pdfBuffer = await generateReceiptPdfBuffer(shipment);
-    const filename = `receipt-${shipment.trackingId}-${Date.now()}.pdf`;
+    const pdfBuffer = await generateReceiptPdfBuffer(shipment, locale);
+    const filename = `receipt-${shipment.trackingId}-${locale}-${Date.now()}.pdf`;
 
     // Ensure bucket exists (ignore error if already created)
     await supabase.storage.createBucket("receipts", { public: true }).catch(() => null);
