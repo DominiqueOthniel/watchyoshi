@@ -285,23 +285,15 @@ export async function generateReceiptPdfBuffer(shipment: Shipment): Promise<Buff
   page.drawRectangle({ x: 0, y: PAGE_H - 108, width: PAGE_W, height: 108, color: C.primary });
   page.drawRectangle({ x: 0, y: PAGE_H - 112, width: PAGE_W, height: 4, color: C.primaryDark });
 
-  // Header bar stays brand blue; place logo on a white plate for contrast
-  page.drawRectangle({
-    x: MARGIN - 4,
-    y: PAGE_H - 90,
-    width: 118,
-    height: 52,
-    color: C.white,
-  });
   try {
     const logoPath = path.join(process.cwd(), "public", "aurex-logo-light.png");
     const logoBytes = await readFile(logoPath);
     const logo = await pdfDoc.embedPng(logoBytes);
-    const logoH = 44;
-    const logoW = Math.min((logo.width / logo.height) * logoH, 110);
+    const logoH = 58;
+    const logoW = Math.min((logo.width / logo.height) * logoH, 150);
     page.drawImage(logo, {
       x: MARGIN,
-      y: PAGE_H - 86,
+      y: PAGE_H - 78,
       width: logoW,
       height: logoH,
     });
