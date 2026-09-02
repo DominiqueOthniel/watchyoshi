@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FR_CITIES, FRANCE, geocodeAddress, isFrance, isFrenchPostalCode } from "@/lib/address";
+import { FR_CITIES, FRANCE, isFrance, isFrenchPostalCode } from "@/lib/address";
 import { useAdminSession } from "@/lib/use-admin-session";
 
 function AddressBlock({ prefix, title }: { prefix: "sender" | "recipient"; title: string }) {
@@ -98,15 +98,25 @@ export default function CreateShipmentForm() {
         throw new Error("Code postal destinataire invalide (5 chiffres, ex. 69001).");
       }
 
-      const [senderCoords, recipientCoords] = await Promise.all([
-        geocodeAddress(sender),
-        geocodeAddress(recipient),
+      const [senderRes, recipientRes] = await Promise.all([
+        fetch("/api/geocode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sender),
+        }),
+        fetch("/api/geocode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(recipient),
+        }),
       ]);
+      const senderCoords = senderRes.ok ? await senderRes.json() : null;
+      const recipientCoords = recipientRes.ok ? await recipientRes.json() : null;
 
-      if (!senderCoords) {
+      if (!senderCoords?.lat || !senderCoords?.lng) {
         throw new Error("Adresse expéditeur introuvable. Vérifiez rue, code postal et ville.");
       }
-      if (!recipientCoords) {
+      if (!recipientCoords?.lat || !recipientCoords?.lng) {
         throw new Error("Adresse destinataire introuvable. Vérifiez rue, code postal et ville.");
       }
 
