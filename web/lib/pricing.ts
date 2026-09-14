@@ -1,4 +1,4 @@
-export const INSURANCE_RATE = 0.5;
+export const INSURANCE_RATE = 0.3;
 
 export function roundMoney(n: number) {
   return Math.round((Number.isFinite(n) ? n : 0) * 100) / 100;

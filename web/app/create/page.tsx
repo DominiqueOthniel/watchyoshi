@@ -249,7 +249,7 @@ export default function CreateShipmentForm() {
               pause manuelle.
             </p>
             <label className="flex items-center gap-2 text-sm text-text-secondary sm:col-span-2">
-              <input name="insurance" type="checkbox" /> Assurance (50 % de la valeur déclarée)
+              <input name="insurance" type="checkbox" /> Assurance (30 % de la valeur déclarée)
             </label>
           </div>
         </section>
